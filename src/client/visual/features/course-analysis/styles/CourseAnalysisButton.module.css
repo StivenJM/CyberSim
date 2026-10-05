@@ -1,0 +1,32 @@
+.analysisButton {
+  font-size: 14px;
+  font-weight: 400;
+}
+
+.label {
+  color: transparent !important;
+  background: linear-gradient(90deg, #9ca3af 25%, #e5e7eb 50%, #9ca3af 75%);
+  background-size: 400px 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  animation: shimmerText 2s linear infinite;
+}
+
+@keyframes shimmerText {
+  0% { background-position: -200px 0; }
+  100% { background-position: 200px 0; }
+}
+
+.spinner {
+  width: 16px;
+  height: 16px;
+  border: 2px solid var(--text-secondary);
+  border-top-color: var(--text-primary);
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite;
+  flex-shrink: 0;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}

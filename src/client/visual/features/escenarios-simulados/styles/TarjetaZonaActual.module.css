@@ -1,0 +1,13 @@
+.contenedor {
+  position: absolute;
+  bottom: 16px;
+  right: 16px;
+  mix-blend-mode: difference;
+}
+
+.titulo {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: var(--text-primary);
+}

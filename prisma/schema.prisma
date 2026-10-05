@@ -1,0 +1,118 @@
+generator client {
+  provider = "prisma-client-js"
+  output   = "../src/generated/prisma"
+}
+
+generator client_render {
+  provider = "prisma-client-js"
+  output   = "../dist/server/generated/prisma"
+}
+
+// La URL la gestiona prisma.config.ts (datasource.url = env('DIRECT_URL'))
+datasource db {
+  provider = "postgresql"
+}
+
+model curso {
+  id_curso                       Int                           @id @default(autoincrement())
+  id_profesor                    Int
+  nombre                         String                        @db.VarChar
+  codigo_acceso                  String?                       @unique @db.VarChar
+  codigo_expira                  DateTime?                     @db.Timestamp(6)
+  profesor                       profesor                      @relation(fields: [id_profesor], references: [id_profesor], onDelete: NoAction, onUpdate: NoAction, map: "fk_curso_profesor")
+  matricula                      matricula[]
+  retroalimentacion_curso        retroalimentacion_curso[]
+}
+
+model estudiante {
+  id_estudiante                   Int                           @id @default(autoincrement())
+  codigo_unico                    Int                           @unique
+  primernombre                    String                        @db.VarChar
+  segundo_nombre                  String                        @db.VarChar
+  primer_apellido                 String                        @db.VarChar
+  segundo_apellido                String                        @db.VarChar
+  id_usuario_auth                 Int?                          @unique
+  usuario_auth                    usuario_auth?                 @relation(fields: [id_usuario_auth], references: [id_usuario_auth], onDelete: NoAction, onUpdate: NoAction, map: "fk_estudiante_usuario_auth")
+  matricula                       matricula[]
+  progreso                        progreso[]
+  retroalimentacion_estudiante    retroalimentacion_estudiante[]
+}
+
+model matricula {
+  id_matricula  Int        @id @default(autoincrement())
+  id_curso      Int
+  id_estudiante Int
+  fecha         DateTime   @default(dbgenerated("CURRENT_DATE")) @db.Date
+  curso         curso      @relation(fields: [id_curso], references: [id_curso], onDelete: NoAction, onUpdate: NoAction, map: "fk_matricula_curso")
+  estudiante    estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: NoAction, onUpdate: NoAction, map: "fk_matricula_estudiante")
+}
+
+model profesor {
+  id_profesor              Int                       @id @default(autoincrement())
+  primernombre             String                    @db.VarChar
+  segundo_nombre           String                    @db.VarChar
+  primer_apellido          String                    @db.VarChar
+  segundo_apellido         String                    @db.VarChar
+  id_usuario_auth          Int?                      @unique
+  curso                    curso[]
+  usuario_auth             usuario_auth?             @relation(fields: [id_usuario_auth], references: [id_usuario_auth], onDelete: NoAction, onUpdate: NoAction, map: "fk_profesor_usuario_auth")
+}
+
+model progreso {
+  id_progreso   Int        @id @default(autoincrement())
+  id_estudiante Int
+  slug_escenario String    @db.VarChar
+  terminado     Boolean?   @default(false)
+  tiempo        Float?
+  acciones      String?    @db.Text
+  fecha_creacion DateTime?  @default(now())
+  // escenario     escenario  @relation(fields: [id_escenario], references: [id_escenario], onDelete: NoAction, onUpdate: NoAction, map: "fk_progreso_escenario")
+  estudiante    estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: NoAction, onUpdate: NoAction, map: "fk_progreso_estudiante")
+}
+
+model usuario_auth {
+  id_usuario_auth    Int         @id @default(autoincrement())
+  correo_electronico String      @unique @db.VarChar
+  contrasenia_hash   String      @db.VarChar
+  confirmado         Boolean     @default(false)
+  token_confirmacion String?     @db.VarChar
+  token_recuperacion String?     @db.VarChar
+  token_expira       DateTime?   @db.Timestamp(6)
+  creado_en          DateTime    @default(now()) @db.Timestamp(6)
+  estudiante         estudiante?
+  profesor           profesor?
+}
+
+model retroalimentacion_estudiante {
+  id_retro_est           Int        @id @default(autoincrement())
+  id_estudiante          Int
+  slug_escenario         String     @db.VarChar
+  analisis               String     @db.Text
+  fortaleza              String     @db.Text
+  area_mejora            String     @db.Text
+  consejo                String     @db.Text
+  num_intentos_al_generar Int       @default(0)
+  fecha                  DateTime   @default(now()) @db.Timestamp(6)
+
+  estudiante             estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: Cascade, onUpdate: NoAction, map: "fk_retro_estudiante")
+}
+
+model retroalimentacion_curso {
+  id_retro_curso   Int        @id @default(autoincrement())
+  id_curso         Int
+  id_profesor      Int        // desnormalizado: profesor que lo solicitó (via curso.id_profesor)
+  resumen          String     @db.Text
+  patrones         String     @db.Text
+  fortalezas       String     @db.Text
+  areas_mejora     String     @db.Text
+  recomendaciones  String     @db.Text
+  fecha            DateTime   @default(now()) @db.Timestamp(6)
+
+  curso            curso      @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade, onUpdate: NoAction, map: "fk_retro_curso")
+}
+//
+// model escenario {
+//   id_escenario Int        @id @default(autoincrement())
+//   nombre       String     @db.VarChar
+//   progreso     progreso[]
+// }

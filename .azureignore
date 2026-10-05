@@ -1,0 +1,26 @@
+# .azureignore
+node_modules/.vite
+.git
+.github
+.vscode
+*.log
+.env.local
+.env.development
+coverage
+dist/client
+public
+src/components
+src/hooks
+src/pages
+src/styles
+src/assets
+src/App.tsx
+src/main.tsx
+index.html
+vite.config.ts
+.eslintrc.*
+*.test.ts
+*.test.tsx
+*.spec.ts
+*.spec.tsx
+README.md

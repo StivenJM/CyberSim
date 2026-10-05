@@ -1,0 +1,121 @@
+.wrapper {
+    position: relative;
+    display: inline-flex;
+}
+
+.tooltip {
+    position: absolute;
+    bottom: calc(100% + 8px);
+    left: 50%;
+    transform: translateX(-50%);
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    padding: 6px 10px;
+    border-radius: 8px;
+    font-size: 12px;
+    white-space: nowrap;
+    pointer-events: none;
+    user-select: none;
+    opacity: 0;
+    transition: opacity 0.15s ease;
+    z-index: 10;
+}
+
+.tooltip::after {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%);
+    border: 5px solid transparent;
+    border-top-color: var(--border-primary);
+}
+
+.tooltip::before {
+    content: '';
+    position: absolute;
+    top: 100%;
+    left: 50%;
+    transform: translateX(-50%) translateY(-1px);
+    border: 5px solid transparent;
+    border-top-color: var(--surface-secondary);
+    z-index: 1;
+}
+
+.bottom {
+    bottom: auto;
+    top: calc(100% + 8px);
+}
+
+.bottom::after {
+    top: auto;
+    bottom: 100%;
+    border-top-color: transparent;
+    border-bottom-color: var(--border-primary);
+}
+
+.bottom::before {
+    top: auto;
+    bottom: 100%;
+    transform: translateX(-50%) translateY(1px);
+    border-top-color: transparent;
+    border-bottom-color: var(--surface-secondary);
+}
+
+.right {
+    bottom: auto;
+    top: 50%;
+    left: calc(100% + 8px);
+    transform: translateY(-50%);
+}
+
+.right::after {
+    top: 50%;
+    left: auto;
+    right: 100%;
+    bottom: auto;
+    transform: translateY(-50%);
+    border-top-color: transparent;
+    border-right-color: var(--border-primary);
+}
+
+.right::before {
+    top: 50%;
+    left: auto;
+    right: 100%;
+    bottom: auto;
+    transform: translateY(-50%) translateX(1px);
+    border-top-color: transparent;
+    border-right-color: var(--surface-secondary);
+}
+
+.left {
+    bottom: auto;
+    top: 50%;
+    left: auto;
+    right: calc(100% + 8px);
+    transform: translateY(-50%);
+}
+
+.left::after {
+    top: 50%;
+    left: 100%;
+    bottom: auto;
+    transform: translateY(-50%);
+    border-top-color: transparent;
+    border-left-color: var(--border-primary);
+}
+
+.left::before {
+    top: 50%;
+    left: 100%;
+    bottom: auto;
+    transform: translateY(-50%) translateX(-1px);
+    border-top-color: transparent;
+    border-left-color: var(--surface-secondary);
+}
+
+.wrapper:hover .tooltip {
+    opacity: 1;
+}

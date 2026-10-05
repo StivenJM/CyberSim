@@ -1,0 +1,113 @@
+.vistaTabla {
+  width: 100%;
+  flex: 0 1 auto;
+  max-height: 100%;
+  border-radius: var(--border-radius);
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+}
+
+.tablaHeader {
+  flex-shrink: 0;
+  background: var(--surface-secondary);
+}
+
+.tablaBody {
+  flex: 0 1 auto;
+  min-height: 0;
+  max-height: 100%;
+  overflow-y: auto;
+  overflow-x: hidden;
+}
+
+.tabla {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: separate;
+  border-spacing: 0;
+  background-color: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+.tabla th {
+  padding: 12px 16px;
+  font-weight: normal;
+  text-align: left;
+  font-size: 14px;
+  color: var(--text-secondary);
+  background: var(--surface-secondary);
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.tabla th:nth-child(1),
+.tabla td:nth-child(1) {
+  width: 25%;
+}
+
+.tabla th:nth-child(2),
+.tabla td:nth-child(2) {
+  width: 25%;
+}
+
+.tabla th:nth-child(3),
+.tabla td:nth-child(3) {
+  width: 35%;
+  display: flex;
+  width: 100%;
+  justify-content: center;
+}
+
+.tabla th:nth-child(4),
+.tabla td:nth-child(4) {
+  width: 15%;
+  text-align: right;
+}
+
+.tabla th:nth-child(5),
+.tabla td:nth-child(5) {
+  width: 10%;
+  text-align: right;
+}
+
+.tabla tbody tr {
+  border-bottom: 1px solid var(--border-secondary);
+  transition: background-color 0.2s ease;
+}
+
+.tabla tbody tr:hover {
+  background-color: var(--surface-hover);
+}
+
+.tabla td {
+  padding: 12px 16px;
+  border-bottom: 1px solid var(--surface-secondary);
+  font-size: 14px;
+}
+
+.activosCell {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.activoIndicador {
+  width: 24px;
+  height: 24px;
+  border-radius: 50%;
+  border: 2px solid var(--border-primary);
+  background-color: var(--surface-tertiary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  color: transparent;
+  transition: all 0.2s ease;
+}
+
+.activoIndicador.activo {
+  background-color: var(--success);
+  border-color: var(--success);
+  color: var(--surface-primary);
+}

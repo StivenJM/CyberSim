@@ -1,0 +1,174 @@
+.btn {
+  all: unset;
+  box-sizing: border-box;
+  cursor: pointer;
+  font: inherit;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  height: 36px;
+  padding: 0 14px;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 1;
+  border-radius: 6px;
+  white-space: nowrap;
+  gap: 6px;
+  transition: background 0.15s ease, color 0.15s ease, border-color 0.15s ease !important;
+}
+
+.btn:disabled {
+  cursor: not-allowed;
+  opacity: 0.5;
+}
+
+.iconSlot {
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  height: 14px;
+}
+
+.label {
+  display: flex;
+  align-items: center;
+  height: 14px;
+}
+
+/* ── Primary ── */
+
+.primary {
+  background: var(--surface-secondary) !important;
+  color: var(--text-muted);
+  border: 1px solid var(--border-primary);
+}
+
+.primary:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-tertiary) !important;
+}
+
+/* ── Secondary ── */
+
+.secondary {
+  background: transparent !important;
+  color: var(--text-muted);
+  border: 1px solid var(--border-primary);
+}
+
+.secondary:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-tertiary) !important;
+}
+
+/* ── Ghost ── */
+
+.ghost {
+  background: transparent !important;
+  color: var(--text-muted);
+  border: none;
+}
+
+.ghost:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-tertiary) !important;
+}
+
+/* ── Danger ── */
+
+.danger {
+  background: color-mix(in srgb, var(--error) 5%, transparent) !important;
+  color: var(--error);
+  border: 1px solid color-mix(in srgb, var(--error) 20%, transparent);
+}
+
+.danger:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--error) 10%, transparent) !important;
+}
+
+/* ── Success ── */
+
+.success {
+  background: color-mix(in srgb, var(--success) 5%, transparent) !important;
+  color: var(--success);
+  border: 1px solid color-mix(in srgb, var(--success) 20%, transparent);
+}
+
+.success:hover:not(:disabled) {
+  background: color-mix(in srgb, var(--success) 10%, transparent) !important;
+}
+
+/* ── Accent ── */
+
+.accent {
+  background: var(--blue) !important;
+  color: #ffffff;
+  border: none;
+}
+
+.accent:hover:not(:disabled) {
+  background: var(--blue-lighter) !important;
+}
+
+/* ── AI ── */
+
+.ai {
+  background: var(--surface-secondary) !important;
+  color: var(--text-muted);
+  border: 1px solid var(--border-primary);
+}
+
+.ai:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-tertiary) !important;
+}
+
+.ai .label {
+  background: linear-gradient(90deg, #a3a3a3 25%, #f5f5f5 50%, #a3a3a3 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s linear infinite;
+}
+
+.ai:hover:not(:disabled) .label {
+  background: linear-gradient(90deg, #f5f5f5 25%, #ffffff 50%, #f5f5f5 75%);
+  background-size: 200% 100%;
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  animation: shimmer 2s linear infinite;
+}
+
+@keyframes shimmer {
+  0% { background-position: 200% 0; }
+  100% { background-position: -200% 0; }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .ai .label,
+  .ai:hover:not(:disabled) .label {
+    animation: shimmer 2s linear infinite !important;
+    animation-duration: 2s !important;
+    animation-iteration-count: infinite !important;
+  }
+}
+
+/* ── Square modifier ── */
+
+.square {
+  width: 36px;
+  padding: 0;
+}
+
+/* ── Icon (square + secondary defaults) ── */
+
+.icon {
+  background: transparent !important;
+  color: var(--text-muted);
+  border: 1px solid var(--border-primary);
+}
+
+.icon:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-tertiary) !important;
+}

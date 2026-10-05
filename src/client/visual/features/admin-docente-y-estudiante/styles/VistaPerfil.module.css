@@ -1,0 +1,148 @@
+/* ── Layout ── */
+
+.main {
+  display: flex;
+  flex-direction: column;
+  gap: 32px;
+}
+
+/* ── Profile ── */
+
+.profileHeader {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.profileAvatar {
+  width: 64px;
+  height: 64px;
+  border-radius: var(--border-radius);
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.pageTitle {
+  font-size: 28px;
+  font-weight: 600;
+  margin: 0;
+  color: var(--text-primary);
+}
+
+.profileMetaRow {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-top: 6px;
+}
+
+.meta {
+  margin: 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+/* ── Historial de evaluaciones ── */
+
+.historialSection {
+  padding-top: 8px;
+}
+
+.historialTitle {
+  font-size: 16px;
+  font-weight: 600;
+  color: var(--text-primary);
+  margin: 0 0 16px 0;
+}
+
+.historialList {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.metaDot {
+  font-size: 11px;
+  color: var(--text-secondary);
+}
+
+/* ── Buttons ── */
+
+.linkButton {
+  padding: 0;
+  background: none !important;
+  border: none;
+  border-radius: 0 !important;
+  color: var(--text-muted);
+  text-decoration: underline;
+  cursor: pointer;
+  font-size: 13px;
+  transition: color 0.15s ease;
+}
+
+.linkButton:hover {
+  color: var(--text-primary);
+  background: none !important;
+}
+
+/* ── Empty / loading ── */
+
+.empty {
+  padding: 48px 24px;
+  text-align: center;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 16px;
+}
+
+.emptyButton {
+  background: var(--blue);
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 500;
+  font-family: "Inter", sans-serif;
+  cursor: pointer;
+  padding: 8px 20px;
+  border: none;
+  border-radius: var(--border-radius);
+  transition: background 0.15s ease;
+}
+
+.emptyButton:hover {
+  background: var(--blue-lighter);
+}
+
+.muted {
+  font-size: 13px;
+  color: var(--text-muted);
+  margin: 0;
+}
+
+/* ── Skeleton ── */
+
+.skeletonItem {
+  height: 86.72px;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius);
+  background: var(--surface-secondary);
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 640px) {
+  .main {
+    padding: 24px 16px;
+  }
+}

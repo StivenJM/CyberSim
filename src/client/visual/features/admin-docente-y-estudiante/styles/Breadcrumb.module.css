@@ -1,0 +1,33 @@
+.breadcrumb {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  margin-bottom: 20px;
+}
+
+.item {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+}
+
+.sep {
+  color: var(--text-secondary);
+}
+
+.link {
+  color: var(--text-secondary);
+  background: transparent !important;
+  padding: 0;
+  border-radius: 0;
+  font-size: inherit;
+}
+
+.link:hover {
+  color: var(--text-primary);
+  background: transparent !important;
+}
+
+.current {
+  color: var(--text-muted);
+}

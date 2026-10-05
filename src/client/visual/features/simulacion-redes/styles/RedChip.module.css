@@ -1,0 +1,44 @@
+.colorDot {
+  height: 8px;
+  width: 8px;
+  border-radius: 50%;
+  position: relative;
+}
+
+.redChipContainer {
+  user-select: none;
+  display: flex;
+  gap: 6px;
+  align-items: center;
+}
+
+.redChipDesactivado {
+  opacity: 0.5 !important;
+} /*
+
+.redChipDesactivado:hover {
+  opacity: 1 !important;
+} */
+
+.colorDot::after {
+  content: "";
+  position: absolute;
+  inset: 0;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background-color: inherit;
+  opacity: 0.4;
+}
+
+.redChipContainer:not(.redChipDesactivado) .colorDot::after {
+  animation: ping 1s cubic-bezier(0, 0, 0.2, 1) infinite;
+}
+
+@keyframes ping {
+  75%,
+  100% {
+    transform: scale(2.5);
+    opacity: 0;
+  }
+}

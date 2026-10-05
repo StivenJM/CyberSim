@@ -1,0 +1,230 @@
+/* ── Layout ── */
+
+.grid {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+/* ── Section (flat, no card) ── */
+
+.section {
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+
+.sectionTitle {
+  margin: 0 0 20px;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+/* ── Bar chart (completion) ── */
+
+.barList {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.barItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.barLabel {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  font-size: 13px;
+}
+
+.barName {
+  color: var(--text-primary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.barValue {
+  color: var(--text-muted);
+  font-size: 12px;
+  flex-shrink: 0;
+  margin-left: 8px;
+}
+
+.barTrack {
+  height: 8px;
+  background: rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  overflow: hidden;
+}
+
+.barFill {
+  height: 100%;
+  border-radius: 4px;
+  transition: width 0.3s ease;
+}
+
+/* ── Donut chart ── */
+
+.donutRow {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  flex: 1;
+}
+
+.donut {
+  flex-shrink: 0;
+  width: 40%;
+  max-width: 160px;
+  aspect-ratio: 1;
+}
+
+.donutSummary {
+  margin: 16px 0 0;
+  font-size: 13px;
+  color: var(--text-muted);
+}
+
+.donutSummaryPct {
+  color: var(--text-primary);
+}
+
+/* ── Legend ── */
+
+.legend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.legendItem {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  font-size: 13px;
+  color: var(--text-primary);
+}
+
+.legendDot {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.legendLabel {
+  white-space: nowrap;
+}
+
+.legendValue {
+  margin-left: auto;
+  color: var(--text-muted);
+  font-size: 12px;
+  white-space: nowrap;
+}
+
+/* ── Skeleton ── */
+
+.skeletonBone {
+  background: var(--surface-tertiary);
+  border-radius: 4px;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeletonTitle {
+  composes: skeletonBone;
+  width: 45%;
+  height: 18px;
+  margin-bottom: 20px;
+}
+
+.skeletonBars {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.skeletonBarItem {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+}
+
+.skeletonLabel {
+  composes: skeletonBone;
+  height: 13px;
+}
+
+.skeletonTrack {
+  composes: skeletonBone;
+  height: 8px;
+  width: 100%;
+}
+
+.skeletonDonutRow {
+  display: flex;
+  align-items: center;
+  gap: 48px;
+  flex: 1;
+}
+
+.skeletonDonut {
+  composes: skeletonBone;
+  width: 40%;
+  max-width: 160px;
+  aspect-ratio: 1;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.skeletonLegend {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  flex: 1;
+}
+
+.skeletonLegendItem {
+  composes: skeletonBone;
+  height: 13px;
+}
+
+.skeletonSummary {
+  composes: skeletonBone;
+  width: 70%;
+  height: 13px;
+  margin-top: 16px;
+}
+
+@keyframes skeletonPulse {
+  0%, 100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 768px) {
+  .grid {
+    grid-template-columns: 1fr;
+  }
+
+  .donutRow {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+}

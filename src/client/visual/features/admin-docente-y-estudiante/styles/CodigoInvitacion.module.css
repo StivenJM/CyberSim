@@ -1,0 +1,84 @@
+.container {
+  padding: 0;
+}
+
+.row {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.codeRow {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+}
+
+.code {
+  font-family: "SF Mono", "Fira Code", monospace;
+  font-size: 14px;
+  font-weight: 400;
+  letter-spacing: 0.06em;
+  color: var(--text-primary);
+}
+
+.copyButton,
+.regenButton {
+  color: var(--text-secondary);
+  background: transparent;
+  padding: 4px;
+  border-radius: 4px;
+  display: flex;
+  align-items: center;
+}
+
+.copyButton:hover,
+.regenButton:hover {
+  color: var(--text-muted);
+  background: transparent;
+}
+
+.regenButton:disabled {
+  cursor: not-allowed;
+}
+
+.spinning {
+  transform-origin: center;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.generateButton {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--blue);
+  background: transparent;
+  padding: 0;
+  border-radius: 0;
+}
+
+.generateButton:hover:not(:disabled) {
+  color: var(--blue-lighter);
+  background: transparent;
+}
+
+.generateButton:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.hint {
+  margin: 6px 0 0 0;
+  font-size: 12px;
+  color: var(--text-secondary);
+}

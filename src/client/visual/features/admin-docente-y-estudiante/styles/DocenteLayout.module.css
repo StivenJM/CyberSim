@@ -1,0 +1,21 @@
+.page {
+  height: 100vh;
+  background: var(--surface-primary);
+  color: var(--text-primary);
+  display: flex;
+  flex-direction: column;
+}
+
+.content {
+  flex: 1;
+  min-height: 0;
+  overflow-y: auto;
+  scrollbar-gutter: stable;
+  padding: 0 max(16px, calc((100% - var(--content-width)) / 2));
+}
+
+@media (max-width: 768px) {
+  .content {
+    scrollbar-gutter: auto;
+  }
+}

@@ -1,0 +1,293 @@
+/* ═══ Windows 11 Dark — Window Frame ═══ */
+
+.ventana {
+    position: absolute;
+    display: flex;
+    flex-direction: column;
+    background: #202020;
+    border-radius: 8px;
+    border: 1px solid rgba(255, 255, 255, 0.06);
+    box-shadow:
+        0 8px 32px rgba(0, 0, 0, 0.38),
+        0 2px 6px rgba(0, 0, 0, 0.24);
+    overflow: hidden;
+    transition: border-radius 0.2s ease;
+}
+
+.ventanaMaximizada {
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 0;
+    border: none;
+}
+
+/* ═══ Title Bar ═══ */
+
+.barraVentana {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    height: 32px;
+    min-height: 32px;
+    padding: 0 0 0 12px;
+    background: transparent;
+    cursor: grab;
+    user-select: none;
+}
+
+.ventanaMaximizada .barraVentana {
+    cursor: default;
+}
+
+.barraVentana:active {
+    cursor: grabbing;
+}
+
+.ventanaMaximizada .barraVentana:active {
+    cursor: default;
+}
+
+.tituloVentana {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 12px;
+    font-weight: 400;
+    color: rgba(255, 255, 255, 0.79);
+}
+
+.iconoVentana {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 16px;
+    height: 16px;
+}
+
+.iconoVentana svg {
+    width: 16px;
+    height: 16px;
+}
+
+/* ═══ Window Controls (Win11 exact) ═══ */
+
+.botonesVentana {
+    display: flex !important;
+    align-items: stretch !important;
+    height: 100%;
+    gap: 0 !important;
+    padding: 0 !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+}
+
+.botonVentana {
+    display: flex !important;
+    align-items: center !important;
+    justify-content: center !important;
+    width: 46px !important;
+    height: 100% !important;
+    background: transparent !important;
+    border: none !important;
+    border-radius: 0 !important;
+    color: rgba(255, 255, 255, 0.79) !important;
+    cursor: pointer !important;
+    transition: background 0.08s ease !important;
+    padding: 0 !important;
+    gap: 0 !important;
+}
+
+.botonVentana svg {
+    width: 10px;
+    height: 10px;
+}
+
+.botonVentana:hover {
+    background: rgba(255, 255, 255, 0.07) !important;
+    color: #ffffff !important;
+}
+
+.botonVentana:active {
+    background: rgba(255, 255, 255, 0.04) !important;
+    color: rgba(255, 255, 255, 0.6) !important;
+}
+
+.botonCerrar:hover {
+    background: #c42b1c !important;
+    color: #ffffff !important;
+}
+
+.botonCerrar:active {
+    background: #a41f14 !important;
+    color: rgba(255, 255, 255, 0.7) !important;
+}
+
+/* ═══ Window Content ═══ */
+
+.contenidoVentana {
+    flex: 1 1 auto;
+    overflow: auto;
+    min-height: 0;
+    background: #202020;
+}
+
+/* ═══ Resize Handles ═══ */
+
+.resizeHandle {
+    position: absolute;
+}
+
+.resizeN {
+    top: 0;
+    left: 6px;
+    right: 6px;
+    height: 4px;
+    cursor: n-resize;
+}
+
+.resizeS {
+    bottom: 0;
+    left: 6px;
+    right: 6px;
+    height: 4px;
+    cursor: s-resize;
+}
+
+.resizeE {
+    top: 6px;
+    right: 0;
+    bottom: 6px;
+    width: 4px;
+    cursor: e-resize;
+}
+
+.resizeW {
+    top: 6px;
+    left: 0;
+    bottom: 6px;
+    width: 4px;
+    cursor: w-resize;
+}
+
+.resizeNE {
+    top: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    cursor: ne-resize;
+}
+
+.resizeNW {
+    top: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    cursor: nw-resize;
+}
+
+.resizeSE {
+    bottom: 0;
+    right: 0;
+    width: 8px;
+    height: 8px;
+    cursor: se-resize;
+}
+
+.resizeSW {
+    bottom: 0;
+    left: 0;
+    width: 8px;
+    height: 8px;
+    cursor: sw-resize;
+}
+
+/* ═══ Snap States ═══ */
+
+.ventanaSnapped {
+    border-radius: 0;
+}
+
+.ventanaSnapping {
+    transition: left 0.15s ease, top 0.15s ease, width 0.15s ease, height 0.15s ease, border-radius 0.15s ease;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Ubuntu (Yaru) Dark — Window Frame
+   ═══════════════════════════════════════════════════════════ */
+
+.ventana.linux {
+    background: #1e1e1e;
+    border-radius: 12px;
+    border: 1px solid rgba(0, 0, 0, 0.55);
+    box-shadow:
+        0 14px 44px rgba(0, 0, 0, 0.5),
+        0 0 0 1px rgba(255, 255, 255, 0.05) inset;
+}
+
+.ventana.linux.ventanaMaximizada,
+.ventana.linux.ventanaSnapped {
+    border-radius: 0;
+    border: none;
+    box-shadow: none;
+}
+
+/* ─── Headerbar (GNOME) ─── */
+.linux .barraVentana {
+    height: 38px;
+    min-height: 38px;
+    padding: 0 8px 0 14px;
+    background: linear-gradient(180deg, #3a3a3a 0%, #303030 100%);
+    border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.linux .tituloVentana {
+    font-weight: 700;
+    font-size: 13px;
+    color: #f6f5f4;
+}
+
+/* ─── Window controls: GNOME circular buttons ─── */
+.linux .botonesVentana {
+    align-items: center !important;
+    gap: 8px !important;
+    padding-right: 4px !important;
+}
+
+.linux .botonVentana {
+    width: 26px !important;
+    height: 26px !important;
+    border-radius: 50% !important;
+    background: rgba(255, 255, 255, 0.1) !important;
+    color: #f6f5f4 !important;
+}
+
+.linux .botonVentana:hover {
+    background: rgba(255, 255, 255, 0.18) !important;
+    color: #ffffff !important;
+}
+
+.linux .botonVentana:active {
+    background: rgba(255, 255, 255, 0.08) !important;
+    color: #f6f5f4 !important;
+}
+
+.linux .botonCerrar:hover {
+    background: #e95420 !important;
+    color: #ffffff !important;
+}
+
+.linux .botonCerrar:active {
+    background: #c7431a !important;
+    color: rgba(255, 255, 255, 0.85) !important;
+}
+
+/* ─── Content ─── */
+.linux .contenidoVentana {
+    background: #1e1e1e;
+}

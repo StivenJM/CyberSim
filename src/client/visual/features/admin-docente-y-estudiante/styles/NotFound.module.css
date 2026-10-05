@@ -1,0 +1,44 @@
+.notFoundContainer {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    min-height: 100vh;
+    background-color: var(--surface-primary);
+}
+
+.content {
+    text-align: center;
+    color: var(--text-primary);
+}
+
+.title {
+    font-size: 120px;
+    font-weight: 700;
+    margin: 0;
+    line-height: 1;
+    color: var(--blue);
+}
+
+.message {
+    font-size: 24px;
+    margin: 20px 0 40px;
+    color: var(--text-muted);
+}
+
+.homeButton {
+    display: inline-block;
+    padding: 12px 32px;
+    background: var(--surface-secondary);
+    color: var(--text-primary);
+    text-decoration: none;
+    border-radius: var(--border-radius);
+    font-weight: 600;
+    transition: all 0.15s ease;
+    border: 1px solid var(--border-primary);
+}
+
+.homeButton:hover {
+    background-color: rgb(50, 50, 50);
+    border-color: var(--blue);
+    transform: translateY(-2px);
+}

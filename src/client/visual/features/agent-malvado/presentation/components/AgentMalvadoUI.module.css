@@ -1,0 +1,161 @@
+/* ── Container ── */
+
+.container {
+  width: 100%;
+  font-size: 0.85rem;
+}
+
+/* ── Success Container ── */
+
+.successContainer {
+  /* wrapper for generated scenario */
+}
+
+/* ── Buttons ── */
+
+.button {
+  width: 100%;
+  padding: 8px;
+  border: 1px solid var(--border-primary);
+  border-radius: 8px;
+  font-size: 0.85rem;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  color: var(--text-primary);
+  transition: background 0.2s, border-color 0.2s, box-shadow 0.2s;
+}
+
+.buttonSuccess {
+  composes: button;
+  background-color: #52d356;
+  color: #000;
+  border: none;
+  font-weight: 600;
+  flex: 1;
+}
+
+.buttonSuccess:hover {
+  background-color: #45b849;
+}
+
+.buttonSecondary {
+  composes: button;
+  background: #333;
+  color: #ccc;
+  border: none;
+  width: auto;
+  padding: 8px 12px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+.buttonSecondary:hover {
+  background: #444;
+}
+
+.buttonSmall {
+  composes: button;
+  background: #333;
+  color: #fff;
+  border: none;
+  padding: 6px 12px;
+  border-radius: 6px;
+  font-size: 0.8rem;
+  font-weight: 600;
+}
+
+/* ── Loading ── */
+
+.loadingContainer {
+  text-align: center;
+  padding: 0.6rem 0;
+}
+
+.loadingIcon {
+  margin-bottom: 0.5rem;
+  display: inline-block;
+}
+
+.botIcon {
+  color: #ef5350;
+}
+
+.loadingTitle {
+  margin: 0 0 4px 0;
+  color: #fff;
+  font-size: 0.9rem;
+}
+
+.loadingText {
+  color: var(--text-muted);
+  font-size: 0.75rem;
+  margin: 0;
+}
+
+/* ── Error ── */
+
+.errorContainer {
+  text-align: center;
+  padding: 0.4rem 0;
+}
+
+.errorMessage {
+  color: #ef5350;
+  margin-bottom: 0.6rem;
+  font-size: 0.8rem;
+  background: rgba(239, 83, 80, 0.1);
+  padding: 8px;
+  border-radius: 6px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.errorIcon {
+  color: #ef5350;
+  flex-shrink: 0;
+}
+
+/* ── Scenario Card ── */
+
+.scenarioCard {
+  background: #222;
+  border-radius: 8px;
+  margin-bottom: 0.6rem;
+  border: 1px solid #444;
+  padding: 0.8rem;
+}
+
+.scenarioTitle {
+  margin: 0 0 6px 0;
+  color: var(--success);
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.scenarioName {
+  font-size: 0.9rem;
+  font-weight: 400;
+}
+
+.scenarioDescription {
+  color: #ccc;
+  font-style: italic;
+  font-size: 0.75rem;
+}
+
+/* ── Actions Row ── */
+
+.actionsRow {
+  display: flex;
+  gap: 8px;
+}
+
+.playIcon {
+  color: #000;
+  fill: #000;
+}

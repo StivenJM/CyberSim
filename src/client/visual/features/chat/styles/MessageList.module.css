@@ -1,0 +1,41 @@
+.messageList {
+  flex: 1;
+  overflow-y: auto;
+  padding: 16px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+  position: relative;
+}
+
+.emptyState {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  color: var(--text-secondary);
+  font-size: 0.95rem;
+}
+
+.emptyState p {
+  text-align: center;
+  margin: 0;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .messageList {
+    padding: 12px;
+    gap: 6px;
+  }
+
+  .emptyState {
+    font-size: 0.9rem;
+  }
+}
+
+@media (max-width: 480px) {
+  .messageList {
+    padding: 8px;
+  }
+}

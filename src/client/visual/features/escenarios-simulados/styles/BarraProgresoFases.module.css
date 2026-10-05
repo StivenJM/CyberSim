@@ -1,0 +1,75 @@
+.barraProgreso {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 20px 0;
+}
+
+.faseItem {
+    display: flex;
+    align-items: center;
+}
+
+/* ── Step circle ── */
+
+.step {
+    width: 28px;
+    height: 28px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border: 2px solid transparent;
+    background: none;
+    padding: 0;
+    transition: background-color 0.15s ease, border-color 0.15s ease;
+}
+
+.step:disabled {
+    cursor: default;
+    opacity: 0.45;
+}
+
+.step:not(:disabled) {
+    cursor: pointer;
+}
+
+/* ── States ── */
+
+.completada {
+    background-color: var(--success);
+    border-color: var(--success);
+    color: #fff;
+}
+
+.completada:not(:disabled):hover {
+    opacity: 0.85;
+}
+
+.actual {
+    border-color: var(--success);
+}
+
+.actual:not(:disabled):hover {
+    background-color: rgba(5, 150, 105, 0.1);
+}
+
+.futura {
+    border-color: var(--border-primary);
+}
+
+/* ── Connecting line ── */
+
+.linea {
+    width: 56px;
+    height: 0;
+    border-top: 2px dashed var(--border-primary);
+}
+
+.lineaCompletada {
+    border-color: var(--success);
+}
+
+.lineaPendiente {
+    border-color: var(--border-primary);
+}

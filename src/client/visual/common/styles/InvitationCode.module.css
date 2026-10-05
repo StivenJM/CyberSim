@@ -1,0 +1,126 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+.label {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+}
+
+.row {
+  display: flex;
+  align-items: center;
+  gap: 20px;
+}
+
+.cells {
+  display: inline-flex;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1.5px solid var(--border-primary);
+  background: var(--surface-secondary);
+}
+
+.cell {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 0;
+  border: none;
+  border-right: 1px solid var(--border-primary);
+  background: transparent;
+  font-family: "SF Mono", "Fira Code", "Cascadia Code", monospace;
+  font-size: 16px;
+  font-weight: 600;
+  letter-spacing: 0.04em;
+  color: var(--text-primary);
+  user-select: none;
+}
+
+.cell:last-child {
+  border-right: none;
+}
+
+/* Input mode */
+.cellInput {
+  outline: none;
+  text-align: center;
+  caret-color: var(--text-primary);
+  cursor: text;
+  padding: 0;
+}
+
+.cellInput::placeholder {
+  color: var(--text-secondary);
+  opacity: 0.4;
+}
+
+.cellInput:focus {
+  border-color: inherit;
+}
+
+.cellFilled {
+  border-color: inherit;
+}
+
+.cellInput:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.cellError {
+  border-color: var(--error);
+}
+
+.cellError:focus {
+  border-color: var(--error);
+}
+
+/* Action buttons */
+.actions {
+  display: flex;
+  gap: 4px;
+}
+
+.actionBtn {
+  width: 36px;
+  height: 36px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 6px;
+  border: 1.5px solid var(--border-primary);
+  background: var(--surface-secondary);
+  color: var(--text-secondary);
+  transition: color 0.1s, background 0.1s;
+}
+
+.actionBtn:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: var(--surface-tertiary);
+}
+
+.actionBtn:disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+}
+
+.spinning {
+  transform-origin: center;
+  animation: spin 0.8s linear infinite;
+}
+
+@keyframes spin {
+  from { transform: rotate(0deg); }
+  to { transform: rotate(360deg); }
+}
+
+.error {
+  font-size: 12px;
+  color: var(--error);
+}

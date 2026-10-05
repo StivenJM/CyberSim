@@ -1,0 +1,302 @@
+/* ═══ Windows 11 — Microsoft Store Style ═══ */
+
+.container {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  min-width: 0;
+  background: #202020;
+}
+
+/* ─── Search Bar ─── */
+.searchBar {
+  position: relative;
+  padding: 16px 20px 10px;
+  flex-shrink: 0;
+}
+
+.searchIcon {
+  position: absolute;
+  left: 32px;
+  top: 16px;
+  bottom: 10px;
+  display: flex;
+  align-items: center;
+  color: #9e9e9e;
+  pointer-events: none;
+}
+
+.searchInput {
+  width: 100%;
+  padding: 7px 14px 7px 36px;
+  background: rgba(255, 255, 255, 0.04);
+  border: 1px solid rgba(255, 255, 255, 0.08);
+  border-bottom: 2px solid #4cc2ff;
+  border-radius: 4px;
+  color: #ffffff;
+  font-size: 14px;
+  outline: none;
+  transition: border-color 0.15s, background 0.15s;
+}
+
+.searchInput:hover {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.searchInput:focus {
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.searchInput::placeholder {
+  color: #9e9e9e;
+}
+
+/* ─── Tabs ─── */
+.tabs {
+  display: flex;
+  padding: 0 20px;
+  gap: 0;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+}
+
+.tab {
+  user-select: none;
+  padding: 10px 16px !important;
+  color: #9e9e9e;
+  font-size: 14px;
+  font-weight: 500;
+  cursor: pointer;
+  border: none !important;
+  background: none !important;
+  border-bottom: 2px solid transparent !important;
+  margin-bottom: -1px;
+  transition: all 0.15s;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  border-radius: 0 !important;
+}
+
+.tab:hover {
+  color: #ffffff;
+  background: none !important;
+}
+
+.tab.active {
+  color: #ffffff;
+  border-bottom-color: #4cc2ff !important;
+  background: none !important;
+}
+
+.count {
+  color: #9e9e9e;
+  font-size: 12px;
+}
+
+.tab.active .count {
+  color: #ffffff;
+}
+
+/* ─── Content ─── */
+.content {
+  padding: 12px 20px 20px;
+  flex: 1;
+  overflow-y: auto;
+  min-height: 0;
+}
+
+.content::-webkit-scrollbar {
+  width: 6px;
+}
+
+.content::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.content::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.content::-webkit-scrollbar-thumb:hover {
+  background: rgba(255, 255, 255, 0.18);
+}
+
+/* ─── App List ─── */
+.appList {
+  background: #2b2b2b;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+  overflow: hidden;
+}
+
+.emptyState {
+  text-align: center;
+  padding: 48px 20px;
+  color: #9e9e9e;
+  font-size: 14px;
+}
+
+/* ─── App Row ─── */
+.appRow {
+  display: flex !important;
+  align-items: center !important;
+  gap: 14px !important;
+  padding: 12px 16px !important;
+  transition: background 0.08s ease !important;
+  cursor: default;
+  background: transparent !important;
+  border-radius: 0 !important;
+}
+
+.appRow:first-child {
+  border-radius: 8px 8px 0 0 !important;
+}
+
+.appRow:last-child {
+  border-radius: 0 0 8px 8px !important;
+}
+
+.appRow:only-child {
+  border-radius: 8px !important;
+}
+
+.appRow:hover {
+  background: rgba(255, 255, 255, 0.04) !important;
+}
+
+.appRow + .appRow {
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+}
+
+.appIcon {
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  flex-shrink: 0;
+}
+
+.appInfo {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.appName {
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  line-height: 1.3;
+}
+
+.appDesc {
+  color: #9e9e9e;
+  font-size: 12px;
+  line-height: 1.3;
+}
+
+/* ─── WinUI Buttons ─── */
+.btn {
+  padding: 5px 20px !important;
+  border-radius: 4px !important;
+  font-size: 13px;
+  font-weight: 400;
+  cursor: pointer;
+  transition: all 0.1s;
+  border: none !important;
+  flex-shrink: 0;
+  white-space: nowrap;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+}
+
+.btnInstall {
+  background: #4cc2ff !important;
+  color: #000000 !important;
+}
+
+.btnInstall:hover {
+  background: #62ccff !important;
+}
+
+.btnRemove {
+  background: transparent !important;
+  border: 1px solid rgba(255, 255, 255, 0.15) !important;
+  color: #ffffff !important;
+}
+
+.btnRemove:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+}
+
+@keyframes spin {
+  to { transform: rotate(360deg); }
+}
+
+.spinner {
+  display: inline-block;
+  width: 12px;
+  height: 12px;
+  border: 2px solid currentColor;
+  border-right-color: transparent;
+  border-radius: 50%;
+  animation: spin 0.6s linear infinite !important;
+  animation-iteration-count: infinite !important;
+}
+
+.btn:disabled {
+  opacity: 0.7;
+  cursor: default;
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Ubuntu (Yaru) Dark — Software
+   ═══════════════════════════════════════════════════════════ */
+.linux {
+  background: #1e1e1e;
+}
+
+.linux .searchInput {
+  background: rgba(255, 255, 255, 0.06);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 7px;
+}
+
+.linux .searchInput:focus {
+  background: rgba(0, 0, 0, 0.25);
+  border-color: #e95420;
+}
+
+.linux .tab.active {
+  border-bottom-color: #e95420 !important;
+}
+
+.linux .appList {
+  background: #2a2a2a;
+  border-radius: 12px;
+}
+
+.linux .appRow + .appRow {
+  border-top-color: rgba(255, 255, 255, 0.06);
+}
+
+.linux .btn {
+  border-radius: 7px !important;
+}
+
+.linux .btnInstall {
+  background: #e95420 !important;
+  color: #ffffff !important;
+}
+
+.linux .btnInstall:hover {
+  background: #f06d44 !important;
+}

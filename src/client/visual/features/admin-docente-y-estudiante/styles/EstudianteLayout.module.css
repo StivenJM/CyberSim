@@ -1,0 +1,50 @@
+.page {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+  background: var(--surface-primary);
+  color: var(--text-primary);
+}
+
+/* ── Header ── */
+
+.header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px;
+  padding: 0 max(24px, calc((100% - 1280px) / 2 + 48px));
+  border-bottom: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.logoButton {
+  padding: 0;
+  background: transparent !important;
+  border: none;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+}
+
+/* ── Content area ── */
+
+.content {
+  flex: 1;
+  overflow-y: auto;
+  width: 100%;
+}
+
+.contentInner {
+  max-width: 1280px;
+  margin: 0 auto;
+  padding: 60px 48px 32px 48px;
+}
+
+/* ── Responsive ── */
+
+@media (max-width: 640px) {
+  .contentInner {
+    padding: 24px 16px;
+  }
+}

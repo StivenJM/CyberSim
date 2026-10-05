@@ -1,0 +1,530 @@
+[
+  {
+    "slug": "tutorial",
+    "tipo": "desafio",
+    "titulo": "Tutorial: Introducción a la Seguridad",
+    "fases": [
+      {
+        "id": 1,
+        "nombre": "Fase 1: Disponibilidad — Conectar sistemas",
+        "descripcion": "La DISPONIBILIDAD es uno de los tres pilares de la seguridad (CIA). Significa que los sistemas y datos deben estar accesibles cuando se necesiten. Asigna la red correcta al PC del empleado.",
+        "objetivos": [
+          "Restaurar conectividad interna"
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Fase 2: Confidencialidad — Bloquear intrusos",
+        "descripcion": "La CONFIDENCIALIDAD protege la información contra accesos no autorizados. Configura el firewall para bloquear conexiones SSH desde Internet.",
+        "objetivos": [
+          "Bloquear acceso SSH externo"
+        ]
+      }
+    ],
+    "eventos": [
+      {
+        "nombreEvento": "Restaurar conectividad interna",
+        "tipoEvento": "Tráfico de red",
+        "descripcion": "¡Bienvenido! Tu primera tarea como administrador de seguridad es garantizar la DISPONIBILIDAD de los sistemas. El 'PC Empleado' no puede comunicarse con el 'Servidor Interno' porque no está conectado a ninguna red. Dirígete a la vista de Redes y asígnalo a la red 'LAN-Oficina'.",
+        "fase": 1,
+        "tiempoNotificacion": 5,
+        "infoAdicional": {
+          "dispositivoOrigen": "PC Empleado",
+          "dispositivoDestino": "Servidor Interno",
+          "protocolo": "MANAGEMENT",
+          "esObjetivo": true,
+          "debeSerBloqueado": false
+        }
+      },
+      {
+        "nombreEvento": "Completación Fase 1",
+        "tipoEvento": "Completación de fase",
+        "descripcion": "¡Excelente! Has restaurado la disponibilidad del sistema. Ahora pasemos a proteger la CONFIDENCIALIDAD de los datos.",
+        "fase": 1,
+        "tiempoNotificacion": 15,
+        "infoAdicional": null
+      },
+      {
+        "nombreEvento": "Bloquear acceso SSH externo",
+        "tipoEvento": "Tráfico de red",
+        "descripcion": "Se ha detectado un intento de conexión SSH desde Internet hacia tu red interna. Esto es una AMENAZA a la CONFIDENCIALIDAD: un atacante externo intenta acceder a tus sistemas. Para proteger la red, configura el firewall del 'Router Principal': bloquea todo el tráfico SSH entrante hacia la red 'LAN-Oficina'.",
+        "fase": 2,
+        "tiempoNotificacion": 20,
+        "infoAdicional": {
+          "dispositivoOrigen": "Servidor Externo",
+          "dispositivoDestino": "PC Empleado",
+          "protocolo": "SSH",
+          "esObjetivo": true,
+          "debeSerBloqueado": true
+        }
+      },
+      {
+        "nombreEvento": "Completación Escenario",
+        "tipoEvento": "Completación de escenario",
+        "descripcion": "¡Felicidades! Has completado el tutorial. Aprendiste sobre Disponibilidad (conectar sistemas) y Confidencialidad (bloquear accesos no autorizados). En los siguientes escenarios explorarás la Integridad, la criptografía, la autenticación y más.",
+        "fase": 2,
+        "tiempoNotificacion": 30,
+        "infoAdicional": null
+      }
+    ],
+    "ataques": [],
+    "text": "DESAFÍOS DEL ESCENARIO: Tutorial: Introducción a la Seguridad\nSlug: tutorial\n\n=== REGLAS DE tipoEvento (OBLIGATORIO SEGUIR) ===\n\nREGLA 1 — \"Verificación de acciones de un jugador en la simulación\":\n  Usar SOLO para: ejecutar aplicaciones (Net-Scan Viz, Company Social-Searcher), comandos de terminal (ssh, cat, ls), configuraciones de workstation (click).\n  infoAdicional requerido: { \"accion\": \"ejecutar\"|\"click\", \"objeto\": \"aplicación/software de computadora\"|\"comando de terminal/CLI\"|\"configuración de workstation\", \"val\": {...}, \"esObjetivo\": true }\n\nREGLA 2 — \"Tráfico de red\":\n  Usar SOLO para: asignar redes a dispositivos, bloquear tráfico en firewall de router.\n  infoAdicional requerido: { \"dispositivoOrigen\": \"...\", \"dispositivoDestino\": \"...\", \"protocolo\": \"SSH\"|\"MANAGEMENT\"|\"HTTP\", \"esObjetivo\": true, \"debeSerBloqueado\": true|false }\n  ATENCIÓN: NO usar \"Verificación de acciones\" para firewall — usar \"Tráfico de red\".\n\nREGLA 3 — \"Conexión VPN\":\n  Usar SOLO para: configurar túnel VPN entre gateway y cliente.\n  infoAdicional requerido: { \"gateway\": { \"lanLocal\":\"...\", \"hostLan\":\"...\", \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" }, \"cliente\": { \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" } }\n  ATENCIÓN CRÍTICA: Solo puedes asignar rol 'gateway' a un dispositivo de tipo \"vpn\". Un router o workstation NO sirve. Si la topología NO tiene tipo \"vpn\", PROHIBIDO generar este evento (la simulación crasheará). Aborta el objetivo.\n\nREGLA 4 — \"Envío de correo\":\n  Usar SOLO para: enviar correo phishing.\n  infoAdicional requerido: { \"dispositivoEmisor\": \"...\", \"destinatario\": \"correo@dominio.com\", \"asunto\": \"...\" }\n\nREGLA 5 — \"Verificación de firma\":\n  Usar SOLO para: verificar firma digital de un documento.\n  infoAdicional requerido: { \"nombreDocumento\": \"...\", \"nombreFirma\": \"...\", \"nombreClave\": \"...\", \"veredicto\": true|false }\n\n=== FASES Y OBJETIVOS ===\n\nFASE 1: Fase 1: Disponibilidad — Conectar sistemas\n  Descripción: La DISPONIBILIDAD es uno de los tres pilares de la seguridad (CIA). Significa que los sistemas y datos deben estar accesibles cuando se necesiten. Asigna la red correcta al PC del empleado.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Restaurar conectividad interna\"\n\nFASE 2: Fase 2: Confidencialidad — Bloquear intrusos\n  Descripción: La CONFIDENCIALIDAD protege la información contra accesos no autorizados. Configura el firewall para bloquear conexiones SSH desde Internet.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Bloquear acceso SSH externo\"\n\n=== EVENTOS (copiar estructura infoAdicional exactamente) ===\n\nEvento: \"Restaurar conectividad interna\" | tipoEvento: \"Tráfico de red\" | Fase: 1\n  Descripción para el jugador: ¡Bienvenido! Tu primera tarea como administrador de seguridad es garantizar la DISPONIBILIDAD de los sistemas. El 'PC Empleado' no puede comunicarse con el 'Servidor Interno' porque no está conectado a ninguna red. Dirígete a la vista de Redes y asígnalo a la red 'LAN-Oficina'.\n  infoAdicional EXACTO: {\"dispositivoOrigen\":\"PC Empleado\",\"dispositivoDestino\":\"Servidor Interno\",\"protocolo\":\"MANAGEMENT\",\"esObjetivo\":true,\"debeSerBloqueado\":false}\n\nEvento: \"Completación Fase 1\" | tipoEvento: \"Completación de fase\" | Fase: 1\n  Descripción para el jugador: ¡Excelente! Has restaurado la disponibilidad del sistema. Ahora pasemos a proteger la CONFIDENCIALIDAD de los datos.\n\nEvento: \"Bloquear acceso SSH externo\" | tipoEvento: \"Tráfico de red\" | Fase: 2\n  Descripción para el jugador: Se ha detectado un intento de conexión SSH desde Internet hacia tu red interna. Esto es una AMENAZA a la CONFIDENCIALIDAD: un atacante externo intenta acceder a tus sistemas. Para proteger la red, configura el firewall del 'Router Principal': bloquea todo el tráfico SSH entrante hacia la red 'LAN-Oficina'.\n  infoAdicional EXACTO: {\"dispositivoOrigen\":\"Servidor Externo\",\"dispositivoDestino\":\"PC Empleado\",\"protocolo\":\"SSH\",\"esObjetivo\":true,\"debeSerBloqueado\":true}\n\nEvento: \"Completación Escenario\" | tipoEvento: \"Completación de escenario\" | Fase: 2\n  Descripción para el jugador: ¡Felicidades! Has completado el tutorial. Aprendiste sobre Disponibilidad (conectar sistemas) y Confidencialidad (bloquear accesos no autorizados). En los siguientes escenarios explorarás la Integridad, la criptografía, la autenticación y más.\n\n=== ACCIONES ESPERADAS DEL JUGADOR (accion/objeto/val exactos) ===\n\naccion: \"agregar\" | objeto: \"red de computadora\"\n  val: {\"nombreDispositivo\":\"PC Empleado\",\"nombreRed\":\"LAN-Oficina\"}\n\naccion: \"click\" | objeto: \"configuración de firewall\"\n  val: {\"nombreRouter\":\"Router Principal\",\"nombreRed\":\"LAN-Oficina\",\"accion\":\"DENEGAR\",\"direccion\":\"HACIA\",\"protocolo\":\"SSH\"}"
+  },
+  {
+    "slug": "amenazas",
+    "tipo": "desafio",
+    "titulo": "Amenazas y Ataques Comunes",
+    "fases": [
+      {
+        "id": 1,
+        "nombre": "Fase 1: Bloquear amenaza externa",
+        "descripcion": "Las AMENAZAS externas buscan explotar VULNERABILIDADES en tu red. Usa el firewall para bloquear el acceso no autorizado.",
+        "objetivos": [
+          "Bloquear acceso SSH externo"
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Fase 2: Proteger contra amenaza interna",
+        "descripcion": "Las amenazas internas (USB infectados, software malicioso) requieren configuraciones preventivas en los dispositivos.",
+        "objetivos": [
+          "Bloqueo de Troyano vía USB infectado"
+        ]
+      }
+    ],
+    "eventos": [
+      {
+        "nombreEvento": "Bloquear acceso SSH externo",
+        "tipoEvento": "Tráfico de red",
+        "descripcion": "Una AMENAZA es cualquier evento que puede causar daño. Se detectó un intento de conexión SSH desde Internet: esto explota una VULNERABILIDAD (puerto SSH abierto) generando un RIESGO. Configura el firewall del 'Router Oficina' para BLOQUEAR SSH entrante a 'LAN-Oficina'.",
+        "fase": 1,
+        "tiempoNotificacion": 5,
+        "infoAdicional": {
+          "dispositivoOrigen": "Servidor Externo",
+          "dispositivoDestino": "PC Director",
+          "protocolo": "SSH",
+          "esObjetivo": true,
+          "debeSerBloqueado": true
+        }
+      },
+      {
+        "nombreEvento": "Completación Fase 1",
+        "tipoEvento": "Completación de fase",
+        "descripcion": "¡Bien! Has bloqueado la amenaza externa. Ahora protege los equipos contra amenazas internas.",
+        "fase": 1,
+        "tiempoNotificacion": 20,
+        "infoAdicional": null
+      },
+      {
+        "nombreEvento": "Completación Escenario",
+        "tipoEvento": "Completación de escenario",
+        "descripcion": "¡Felicidades! Has protegido la empresa contra amenazas externas (firewall) e internas (hardening). Recuerda: Amenaza + Vulnerabilidad = Riesgo. Tu trabajo es reducir las vulnerabilidades.",
+        "fase": 2,
+        "tiempoNotificacion": 35,
+        "infoAdicional": null
+      }
+    ],
+    "ataques": [
+      {
+        "nombreAtaque": "Bloqueo de Troyano vía USB infectado",
+        "tipoAtaque": "Infección de troyano",
+        "descripcion": "Los dispositivos USB son un vector de ATAQUE común para introducir malware (troyanos). Un empleado podría conectar una USB infectada sin saberlo. Activa la configuración 'Bloquear medios extraíbles' en el 'PC Secretaría' para reducir este RIESGO.",
+        "fase": 2,
+        "dispositivoAAtacar": "PC Secretaría",
+        "condicionMitigacion": {
+          "accion": "click",
+          "objeto": "configuración de workstation",
+          "val": [
+            {
+              "nombreConfig": "Bloquear medios extraíbles",
+              "activado": true
+            }
+          ]
+        }
+      }
+    ],
+    "text": "DESAFÍOS DEL ESCENARIO: Amenazas y Ataques Comunes\nSlug: amenazas\n\n=== REGLAS DE tipoEvento (OBLIGATORIO SEGUIR) ===\n\nREGLA 1 — \"Verificación de acciones de un jugador en la simulación\":\n  Usar SOLO para: ejecutar aplicaciones (Net-Scan Viz, Company Social-Searcher), comandos de terminal (ssh, cat, ls), configuraciones de workstation (click).\n  infoAdicional requerido: { \"accion\": \"ejecutar\"|\"click\", \"objeto\": \"aplicación/software de computadora\"|\"comando de terminal/CLI\"|\"configuración de workstation\", \"val\": {...}, \"esObjetivo\": true }\n\nREGLA 2 — \"Tráfico de red\":\n  Usar SOLO para: asignar redes a dispositivos, bloquear tráfico en firewall de router.\n  infoAdicional requerido: { \"dispositivoOrigen\": \"...\", \"dispositivoDestino\": \"...\", \"protocolo\": \"SSH\"|\"MANAGEMENT\"|\"HTTP\", \"esObjetivo\": true, \"debeSerBloqueado\": true|false }\n  ATENCIÓN: NO usar \"Verificación de acciones\" para firewall — usar \"Tráfico de red\".\n\nREGLA 3 — \"Conexión VPN\":\n  Usar SOLO para: configurar túnel VPN entre gateway y cliente.\n  infoAdicional requerido: { \"gateway\": { \"lanLocal\":\"...\", \"hostLan\":\"...\", \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" }, \"cliente\": { \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" } }\n  ATENCIÓN CRÍTICA: Solo puedes asignar rol 'gateway' a un dispositivo de tipo \"vpn\". Un router o workstation NO sirve. Si la topología NO tiene tipo \"vpn\", PROHIBIDO generar este evento (la simulación crasheará). Aborta el objetivo.\n\nREGLA 4 — \"Envío de correo\":\n  Usar SOLO para: enviar correo phishing.\n  infoAdicional requerido: { \"dispositivoEmisor\": \"...\", \"destinatario\": \"correo@dominio.com\", \"asunto\": \"...\" }\n\nREGLA 5 — \"Verificación de firma\":\n  Usar SOLO para: verificar firma digital de un documento.\n  infoAdicional requerido: { \"nombreDocumento\": \"...\", \"nombreFirma\": \"...\", \"nombreClave\": \"...\", \"veredicto\": true|false }\n\n=== FASES Y OBJETIVOS ===\n\nFASE 1: Fase 1: Bloquear amenaza externa\n  Descripción: Las AMENAZAS externas buscan explotar VULNERABILIDADES en tu red. Usa el firewall para bloquear el acceso no autorizado.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Bloquear acceso SSH externo\"\n\nFASE 2: Fase 2: Proteger contra amenaza interna\n  Descripción: Las amenazas internas (USB infectados, software malicioso) requieren configuraciones preventivas en los dispositivos.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Bloqueo de Troyano vía USB infectado\"\n\n=== EVENTOS (copiar estructura infoAdicional exactamente) ===\n\nEvento: \"Bloquear acceso SSH externo\" | tipoEvento: \"Tráfico de red\" | Fase: 1\n  Descripción para el jugador: Una AMENAZA es cualquier evento que puede causar daño. Se detectó un intento de conexión SSH desde Internet: esto explota una VULNERABILIDAD (puerto SSH abierto) generando un RIESGO. Configura el firewall del 'Router Oficina' para BLOQUEAR SSH entrante a 'LAN-Oficina'.\n  infoAdicional EXACTO: {\"dispositivoOrigen\":\"Servidor Externo\",\"dispositivoDestino\":\"PC Director\",\"protocolo\":\"SSH\",\"esObjetivo\":true,\"debeSerBloqueado\":true}\n\nEvento: \"Completación Fase 1\" | tipoEvento: \"Completación de fase\" | Fase: 1\n  Descripción para el jugador: ¡Bien! Has bloqueado la amenaza externa. Ahora protege los equipos contra amenazas internas.\n\nEvento: \"Completación Escenario\" | tipoEvento: \"Completación de escenario\" | Fase: 2\n  Descripción para el jugador: ¡Felicidades! Has protegido la empresa contra amenazas externas (firewall) e internas (hardening). Recuerda: Amenaza + Vulnerabilidad = Riesgo. Tu trabajo es reducir las vulnerabilidades.\n\n=== ACCIONES ESPERADAS DEL JUGADOR (accion/objeto/val exactos) ===\n\naccion: \"click\" | objeto: \"configuración de firewall\"\n  val: {\"nombreRouter\":\"Router Oficina\",\"nombreRed\":\"LAN-Oficina\",\"accion\":\"DENEGAR\",\"direccion\":\"HACIA\",\"protocolo\":\"SSH\"}\n\naccion: \"click\" | objeto: \"configuración de workstation\"\n  val: {\"nombreConfig\":\"Bloquear medios extraíbles\",\"dispositivoAAtacar\":\"PC Secretaría\",\"activado\":true}\n\n=== ATAQUES (van en array \"ataques\", NO en \"eventos\") ===\n\nAtaque: \"Bloqueo de Troyano vía USB infectado\" | tipoAtaque: \"Infección de troyano\" | Fase: 2\n  dispositivoAAtacar: \"PC Secretaría\"\n  Descripción: Los dispositivos USB son un vector de ATAQUE común para introducir malware (troyanos). Un empleado podría conectar una USB infectada sin saberlo. Activa la configuración 'Bloquear medios extraíbles' en el 'PC Secretaría' para reducir este RIESGO.\n  condicionMitigacion EXACTA: {\"accion\":\"click\",\"objeto\":\"configuración de workstation\",\"val\":[{\"nombreConfig\":\"Bloquear medios extraíbles\",\"activado\":true}]}"
+  },
+  {
+    "slug": "criptografia",
+    "tipo": "desafio",
+    "titulo": "Criptografía: Firma Digital y Comunicación Segura",
+    "fases": [
+      {
+        "id": 1,
+        "nombre": "Fase 1: Verificación de firma digital",
+        "descripcion": "Las FIRMAS DIGITALES usan criptografía asimétrica: el remitente firma con su clave privada y el receptor verifica con la clave pública. Si los hashes coinciden, el documento es auténtico e íntegro.",
+        "objetivos": [
+          "Verificar contrato original"
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Fase 2: Detección de alteración",
+        "descripcion": "Las FUNCIONES HASH son el corazón de las firmas digitales. Un cambio mínimo en el documento produce un hash completamente diferente, permitiendo detectar cualquier alteración.",
+        "objetivos": [
+          "Detectar factura alterada"
+        ]
+      },
+      {
+        "id": 3,
+        "nombre": "Fase 3: Comunicación cifrada (VPN)",
+        "descripcion": "La encriptación protege los datos en tránsito. Una VPN con modo 'Encriptar y Autenticar' combina cifrado simétrico (AES) para los datos con autenticación asimétrica (RSA/ECDSA) para la identidad.",
+        "objetivos": [
+          "Establecer canal cifrado con cliente."
+        ]
+      }
+    ],
+    "eventos": [
+      {
+        "nombreEvento": "Verificar contrato original",
+        "tipoEvento": "Verificación de firma",
+        "descripcion": "El cliente ha enviado un contrato firmado digitalmente al 'PC Abogado'. Una FIRMA DIGITAL garantiza la INTEGRIDAD del documento (no fue alterado) y la AUTENTICIDAD del remitente. Abre el 'PC Abogado', ve al verificador de firmas y verifica el 'Contrato Comercial' usando la clave pública del cliente. Debes emitir un veredicto sobre la autenticidad del documento según los hashes resultantes.",
+        "fase": 1,
+        "tiempoNotificacion": 5,
+        "infoAdicional": {
+          "nombreDocumento": "Contrato Comercial",
+          "nombreFirma": "Firma Contrato Comercial",
+          "nombreClave": "Clave_Publica_Cliente",
+          "veredicto": true
+        }
+      },
+      {
+        "nombreEvento": "Completación Fase 1",
+        "tipoEvento": "Completación de fase",
+        "descripcion": "¡Correcto! La firma digital es válida: el hash del documento coincide con el hash descifrado de la firma usando la clave pública del cliente. Esto confirma que el documento no fue modificado (Integridad) y que fue firmado por el cliente legítimo (No Repudio).",
+        "fase": 1,
+        "tiempoNotificacion": 20,
+        "infoAdicional": null
+      },
+      {
+        "nombreEvento": "Detectar factura alterada",
+        "tipoEvento": "Verificación de firma",
+        "descripcion": "Se recibió una factura supuestamente firmada por un proveedor. Sin embargo, hay sospechas de que el documento fue ALTERADO después de ser firmado (ataque a la Integridad). Verifica la 'Factura Proveedor' con la clave pública del proveedor. De igual forma, emite un veredicto según los los hashes resultantes.",
+        "fase": 2,
+        "tiempoNotificacion": 25,
+        "infoAdicional": {
+          "nombreDocumento": "Factura Proveedor",
+          "nombreFirma": "Firma Factura Proveedor",
+          "nombreClave": "Clave_Publica_Proveedor",
+          "veredicto": false
+        }
+      },
+      {
+        "nombreEvento": "Completación Fase 2",
+        "tipoEvento": "Completación de fase",
+        "descripcion": "¡Bien detectado! Los hashes no coinciden: el documento fue alterado después de firmarse. Esto demuestra la importancia de las funciones hash criptográficas: cualquier cambio, por mínimo que sea, produce un hash completamente diferente. Ahora establezcamos un canal seguro para futuras comunicaciones.",
+        "fase": 2,
+        "tiempoNotificacion": 40,
+        "infoAdicional": null
+      },
+      {
+        "nombreEvento": "Establecer canal cifrado con cliente",
+        "tipoEvento": "Conexión VPN",
+        "descripcion": "Para proteger las comunicaciones futuras, configura un túnel VPN cifrado entre el bufete y el cliente. La VPN utiliza criptografía para crear un canal seguro: la opción 'Encriptar y Autenticar' (EA) combina encriptación simétrica (para velocidad) con autenticación asimétrica (para verificar identidad). Configura el 'VPN Gateway Bufete' y el 'PC Cliente' con protección EA para que el cliente pueda establecer una conexión con la computadora del abogado.",
+        "fase": 3,
+        "tiempoNotificacion": 45,
+        "infoAdicional": {
+          "gateway": {
+            "lanLocal": "LAN-Bufete",
+            "hostLan": "PC Abogado",
+            "proteccion": "Encriptar y Autenticar",
+            "dominioRemoto": "Cliente-Externo",
+            "hostRemoto": "PC Cliente"
+          },
+          "cliente": {
+            "proteccion": "Encriptar y Autenticar",
+            "dominioRemoto": "Bufete-Mendoza",
+            "hostRemoto": "PC Abogado"
+          }
+        }
+      },
+      {
+        "nombreEvento": "Completación Escenario",
+        "tipoEvento": "Completación de escenario",
+        "descripcion": "¡Felicidades! Has aplicado conceptos de criptografía: verificación de firmas digitales, detección de documentos alterados mediante funciones hash, y comunicación cifrada con VPN. Estos son los pilares de la seguridad criptográfica moderna.",
+        "fase": 3,
+        "tiempoNotificacion": 60,
+        "infoAdicional": null
+      }
+    ],
+    "ataques": [],
+    "text": "DESAFÍOS DEL ESCENARIO: Criptografía: Firma Digital y Comunicación Segura\nSlug: criptografia\n\n=== REGLAS DE tipoEvento (OBLIGATORIO SEGUIR) ===\n\nREGLA 1 — \"Verificación de acciones de un jugador en la simulación\":\n  Usar SOLO para: ejecutar aplicaciones (Net-Scan Viz, Company Social-Searcher), comandos de terminal (ssh, cat, ls), configuraciones de workstation (click).\n  infoAdicional requerido: { \"accion\": \"ejecutar\"|\"click\", \"objeto\": \"aplicación/software de computadora\"|\"comando de terminal/CLI\"|\"configuración de workstation\", \"val\": {...}, \"esObjetivo\": true }\n\nREGLA 2 — \"Tráfico de red\":\n  Usar SOLO para: asignar redes a dispositivos, bloquear tráfico en firewall de router.\n  infoAdicional requerido: { \"dispositivoOrigen\": \"...\", \"dispositivoDestino\": \"...\", \"protocolo\": \"SSH\"|\"MANAGEMENT\"|\"HTTP\", \"esObjetivo\": true, \"debeSerBloqueado\": true|false }\n  ATENCIÓN: NO usar \"Verificación de acciones\" para firewall — usar \"Tráfico de red\".\n\nREGLA 3 — \"Conexión VPN\":\n  Usar SOLO para: configurar túnel VPN entre gateway y cliente.\n  infoAdicional requerido: { \"gateway\": { \"lanLocal\":\"...\", \"hostLan\":\"...\", \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" }, \"cliente\": { \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" } }\n  ATENCIÓN CRÍTICA: Solo puedes asignar rol 'gateway' a un dispositivo de tipo \"vpn\". Un router o workstation NO sirve. Si la topología NO tiene tipo \"vpn\", PROHIBIDO generar este evento (la simulación crasheará). Aborta el objetivo.\n\nREGLA 4 — \"Envío de correo\":\n  Usar SOLO para: enviar correo phishing.\n  infoAdicional requerido: { \"dispositivoEmisor\": \"...\", \"destinatario\": \"correo@dominio.com\", \"asunto\": \"...\" }\n\nREGLA 5 — \"Verificación de firma\":\n  Usar SOLO para: verificar firma digital de un documento.\n  infoAdicional requerido: { \"nombreDocumento\": \"...\", \"nombreFirma\": \"...\", \"nombreClave\": \"...\", \"veredicto\": true|false }\n\n=== FASES Y OBJETIVOS ===\n\nFASE 1: Fase 1: Verificación de firma digital\n  Descripción: Las FIRMAS DIGITALES usan criptografía asimétrica: el remitente firma con su clave privada y el receptor verifica con la clave pública. Si los hashes coinciden, el documento es auténtico e íntegro.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Verificar contrato original\"\n\nFASE 2: Fase 2: Detección de alteración\n  Descripción: Las FUNCIONES HASH son el corazón de las firmas digitales. Un cambio mínimo en el documento produce un hash completamente diferente, permitiendo detectar cualquier alteración.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Detectar factura alterada\"\n\nFASE 3: Fase 3: Comunicación cifrada (VPN)\n  Descripción: La encriptación protege los datos en tránsito. Una VPN con modo 'Encriptar y Autenticar' combina cifrado simétrico (AES) para los datos con autenticación asimétrica (RSA/ECDSA) para la identidad.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Establecer canal cifrado con cliente.\"\n\n=== EVENTOS (copiar estructura infoAdicional exactamente) ===\n\nEvento: \"Verificar contrato original\" | tipoEvento: \"Verificación de firma\" | Fase: 1\n  Descripción para el jugador: El cliente ha enviado un contrato firmado digitalmente al 'PC Abogado'. Una FIRMA DIGITAL garantiza la INTEGRIDAD del documento (no fue alterado) y la AUTENTICIDAD del remitente. Abre el 'PC Abogado', ve al verificador de firmas y verifica el 'Contrato Comercial' usando la clave pública del cliente. Debes emitir un veredicto sobre la autenticidad del documento según los hashes resultantes.\n  infoAdicional EXACTO: {\"nombreDocumento\":\"Contrato Comercial\",\"nombreFirma\":\"Firma Contrato Comercial\",\"nombreClave\":\"Clave_Publica_Cliente\",\"veredicto\":true}\n\nEvento: \"Completación Fase 1\" | tipoEvento: \"Completación de fase\" | Fase: 1\n  Descripción para el jugador: ¡Correcto! La firma digital es válida: el hash del documento coincide con el hash descifrado de la firma usando la clave pública del cliente. Esto confirma que el documento no fue modificado (Integridad) y que fue firmado por el cliente legítimo (No Repudio).\n\nEvento: \"Detectar factura alterada\" | tipoEvento: \"Verificación de firma\" | Fase: 2\n  Descripción para el jugador: Se recibió una factura supuestamente firmada por un proveedor. Sin embargo, hay sospechas de que el documento fue ALTERADO después de ser firmado (ataque a la Integridad). Verifica la 'Factura Proveedor' con la clave pública del proveedor. De igual forma, emite un veredicto según los los hashes resultantes.\n  infoAdicional EXACTO: {\"nombreDocumento\":\"Factura Proveedor\",\"nombreFirma\":\"Firma Factura Proveedor\",\"nombreClave\":\"Clave_Publica_Proveedor\",\"veredicto\":false}\n\nEvento: \"Completación Fase 2\" | tipoEvento: \"Completación de fase\" | Fase: 2\n  Descripción para el jugador: ¡Bien detectado! Los hashes no coinciden: el documento fue alterado después de firmarse. Esto demuestra la importancia de las funciones hash criptográficas: cualquier cambio, por mínimo que sea, produce un hash completamente diferente. Ahora establezcamos un canal seguro para futuras comunicaciones.\n\nEvento: \"Establecer canal cifrado con cliente\" | tipoEvento: \"Conexión VPN\" | Fase: 3\n  Descripción para el jugador: Para proteger las comunicaciones futuras, configura un túnel VPN cifrado entre el bufete y el cliente. La VPN utiliza criptografía para crear un canal seguro: la opción 'Encriptar y Autenticar' (EA) combina encriptación simétrica (para velocidad) con autenticación asimétrica (para verificar identidad). Configura el 'VPN Gateway Bufete' y el 'PC Cliente' con protección EA para que el cliente pueda establecer una conexión con la computadora del abogado.\n  infoAdicional EXACTO: {\"gateway\":{\"lanLocal\":\"LAN-Bufete\",\"hostLan\":\"PC Abogado\",\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"Cliente-Externo\",\"hostRemoto\":\"PC Cliente\"},\"cliente\":{\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"Bufete-Mendoza\",\"hostRemoto\":\"PC Abogado\"}}\n\nEvento: \"Completación Escenario\" | tipoEvento: \"Completación de escenario\" | Fase: 3\n  Descripción para el jugador: ¡Felicidades! Has aplicado conceptos de criptografía: verificación de firmas digitales, detección de documentos alterados mediante funciones hash, y comunicación cifrada con VPN. Estos son los pilares de la seguridad criptográfica moderna.\n\n=== ACCIONES ESPERADAS DEL JUGADOR (accion/objeto/val exactos) ===\n\naccion: \"agregar\" | objeto: \"aplicación/software de computadora\"\n  val: {\"nombreDispositivo\":\"PC Abogado\",\"aplicacionAgregada\":\"FirmaChecker\"}\n\naccion: \"agregar\" | objeto: \"veredicto de autenticidad de documento digital con firma y clave pública\"\n  val: {\"nombreDocumento\":\"Contrato Comercial\",\"nombreFirma\":\"Firma Contrato Comercial\",\"nombreClave\":\"Clave_Publica_Cliente\",\"veredicto\":true}\n\naccion: \"agregar\" | objeto: \"veredicto de autenticidad de documento digital con firma y clave pública\"\n  val: {\"nombreDocumento\":\"Factura Proveedor\",\"nombreFirma\":\"Firma Factura Proveedor\",\"nombreClave\":\"Clave_Publica_Proveedor\",\"veredicto\":false}\n\naccion: \"agregar\" | objeto: \"perfil de VPN gateway\"\n  val: {\"nombreVPNGateway\":\"VPN Gateway Bufete\",\"lanLocal\":\"LAN-Bufete\",\"hostLan\":\"PC Abogado\",\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"Cliente-Externo\",\"hostRemoto\":\"PC Cliente\"}\n\naccion: \"agregar\" | objeto: \"perfil de cliente VPN\"\n  val: {\"nombreCliente\":\"PC Cliente\",\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"Bufete-Mendoza\",\"hostRemoto\":\"PC Abogado\"}"
+  },
+  {
+    "slug": "control-acceso",
+    "tipo": "desafio",
+    "titulo": "Control de Acceso y Protocolos Seguros",
+    "fases": [
+      {
+        "id": 1,
+        "nombre": "Fase 1: Segmentación y control de acceso",
+        "descripcion": "Separa la red de laboratorio de la red estudiantil y bloquea accesos no autorizados.",
+        "objetivos": [
+          "Asignar laboratorio a red segura",
+          "Bloquear acceso desde red estudiantil"
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Fase 2: Hardening de equipos",
+        "descripcion": "Protege los equipos del aula contra software malicioso.",
+        "objetivos": [
+          "Bloquear software externo en aula"
+        ]
+      },
+      {
+        "id": 3,
+        "nombre": "Fase 3: Acceso remoto autenticado",
+        "descripcion": "Configura VPN autenticada para investigadores remotos.",
+        "objetivos": [
+          "Configurar VPN para investigador remoto."
+        ]
+      }
+    ],
+    "eventos": [
+      {
+        "nombreEvento": "Asignar laboratorio a red segura",
+        "tipoEvento": "Tráfico de red",
+        "descripcion": "El 'PC Investigador' necesita acceder al 'Servidor de Datos' en la red 'LAN-Lab'. Asigna el 'PC Investigador' a 'LAN-Lab' para permitir la comunicación.",
+        "fase": 1,
+        "tiempoNotificacion": 5,
+        "infoAdicional": {
+          "dispositivoOrigen": "PC Investigador",
+          "dispositivoDestino": "Servidor de Datos",
+          "protocolo": "MANAGEMENT",
+          "esObjetivo": true,
+          "debeSerBloqueado": false
+        }
+      },
+      {
+        "nombreEvento": "Bloquear acceso desde red estudiantil",
+        "tipoEvento": "Tráfico de red",
+        "descripcion": "Los estudiantes NO deben poder acceder al laboratorio vía SSH. Configura el firewall del 'Router Universidad' para bloquear SSH entrante a 'LAN-Lab'.",
+        "fase": 1,
+        "tiempoNotificacion": 15,
+        "infoAdicional": {
+          "dispositivoOrigen": "PC Estudiante",
+          "dispositivoDestino": "Servidor de Datos",
+          "protocolo": "SSH",
+          "esObjetivo": true,
+          "debeSerBloqueado": true
+        }
+      },
+      {
+        "nombreEvento": "Completación Fase 1",
+        "tipoEvento": "Completación de fase",
+        "descripcion": "Red segmentada correctamente. Ahora debes proteger los equipos.",
+        "fase": 1,
+        "tiempoNotificacion": 25,
+        "infoAdicional": null
+      },
+      {
+        "nombreEvento": "Bloquear software externo en aula",
+        "tipoEvento": "Verificación de acciones de un jugador en la simulación",
+        "descripcion": "Los equipos del aula son vulnerables a software malicioso descargado por estudiantes. Activa 'Sin software externo' en 'PC Estudiante' para prevenir la instalación de programas no autorizados.",
+        "fase": 2,
+        "tiempoNotificacion": 30,
+        "infoAdicional": {
+          "accion": "click",
+          "objeto": "configuración de workstation",
+          "val": {
+            "nombreConfig": "Sin software externo",
+            "dispositivoAAtacar": "PC Estudiante",
+            "activado": true
+          }
+        }
+      },
+      {
+        "nombreEvento": "Completación Fase 2",
+        "tipoEvento": "Completación de fase",
+        "descripcion": "Equipos protegidos. Ahora configura acceso remoto para investigadores.",
+        "fase": 2,
+        "tiempoNotificacion": 45,
+        "infoAdicional": null
+      },
+      {
+        "nombreEvento": "Configurar VPN para investigador remoto.",
+        "tipoEvento": "Conexión VPN",
+        "descripcion": "Un investigador necesita acceder al servidor del laboratorio desde casa. Configura VPN con modo 'Encriptar y Autenticar' (EA) entre el 'VPN Gateway Universidad' y el 'PC Remoto Investigador'.",
+        "fase": 3,
+        "tiempoNotificacion": 50,
+        "infoAdicional": {
+          "gateway": {
+            "lanLocal": "LAN-Lab",
+            "hostLan": "Servidor de Datos",
+            "proteccion": "Encriptar y Autenticar",
+            "dominioRemoto": "Investigador-Remoto",
+            "hostRemoto": "PC Remoto Investigador"
+          },
+          "cliente": {
+            "proteccion": "Encriptar y Autenticar",
+            "dominioRemoto": "TechU",
+            "hostRemoto": "Servidor de Datos"
+          }
+        }
+      },
+      {
+        "nombreEvento": "Completación Escenario",
+        "tipoEvento": "Completación de escenario",
+        "descripcion": "¡Felicidades! Has implementado control de acceso multicapa: segmentación de red, hardening de dispositivos y VPN autenticada.",
+        "fase": 3,
+        "tiempoNotificacion": 65,
+        "infoAdicional": null
+      }
+    ],
+    "ataques": [
+      {
+        "nombreAtaque": "Ejecución de software no autorizado",
+        "tipoAtaque": "Infección de troyano",
+        "descripcion": "¡ALERTA! Un estudiante descargó software no autorizado en 'PC Estudiante' que contiene malware. Si el equipo está configurado correctamente, el ataque será bloqueado.",
+        "fase": 2,
+        "dispositivoAAtacar": "PC Estudiante",
+        "condicionMitigacion": {
+          "accion": "click",
+          "objeto": "configuración de workstation",
+          "val": [
+            {
+              "nombreConfig": "Sin software externo",
+              "activado": true
+            }
+          ]
+        }
+      }
+    ],
+    "text": "DESAFÍOS DEL ESCENARIO: Control de Acceso y Protocolos Seguros\nSlug: control-acceso\n\n=== REGLAS DE tipoEvento (OBLIGATORIO SEGUIR) ===\n\nREGLA 1 — \"Verificación de acciones de un jugador en la simulación\":\n  Usar SOLO para: ejecutar aplicaciones (Net-Scan Viz, Company Social-Searcher), comandos de terminal (ssh, cat, ls), configuraciones de workstation (click).\n  infoAdicional requerido: { \"accion\": \"ejecutar\"|\"click\", \"objeto\": \"aplicación/software de computadora\"|\"comando de terminal/CLI\"|\"configuración de workstation\", \"val\": {...}, \"esObjetivo\": true }\n\nREGLA 2 — \"Tráfico de red\":\n  Usar SOLO para: asignar redes a dispositivos, bloquear tráfico en firewall de router.\n  infoAdicional requerido: { \"dispositivoOrigen\": \"...\", \"dispositivoDestino\": \"...\", \"protocolo\": \"SSH\"|\"MANAGEMENT\"|\"HTTP\", \"esObjetivo\": true, \"debeSerBloqueado\": true|false }\n  ATENCIÓN: NO usar \"Verificación de acciones\" para firewall — usar \"Tráfico de red\".\n\nREGLA 3 — \"Conexión VPN\":\n  Usar SOLO para: configurar túnel VPN entre gateway y cliente.\n  infoAdicional requerido: { \"gateway\": { \"lanLocal\":\"...\", \"hostLan\":\"...\", \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" }, \"cliente\": { \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" } }\n  ATENCIÓN CRÍTICA: Solo puedes asignar rol 'gateway' a un dispositivo de tipo \"vpn\". Un router o workstation NO sirve. Si la topología NO tiene tipo \"vpn\", PROHIBIDO generar este evento (la simulación crasheará). Aborta el objetivo.\n\nREGLA 4 — \"Envío de correo\":\n  Usar SOLO para: enviar correo phishing.\n  infoAdicional requerido: { \"dispositivoEmisor\": \"...\", \"destinatario\": \"correo@dominio.com\", \"asunto\": \"...\" }\n\nREGLA 5 — \"Verificación de firma\":\n  Usar SOLO para: verificar firma digital de un documento.\n  infoAdicional requerido: { \"nombreDocumento\": \"...\", \"nombreFirma\": \"...\", \"nombreClave\": \"...\", \"veredicto\": true|false }\n\n=== FASES Y OBJETIVOS ===\n\nFASE 1: Fase 1: Segmentación y control de acceso\n  Descripción: Separa la red de laboratorio de la red estudiantil y bloquea accesos no autorizados.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Asignar laboratorio a red segura\"\n    - \"Bloquear acceso desde red estudiantil\"\n\nFASE 2: Fase 2: Hardening de equipos\n  Descripción: Protege los equipos del aula contra software malicioso.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Bloquear software externo en aula\"\n\nFASE 3: Fase 3: Acceso remoto autenticado\n  Descripción: Configura VPN autenticada para investigadores remotos.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Configurar VPN para investigador remoto.\"\n\n=== EVENTOS (copiar estructura infoAdicional exactamente) ===\n\nEvento: \"Asignar laboratorio a red segura\" | tipoEvento: \"Tráfico de red\" | Fase: 1\n  Descripción para el jugador: El 'PC Investigador' necesita acceder al 'Servidor de Datos' en la red 'LAN-Lab'. Asigna el 'PC Investigador' a 'LAN-Lab' para permitir la comunicación.\n  infoAdicional EXACTO: {\"dispositivoOrigen\":\"PC Investigador\",\"dispositivoDestino\":\"Servidor de Datos\",\"protocolo\":\"MANAGEMENT\",\"esObjetivo\":true,\"debeSerBloqueado\":false}\n\nEvento: \"Bloquear acceso desde red estudiantil\" | tipoEvento: \"Tráfico de red\" | Fase: 1\n  Descripción para el jugador: Los estudiantes NO deben poder acceder al laboratorio vía SSH. Configura el firewall del 'Router Universidad' para bloquear SSH entrante a 'LAN-Lab'.\n  infoAdicional EXACTO: {\"dispositivoOrigen\":\"PC Estudiante\",\"dispositivoDestino\":\"Servidor de Datos\",\"protocolo\":\"SSH\",\"esObjetivo\":true,\"debeSerBloqueado\":true}\n\nEvento: \"Completación Fase 1\" | tipoEvento: \"Completación de fase\" | Fase: 1\n  Descripción para el jugador: Red segmentada correctamente. Ahora debes proteger los equipos.\n\nEvento: \"Bloquear software externo en aula\" | tipoEvento: \"Verificación de acciones de un jugador en la simulación\" | Fase: 2\n  Descripción para el jugador: Los equipos del aula son vulnerables a software malicioso descargado por estudiantes. Activa 'Sin software externo' en 'PC Estudiante' para prevenir la instalación de programas no autorizados.\n  infoAdicional EXACTO: {\"accion\":\"click\",\"objeto\":\"configuración de workstation\",\"val\":{\"nombreConfig\":\"Sin software externo\",\"dispositivoAAtacar\":\"PC Estudiante\",\"activado\":true}}\n\nEvento: \"Completación Fase 2\" | tipoEvento: \"Completación de fase\" | Fase: 2\n  Descripción para el jugador: Equipos protegidos. Ahora configura acceso remoto para investigadores.\n\nEvento: \"Configurar VPN para investigador remoto.\" | tipoEvento: \"Conexión VPN\" | Fase: 3\n  Descripción para el jugador: Un investigador necesita acceder al servidor del laboratorio desde casa. Configura VPN con modo 'Encriptar y Autenticar' (EA) entre el 'VPN Gateway Universidad' y el 'PC Remoto Investigador'.\n  infoAdicional EXACTO: {\"gateway\":{\"lanLocal\":\"LAN-Lab\",\"hostLan\":\"Servidor de Datos\",\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"Investigador-Remoto\",\"hostRemoto\":\"PC Remoto Investigador\"},\"cliente\":{\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"TechU\",\"hostRemoto\":\"Servidor de Datos\"}}\n\nEvento: \"Completación Escenario\" | tipoEvento: \"Completación de escenario\" | Fase: 3\n  Descripción para el jugador: ¡Felicidades! Has implementado control de acceso multicapa: segmentación de red, hardening de dispositivos y VPN autenticada.\n\n=== ACCIONES ESPERADAS DEL JUGADOR (accion/objeto/val exactos) ===\n\naccion: \"agregar\" | objeto: \"red de computadora\"\n  val: {\"nombreDispositivo\":\"PC Investigador\",\"nombreRed\":\"LAN-Lab\"}\n\naccion: \"click\" | objeto: \"configuración de firewall\"\n  val: {\"nombreRouter\":\"Router Universidad\",\"nombreRed\":\"LAN-Lab\",\"accion\":\"DENEGAR\",\"direccion\":\"HACIA\",\"protocolo\":\"SSH\"}\n\naccion: \"click\" | objeto: \"configuración de workstation\"\n  val: {\"nombreConfig\":\"Sin software externo\",\"dispositivoAAtacar\":\"PC Estudiante\",\"activado\":true}\n\naccion: \"agregar\" | objeto: \"perfil de VPN gateway\"\n  val: {\"nombreVPNGateway\":\"VPN Gateway Universidad\",\"lanLocal\":\"LAN-Lab\",\"hostLan\":\"Servidor de Datos\",\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"Investigador-Remoto\",\"hostRemoto\":\"PC Remoto Investigador\"}\n\naccion: \"agregar\" | objeto: \"perfil de cliente VPN\"\n  val: {\"nombreCliente\":\"PC Remoto Investigador\",\"proteccion\":\"Encriptar y Autenticar\",\"dominioRemoto\":\"TechU\",\"hostRemoto\":\"Servidor de Datos\"}\n\n=== ATAQUES (van en array \"ataques\", NO en \"eventos\") ===\n\nAtaque: \"Ejecución de software no autorizado\" | tipoAtaque: \"Infección de troyano\" | Fase: 2\n  dispositivoAAtacar: \"PC Estudiante\"\n  Descripción: ¡ALERTA! Un estudiante descargó software no autorizado en 'PC Estudiante' que contiene malware. Si el equipo está configurado correctamente, el ataque será bloqueado.\n  condicionMitigacion EXACTA: {\"accion\":\"click\",\"objeto\":\"configuración de workstation\",\"val\":[{\"nombreConfig\":\"Sin software externo\",\"activado\":true}]}"
+  },
+  {
+    "slug": "hacking-etico",
+    "tipo": "desafio",
+    "titulo": "Hacking Ético y Análisis de Vulnerabilidades",
+    "fases": [
+      {
+        "id": 1,
+        "nombre": "Fase 1: Fase de Reconocimiento y Escaneo",
+        "descripcion": "Recopilar información de la empresa y sus empleados antes de realizar el ataque.",
+        "objetivos": [
+          "Escaneo de dispositivos",
+          "Búsqueda de personas"
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Fase 2: Fase de Explotación",
+        "descripcion": "Con la información recopilada, se intenta obtener acceso no autorizado mediante técnicas de ingeniería social.",
+        "objetivos": [
+          "Creación de correo phishing",
+          "Recepción de credenciales",
+          "Conexión a dispositivo mediante SSH",
+          "Obtención de información confidencial"
+        ]
+      }
+    ],
+    "eventos": [
+      {
+        "nombreEvento": "Escaneo de dispositivos",
+        "tipoEvento": "Verificación de acciones de un jugador en la simulación",
+        "descripcion": "Para empezar con la fase de Reconocimiento y Escaneo, escanea los dispositivos disponibles en el dominio 'Corporación' utilizando Net-Scan Viz. Pista: guarda la información resultante del escaneo.",
+        "fase": 1,
+        "tiempoNotificacion": 5,
+        "infoAdicional": {
+          "accion": "ejecutar",
+          "objeto": "aplicación/software de computadora",
+          "val": {
+            "nombreAplicacion": "Net-Scan Viz"
+          }
+        }
+      },
+      {
+        "nombreEvento": "Búsqueda de personas",
+        "tipoEvento": "Verificación de acciones de un jugador en la simulación",
+        "descripcion": "Ahora se necesita obtener información de los empleados de la empresa. Utiliza Company Social-Searcher para lograrlo. Pista: observa quién es más propenso a caer en un ataque de ingeniería social.",
+        "fase": 1,
+        "tiempoNotificacion": 15,
+        "infoAdicional": {
+          "accion": "ejecutar",
+          "objeto": "aplicación/software de computadora",
+          "val": {
+            "nombreAplicacion": "Company Social-Searcher"
+          }
+        }
+      },
+      {
+        "nombreEvento": "Completación Fase 1",
+        "tipoEvento": "Completación de fase",
+        "descripcion": "¡Has completado la fase de Reconocimiento y Escaneo! Ahora puedes continuar con la fase de Explotación.",
+        "fase": 1,
+        "tiempoNotificacion": 25,
+        "infoAdicional": null
+      },
+      {
+        "nombreEvento": "Creación de correo phishing",
+        "tipoEvento": "Envío de correo",
+        "descripcion": "Una vez identificados los dispositivos y empleados de la empresa, es posible obtener credenciales de acceso mediante ingeniería social. Utiliza Phish-Matic para crear un correo tipo phishing e intentar obtener credenciales a través de él.",
+        "fase": 2,
+        "tiempoNotificacion": 30,
+        "infoAdicional": {
+          "dispositivoEmisor": "Computadora Lisa",
+          "destinatario": "jacob.garcia@corp.com",
+          "asunto": "URGENTE. Problemas con la validación de accesos"
+        }
+      },
+      {
+        "nombreEvento": "Recepción de credenciales",
+        "tipoEvento": "Envío de activo",
+        "descripcion": "El engaño con el correo fue exitoso. El empleado acaba de enviar sus credenciales, revisa tu explorador de archivos para encontrarlas.",
+        "fase": 2,
+        "tiempoNotificacion": 40,
+        "infoAdicional": {
+          "nombreActivo": "credenciales",
+          "dispositivoEmisor": "Computadora Jacob",
+          "dispositivoReceptor": "Computadora Lisa"
+        }
+      },
+      {
+        "nombreEvento": "Conexión a dispositivo mediante SSH",
+        "tipoEvento": "Verificación de acciones de un jugador en la simulación",
+        "descripcion": "Ahora, utilizando las credenciales, abre la consola en 'Computadora Lisa' para acceder al dispositivo del empleado mediante SSH. Pista: ejecuta el comando de ayuda 'h' de la consola para guiarte.",
+        "fase": 2,
+        "tiempoNotificacion": 45,
+        "infoAdicional": {
+          "accion": "ejecutar",
+          "objeto": "comando de terminal/CLI",
+          "val": {
+            "comando": "ssh",
+            "nombreEquipo": "pc-jacob",
+            "usuario": "jgarcia",
+            "contrasenia": "Yl34DT9",
+            "conectadoDesde": "Computadora Lisa"
+          }
+        }
+      },
+      {
+        "nombreEvento": "Obtención de información confidencial",
+        "tipoEvento": "Verificación de acciones de un jugador en la simulación",
+        "descripcion": "Una vez conectado al dispositivo del empleado, obtén información que sea confidencial para la empresa.",
+        "fase": 2,
+        "tiempoNotificacion": 55,
+        "infoAdicional": {
+          "accion": "ejecutar",
+          "objeto": "comando de terminal/CLI",
+          "val": {
+            "comando": "cat",
+            "nombreArchivo": "secret_keys",
+            "nombreDispositivo": "Computadora Jacob"
+          }
+        }
+      },
+      {
+        "nombreEvento": "Completación Escenario",
+        "tipoEvento": "Completación de escenario",
+        "descripcion": "¡Felicidades, has completado el escenario de este nivel! Ahora ya tienes una mejor idea sobre las fases para realizar un proceso de Hacking Ético.",
+        "fase": 2,
+        "tiempoNotificacion": 65,
+        "infoAdicional": null
+      }
+    ],
+    "ataques": [],
+    "text": "DESAFÍOS DEL ESCENARIO: Hacking Ético y Análisis de Vulnerabilidades\nSlug: hacking-etico\n\n=== REGLAS DE tipoEvento (OBLIGATORIO SEGUIR) ===\n\nREGLA 1 — \"Verificación de acciones de un jugador en la simulación\":\n  Usar SOLO para: ejecutar aplicaciones (Net-Scan Viz, Company Social-Searcher), comandos de terminal (ssh, cat, ls), configuraciones de workstation (click).\n  infoAdicional requerido: { \"accion\": \"ejecutar\"|\"click\", \"objeto\": \"aplicación/software de computadora\"|\"comando de terminal/CLI\"|\"configuración de workstation\", \"val\": {...}, \"esObjetivo\": true }\n\nREGLA 2 — \"Tráfico de red\":\n  Usar SOLO para: asignar redes a dispositivos, bloquear tráfico en firewall de router.\n  infoAdicional requerido: { \"dispositivoOrigen\": \"...\", \"dispositivoDestino\": \"...\", \"protocolo\": \"SSH\"|\"MANAGEMENT\"|\"HTTP\", \"esObjetivo\": true, \"debeSerBloqueado\": true|false }\n  ATENCIÓN: NO usar \"Verificación de acciones\" para firewall — usar \"Tráfico de red\".\n\nREGLA 3 — \"Conexión VPN\":\n  Usar SOLO para: configurar túnel VPN entre gateway y cliente.\n  infoAdicional requerido: { \"gateway\": { \"lanLocal\":\"...\", \"hostLan\":\"...\", \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" }, \"cliente\": { \"proteccion\":\"Encriptar y Autenticar\", \"dominioRemoto\":\"...\", \"hostRemoto\":\"...\" } }\n  ATENCIÓN CRÍTICA: Solo puedes asignar rol 'gateway' a un dispositivo de tipo \"vpn\". Un router o workstation NO sirve. Si la topología NO tiene tipo \"vpn\", PROHIBIDO generar este evento (la simulación crasheará). Aborta el objetivo.\n\nREGLA 4 — \"Envío de correo\":\n  Usar SOLO para: enviar correo phishing.\n  infoAdicional requerido: { \"dispositivoEmisor\": \"...\", \"destinatario\": \"correo@dominio.com\", \"asunto\": \"...\" }\n\nREGLA 5 — \"Verificación de firma\":\n  Usar SOLO para: verificar firma digital de un documento.\n  infoAdicional requerido: { \"nombreDocumento\": \"...\", \"nombreFirma\": \"...\", \"nombreClave\": \"...\", \"veredicto\": true|false }\n\n=== FASES Y OBJETIVOS ===\n\nFASE 1: Fase 1: Fase de Reconocimiento y Escaneo\n  Descripción: Recopilar información de la empresa y sus empleados antes de realizar el ataque.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Escaneo de dispositivos\"\n    - \"Búsqueda de personas\"\n\nFASE 2: Fase 2: Fase de Explotación\n  Descripción: Con la información recopilada, se intenta obtener acceso no autorizado mediante técnicas de ingeniería social.\n  Objetivos (los nombres EXACTOS que debe usar el agente):\n    - \"Creación de correo phishing\"\n    - \"Recepción de credenciales\"\n    - \"Conexión a dispositivo mediante SSH\"\n    - \"Obtención de información confidencial\"\n\n=== EVENTOS (copiar estructura infoAdicional exactamente) ===\n\nEvento: \"Escaneo de dispositivos\" | tipoEvento: \"Verificación de acciones de un jugador en la simulación\" | Fase: 1\n  Descripción para el jugador: Para empezar con la fase de Reconocimiento y Escaneo, escanea los dispositivos disponibles en el dominio 'Corporación' utilizando Net-Scan Viz. Pista: guarda la información resultante del escaneo.\n  infoAdicional EXACTO: {\"accion\":\"ejecutar\",\"objeto\":\"aplicación/software de computadora\",\"val\":{\"nombreAplicacion\":\"Net-Scan Viz\"}}\n\nEvento: \"Búsqueda de personas\" | tipoEvento: \"Verificación de acciones de un jugador en la simulación\" | Fase: 1\n  Descripción para el jugador: Ahora se necesita obtener información de los empleados de la empresa. Utiliza Company Social-Searcher para lograrlo. Pista: observa quién es más propenso a caer en un ataque de ingeniería social.\n  infoAdicional EXACTO: {\"accion\":\"ejecutar\",\"objeto\":\"aplicación/software de computadora\",\"val\":{\"nombreAplicacion\":\"Company Social-Searcher\"}}\n\nEvento: \"Completación Fase 1\" | tipoEvento: \"Completación de fase\" | Fase: 1\n  Descripción para el jugador: ¡Has completado la fase de Reconocimiento y Escaneo! Ahora puedes continuar con la fase de Explotación.\n\nEvento: \"Creación de correo phishing\" | tipoEvento: \"Envío de correo\" | Fase: 2\n  Descripción para el jugador: Una vez identificados los dispositivos y empleados de la empresa, es posible obtener credenciales de acceso mediante ingeniería social. Utiliza Phish-Matic para crear un correo tipo phishing e intentar obtener credenciales a través de él.\n  infoAdicional EXACTO: {\"dispositivoEmisor\":\"Computadora Lisa\",\"destinatario\":\"jacob.garcia@corp.com\",\"asunto\":\"URGENTE. Problemas con la validación de accesos\"}\n\nEvento: \"Recepción de credenciales\" | tipoEvento: \"Envío de activo\" | Fase: 2\n  Descripción para el jugador: El engaño con el correo fue exitoso. El empleado acaba de enviar sus credenciales, revisa tu explorador de archivos para encontrarlas.\n  infoAdicional EXACTO: {\"nombreActivo\":\"credenciales\",\"dispositivoEmisor\":\"Computadora Jacob\",\"dispositivoReceptor\":\"Computadora Lisa\"}\n\nEvento: \"Conexión a dispositivo mediante SSH\" | tipoEvento: \"Verificación de acciones de un jugador en la simulación\" | Fase: 2\n  Descripción para el jugador: Ahora, utilizando las credenciales, abre la consola en 'Computadora Lisa' para acceder al dispositivo del empleado mediante SSH. Pista: ejecuta el comando de ayuda 'h' de la consola para guiarte.\n  infoAdicional EXACTO: {\"accion\":\"ejecutar\",\"objeto\":\"comando de terminal/CLI\",\"val\":{\"comando\":\"ssh\",\"nombreEquipo\":\"pc-jacob\",\"usuario\":\"jgarcia\",\"contrasenia\":\"Yl34DT9\",\"conectadoDesde\":\"Computadora Lisa\"}}\n\nEvento: \"Obtención de información confidencial\" | tipoEvento: \"Verificación de acciones de un jugador en la simulación\" | Fase: 2\n  Descripción para el jugador: Una vez conectado al dispositivo del empleado, obtén información que sea confidencial para la empresa.\n  infoAdicional EXACTO: {\"accion\":\"ejecutar\",\"objeto\":\"comando de terminal/CLI\",\"val\":{\"comando\":\"cat\",\"nombreArchivo\":\"secret_keys\",\"nombreDispositivo\":\"Computadora Jacob\"}}\n\nEvento: \"Completación Escenario\" | tipoEvento: \"Completación de escenario\" | Fase: 2\n  Descripción para el jugador: ¡Felicidades, has completado el escenario de este nivel! Ahora ya tienes una mejor idea sobre las fases para realizar un proceso de Hacking Ético.\n\n=== ACCIONES ESPERADAS DEL JUGADOR (accion/objeto/val exactos) ===\n\naccion: \"agregar\" | objeto: \"aplicación/software de computadora\"\n  val: {\"nombreDispositivo\":\"Computadora Lisa\",\"aplicacionAgregada\":\"Net-Scan Viz\"}\n\naccion: \"ejecutar\" | objeto: \"aplicación/software de computadora\"\n  val: {\"nombreAplicacion\":\"Net-Scan Viz\"}\n\naccion: \"agregar\" | objeto: \"aplicación/software de computadora\"\n  val: {\"nombreDispositivo\":\"Computadora Lisa\",\"aplicacionAgregada\":\"Company Social-Searcher\"}\n\naccion: \"ejecutar\" | objeto: \"aplicación/software de computadora\"\n  val: {\"nombreAplicacion\":\"Company Social-Searcher\"}\n\naccion: \"envio\" | objeto: \"correo electrónico\"\n  val: {\"dispositivoEmisor\":\"Computadora Lisa\",\"destinatario\":\"jacob.garcia@corp.com\",\"asunto\":\"URGENTE. Problemas con la validación de accesos\"}\n\naccion: \"ejecutar\" | objeto: \"comando de terminal/CLI\"\n  val: {\"comando\":\"ssh\",\"nombreEquipo\":\"pc-jacob\",\"usuario\":\"jgarcia\",\"contrasenia\":\"Yl34DT9\",\"conectadoDesde\":\"Computadora Lisa\"}\n\naccion: \"ejecutar\" | objeto: \"comando de terminal/CLI\"\n  val: {\"comando\":\"ls\",\"nombreDispositivo\":\"Computadora Jacob\"}\n\naccion: \"ejecutar\" | objeto: \"comando de terminal/CLI\"\n  val: {\"comando\":\"cat\",\"nombreArchivo\":\"secret_keys\",\"nombreDispositivo\":\"Computadora Jacob\"}"
+  }
+]

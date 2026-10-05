@@ -1,0 +1,58 @@
+.controles3D {
+    position: absolute;
+    top: 16px;
+    left: 16px;
+    display: flex;
+    flex-direction: column;
+    gap: 6px;
+    z-index: 1000;
+}
+
+.group {
+    display: flex;
+    flex-direction: column;
+    background: var(--surface-secondary);
+    border: 1px solid var(--border-primary);
+    border-radius: 8px;
+}
+
+.group button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 40px;
+    height: 40px;
+    padding: 0;
+    background: transparent;
+    border: none;
+    color: var(--text-muted);
+    cursor: pointer;
+    transition:
+        background 0.15s ease,
+        color 0.15s ease;
+}
+
+.group button:hover {
+    background: var(--surface-tertiary);
+    color: var(--text-primary);
+}
+
+/* Los botones van envueltos en <Tooltip> (div.wrapper), así que el hijo directo del
+   grupo es ese wrapper, no el botón. Redondeamos el botón según la posición del wrapper. */
+.group > div:first-child button {
+    border-radius: 7px 7px 0 0;
+}
+
+.group > div:last-child button {
+    border-radius: 0 0 7px 7px;
+}
+
+.group > div:only-child button {
+    border-radius: 7px;
+}
+
+.divider {
+    height: 1px;
+    background: var(--border-primary);
+    margin: 0;
+}

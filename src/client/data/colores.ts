@@ -1,0 +1,17 @@
+export enum ColoresRed {
+  AZUL = "#417dff",
+  ROJO = "#ef5350",
+  VERDE = "#52d356",
+  AMARILLO = "#ffca28",
+  NARANJA = "#ffa726",
+  MORADO = "#ab47bc",
+  CIAN = "#26c6da",
+  ROSA = "#ec407a",
+  LIMA = "#9ccc65",
+  INDIGO = "#5c6bc0",
+  TURQUESA = "#26a69a",
+  CORAL = "#ff7043",
+  GRIS = "#606060",
+  GRIS_CLARO = "#808080",
+  GRIS_OSCURO = "#393939",
+}

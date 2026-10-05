@@ -1,0 +1,146 @@
+.container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    font-family: 'Cascadia Mono', 'Consolas', 'Courier New', monospace;
+    font-size: 14px;
+    line-height: 1.4;
+}
+
+.terminal {
+    flex: 1;
+    overflow-y: auto;
+    padding: 12px 14px;
+}
+
+.terminal::-webkit-scrollbar {
+    width: 6px;
+}
+
+.terminal::-webkit-scrollbar-track {
+    background: transparent;
+}
+
+.terminal::-webkit-scrollbar-thumb {
+    background: rgba(255, 255, 255, 0.12);
+    border-radius: 3px;
+}
+
+.entry {
+    margin-bottom: 2px;
+}
+
+.promptLine {
+    display: flex;
+    gap: 0;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.commandText,
+.output,
+.banner {
+    white-space: pre-wrap;
+    word-break: break-word;
+}
+
+.input,
+.passwordInput {
+    flex: 1;
+    background: transparent;
+    border: none;
+    outline: none;
+    font-family: inherit;
+    font-size: inherit;
+    line-height: inherit;
+    padding: 0;
+}
+
+.input:focus-visible,
+.passwordInput:focus-visible {
+    outline: none;
+}
+
+.errorText {
+    color: #e74856;
+}
+
+/* ═══ Windows PowerShell Theme ═══ */
+.windows {
+    background: #0c0c0c;
+    color: #cccccc;
+}
+
+.windows .prompt,
+.windows .inputPrompt {
+    color: #cccccc;
+    white-space: nowrap;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.windows .commandText {
+    color: #f9f1a5;
+    margin-left: 6px;
+}
+
+.windows .output {
+    color: #cccccc;
+}
+
+.windows .banner {
+    color: #cccccc;
+    margin-bottom: 4px;
+}
+
+.windows .input,
+.windows .passwordInput {
+    color: #f9f1a5;
+    caret-color: #f9f1a5;
+    margin-left: 6px;
+}
+
+.windows .passwordLabel {
+    color: #f9f1a5;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+/* ═══ Linux Terminal Theme ═══ */
+.linux {
+    background: #0c0c0c;
+    color: #cccccc;
+}
+
+.linux .prompt,
+.linux .inputPrompt {
+    color: #16c60c;
+    white-space: nowrap;
+    font-family: inherit;
+    font-size: inherit;
+}
+
+.linux .commandText {
+    color: #cccccc;
+}
+
+.linux .output {
+    color: #cccccc;
+}
+
+.linux .banner {
+    color: #cccccc;
+    margin-bottom: 4px;
+}
+
+.linux .input,
+.linux .passwordInput {
+    color: #cccccc;
+    caret-color: #cccccc;
+}
+
+.linux .passwordLabel {
+    color: #f9f1a5;
+    font-family: inherit;
+    font-size: inherit;
+}

@@ -1,0 +1,16 @@
+.topBar {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 64px !important;
+  padding: 16px max(16px, calc((100% - var(--content-width)) / 2));
+  border-bottom: 1px solid var(--border-primary);
+  overflow-y: hidden;
+  scrollbar-gutter: stable;
+}
+
+@media (max-width: 768px) {
+  .topBar {
+    scrollbar-gutter: auto;
+  }
+}

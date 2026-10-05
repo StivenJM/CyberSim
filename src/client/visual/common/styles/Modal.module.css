@@ -1,0 +1,110 @@
+.modalOverlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  background-color: rgba(0, 0, 0, 0.7);
+  z-index: 9998;
+  animation: fadeIn 0.3s ease-out;
+}
+
+.modalContainer {
+  position: fixed;
+  inset: 0;
+  margin: auto;
+  width: fit-content;
+  height: fit-content;
+  background: var(--surface-primary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius);
+  z-index: 9999;
+  max-width: 90vw;
+  max-height: 85vh;
+  overflow: hidden;
+  animation: modalSlideIn 0.3s ease-out;
+  display: flex;
+  flex-direction: column;
+}
+
+.modalHeader {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 16px 24px;
+  border-bottom: 1px solid var(--border-primary);
+  gap: 16px;
+  min-height: 56px;
+}
+
+.modalHeader:has(.modalTitle) {
+  justify-content: space-between;
+}
+
+.modalHeader:not(:has(.modalTitle)) {
+  justify-content: flex-end;
+}
+
+.modalTitle {
+  margin: 0;
+  color: var(--text-primary);
+  flex: 1;
+}
+
+.modalCloseButton {
+  flex-shrink: 0;
+  width: 40px;
+  height: 40px;
+  border: none;
+  border-radius: 8px;
+  border: 1px solid var(--border-primary);
+  color: var(--text-primary);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all 0.2s ease;
+  background: var(--surface-secondary);
+  padding: 0;
+}
+
+.modalCloseButton:active {
+  transform: scale(0.95);
+}
+
+/* Contenido del modal */
+.modalContent {
+  overflow-y: auto;
+}
+
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes modalSlideIn {
+  from {
+    opacity: 0;
+    transform: scale(0.95) translateY(-2%);
+  }
+  to {
+    opacity: 1;
+    transform: none;
+  }
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+  .modalContainer {
+    max-width: 95vw;
+    max-height: 95vh;
+  }
+
+  .modalContent {
+    padding: 16px;
+  }
+}

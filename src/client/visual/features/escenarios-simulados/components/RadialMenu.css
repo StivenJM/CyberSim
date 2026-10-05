@@ -1,0 +1,96 @@
+.radial-menu-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 9998;
+    background: transparent;
+    pointer-events: all;
+}
+
+.radial-menu-container {
+    position: relative;
+    z-index: 9999;
+    pointer-events: none;
+    width: 300px;
+    height: 300px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+.radial-menu-center-dot {
+    position: absolute;
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.3);
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    pointer-events: none;
+    animation: radial-menu-pulse 1.5s ease infinite;
+}
+
+@keyframes radial-menu-pulse {
+    0%,
+    100% {
+        transform: translate(-50%, -50%) scale(1);
+        opacity: 0.3;
+    }
+    50% {
+        transform: translate(-50%, -50%) scale(1.5);
+        opacity: 0.6;
+    }
+}
+
+.radial-menu-button {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    padding: 12px;
+    border-radius: var(--border-radius);
+    background: var(--surface-primary);
+    cursor: pointer;
+    pointer-events: all;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 4px;
+    font-size: 12px;
+    transition: all 0.2s ease;
+
+    animation: radial-menu-button-appear 0.3s ease forwards;
+    transform-origin: center;
+    scale: 0;
+}
+
+@keyframes radial-menu-button-appear {
+    to {
+        scale: 1;
+    }
+}
+
+.radial-menu-button:active {
+    scale: 0.95;
+}
+
+.radial-menu-blocked {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: row;
+    align-items: center;
+    gap: 6px;
+    padding: 16px 20px;
+    border-radius: var(--border-radius);
+    background: var(--surface-primary);
+    border: 1px solid var(--border-primary);
+    color: var(--text-primary);
+    font-size: 13px;
+    text-align: center;
+    white-space: nowrap;
+    pointer-events: none;
+    transform-origin: center;
+    scale: 0;
+    animation: radial-menu-button-appear 0.3s ease forwards;
+}

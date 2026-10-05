@@ -1,0 +1,27 @@
+.item {
+  display: flex;
+  justify-content: space-between;
+  padding: 0.5rem 0;
+  cursor: pointer;
+  user-select: none;
+}
+
+.checkbox:disabled {
+  cursor: not-allowed;
+  opacity: 0.6;
+}
+.labelContainer {
+  display: flex;
+  gap: 8px;
+  align-items: start;
+}
+.label {
+  /* max-width: 80%; */
+  word-wrap: wrap;
+  color: var(--text-primary);
+}
+
+.price {
+  color: var(--text-secondary);
+  margin-right: 8px;
+}

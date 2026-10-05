@@ -1,0 +1,33 @@
+.vistaFases {
+    width: 100%;
+    max-width: var(--content-width);
+    margin: 0 auto;
+    padding: 24px;
+    flex: 1;
+    overflow-y: auto;
+}
+
+.faseActual {
+    margin-top: 1rem;
+}
+
+.faseNumero {
+    font-size: 14px;
+    color: var(--text-secondary);
+    margin-bottom: 8px;
+    letter-spacing: 0.5px;
+}
+
+.faseNombre {
+    margin: 0 0 24px 0;
+}
+
+.objetivosList {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+}
+
+.objetivosList > div:last-child{
+    border-bottom: none;
+}

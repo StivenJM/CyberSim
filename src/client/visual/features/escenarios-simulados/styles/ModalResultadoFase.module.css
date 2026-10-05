@@ -1,0 +1,81 @@
+.modalContainer {
+    width: 500px;
+    max-width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 24px;
+    padding: 40px 32px 32px;
+}
+
+.iconContainer {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.icon {
+    width: 80px;
+    height: 80px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    animation: scaleIn 0.4s ease-out;
+}
+
+.iconExito {
+    background: rgba(52, 211, 153, 0.1);
+    color: rgb(52, 211, 153);
+}
+
+.iconFallo {
+    background: rgba(248, 113, 113, 0.1);
+    color: rgb(248, 113, 113);
+}
+
+.titulo {
+    margin: 0;
+    font-size: 24px;
+    font-weight: 600;
+    color: var(--text-primary);
+    text-align: center;
+}
+
+.mensaje {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: var(--text-secondary);
+    text-align: center;
+    max-width: 400px;
+}
+
+.botonesContainer {
+    display: flex;
+    gap: 12px;
+    width: 100%;
+    margin-top: 8px;
+}
+
+.btnReintentar {
+    flex: 1;
+    transition: all 0.2s ease;
+    border: 1px solid var(--border-primary);
+}
+
+
+@keyframes scaleIn {
+    from {
+        transform: scale(0.5);
+        opacity: 0;
+    }
+    to {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+

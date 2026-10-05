@@ -1,0 +1,400 @@
+/* ── Layout ── */
+
+.layout {
+  display: flex;
+  flex-direction: column;
+  flex: 1;
+  min-height: 0;
+  max-width: var(--content-width);
+  margin: 0 auto;
+  width: 100%;
+}
+
+/* ── Tab bar ── */
+
+.tabBar {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 3px;
+  border-radius: 8px;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  margin-bottom: 24px;
+  user-select: none;
+}
+
+.tabIndicator {
+  position: absolute;
+  inset: 0;
+  border-radius: 6px;
+  background: var(--surface-tertiary);
+  pointer-events: none;
+}
+
+.tabLabel {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  position: relative;
+  z-index: 1;
+}
+
+.tab {
+  position: relative;
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 6px 14px;
+  border-radius: 6px;
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  background: transparent !important;
+  cursor: pointer;
+  transition: color 0.2s ease;
+  white-space: nowrap;
+}
+
+.tab:hover {
+  color: var(--text-primary);
+  background: transparent !important;
+}
+
+.tabActive {
+  color: var(--text-primary);
+}
+
+/* ── Main content ── */
+
+.main {
+  flex: 1;
+  min-width: 0;
+  padding: 32px 0px;
+}
+
+/* ── Panel header ── */
+
+.panelHeader {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 36px;
+  margin-bottom: 20px;
+  gap: 12px;
+}
+
+.panelTitle {
+  margin: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.badge {
+  font-size: 0.8rem;
+  line-height: 1;
+  color: var(--text-muted);
+  background: var(--surface-tertiary);
+  border: 1px solid var(--border-primary);
+  width: 22px;
+  height: 22px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+}
+
+/* ── Empty text ── */
+
+.emptyText {
+  color: var(--text-secondary);
+  margin: 0;
+}
+
+/* ── Student list ── */
+
+.studentList {
+  display: flex;
+  flex-direction: column;
+  border: 1px solid var(--border-primary);
+  border-radius: 6px;
+  overflow: visible;
+}
+
+.studentRow {
+  display: flex;
+  align-items: center;
+  padding: 10px 14px;
+  border-bottom: 1px solid var(--border-primary);
+  transition: background 0.1s;
+}
+
+.studentRow:first-child {
+  border-radius: 6px 6px 0 0;
+}
+
+.studentRow:last-child {
+  border-bottom: none;
+  border-radius: 0 0 6px 6px;
+}
+
+.studentRow:only-child {
+  border-radius: 6px;
+}
+
+.studentRow:hover {
+  background: var(--surface-secondary);
+}
+
+.studentClickable {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  cursor: pointer;
+  min-width: 0;
+  gap: 12px;
+}
+
+.avatar {
+  width: 34px;
+  height: 34px;
+  border-radius: 6px;
+  overflow: hidden;
+  border: 1px solid var(--border-primary);
+  flex-shrink: 0;
+}
+
+.studentInfo {
+  display: flex;
+  flex-direction: column;
+  min-width: 0;
+}
+
+.studentName {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.studentMeta {
+  color: var(--text-secondary);
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.rowActions {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  opacity: 0;
+  transition: opacity 0.15s ease;
+}
+
+.studentRow:hover .rowActions {
+  opacity: 1;
+}
+
+/* ── Analysis layout ── */
+
+.analysisRow {
+  display: grid;
+  grid-template-columns: 1fr 300px;
+  gap: 24px;
+  margin-top: 8px;
+}
+
+.analysisCol {
+  min-width: 0;
+  background: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius);
+  padding: 16px;
+}
+
+.analysisTitleRow {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 16px;
+  min-height: 36px;
+  margin: 0 0 20px;
+}
+
+.analysisSectionTitle {
+  margin: 0;
+  font-size: 18px;
+  font-weight: 500;
+  color: var(--text-primary);
+}
+
+.analysisFecha {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+.leaderboardSidebar > div {
+  width: 100%;
+  position: sticky;
+  top: 16px;
+}
+
+.analysisPanel {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-start;
+  gap: 16px;
+}
+
+.analysisDesc {
+  color: var(--text-muted);
+  margin: 0;
+  line-height: 1.5;
+}
+
+/* ── Settings ── */
+
+.settingsSection {
+  padding-bottom: 1.5rem;
+  margin-bottom: 1.5rem;
+}
+
+.settingsSection:last-child {
+  margin-bottom: 0;
+}
+
+.settingsLabel {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-secondary);
+  margin: 0 0 10px 0;
+}
+
+.renameRow {
+  display: flex;
+  align-items: flex-end;
+  gap: 10px;
+}
+
+.renameRow > *:first-child {
+  flex: 1;
+  max-width: 400px;
+}
+
+.settingsAction {
+  background: transparent;
+  padding: 0;
+  color: var(--text-muted);
+  justify-content: flex-start;
+  gap: 8px;
+  border-radius: 0;
+}
+
+.settingsAction:hover:not(:disabled) {
+  color: var(--text-primary);
+  background: transparent;
+}
+
+.settingsAction:disabled {
+  color: var(--text-secondary);
+  cursor: not-allowed;
+}
+
+.dangerRow {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+}
+
+.dangerInfo {
+  display: flex;
+  flex-direction: column;
+  gap: 2px;
+}
+
+.dangerHint {
+  font-size: 13px;
+  color: var(--text-secondary);
+}
+
+/* ── Utility ── */
+
+.backLink {
+  color: var(--text-muted);
+  background: transparent;
+  padding: 0;
+}
+
+.backLink:hover {
+  color: var(--text-primary);
+  background: transparent;
+}
+
+/* ── Skeleton ── */
+
+.skeletonBone {
+  background: var(--surface-secondary);
+  border-radius: 4px;
+  animation: skeletonPulse 1.5s ease-in-out infinite;
+}
+
+.skeletonRow {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 10px 14px;
+  min-height: 62px;
+  box-sizing: border-box;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.skeletonRow:last-child {
+  border-bottom: none;
+}
+
+.skeletonAvatar {
+  composes: skeletonBone;
+  width: 34px;
+  height: 34px;
+  border-radius: var(--border-radius);
+  flex-shrink: 0;
+}
+
+.skeletonLines {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  flex: 1;
+}
+
+.skeletonName {
+  composes: skeletonBone;
+  width: 40%;
+  height: 14px;
+  border-radius: 4px;
+}
+
+.skeletonMeta {
+  composes: skeletonBone;
+  width: 60%;
+  height: 12px;
+  border-radius: 4px;
+}
+
+@keyframes skeletonPulse {
+  0%,
+  100% {
+    opacity: 0.4;
+  }
+  50% {
+    opacity: 1;
+  }
+}
+
+.errorText {
+  text-align: center;
+  padding: 3rem;
+  color: var(--error);
+}

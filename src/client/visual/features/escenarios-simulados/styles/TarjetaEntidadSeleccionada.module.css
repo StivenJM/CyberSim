@@ -1,0 +1,50 @@
+.contenedor {
+  position: absolute;
+  bottom: 16px;
+  left: 80px;
+  mix-blend-mode: difference;
+}
+
+.header {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  margin-bottom: 16px;
+  padding-bottom: 12px;
+  border-bottom: 1px solid var(--border-primary);
+}
+
+.titulo {
+  margin: 0;
+  font-size: 16px;
+  font-weight: normal;
+  color: var(--text-primary);
+}
+
+.contenido {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.item {
+  display: flex;
+  gap: 4px;
+  justify-content: space-between;
+}
+
+.etiqueta {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 14px;
+  color: var(--text-secondary);
+}
+
+.valor {
+  font-size: 14px;
+
+  color: var(--text-primary);
+  padding-left: 22px;
+  word-break: break-word;
+}

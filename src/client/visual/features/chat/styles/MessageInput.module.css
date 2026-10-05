@@ -1,0 +1,130 @@
+.messageInputContainer {
+    gap: 10px;
+    padding: 12px;
+    margin: 12px;
+    border-radius: var(--border-radius);
+    border: 1px solid var(--border-primary);
+    background-color: var(--surface-secondary);
+    flex-shrink: 0;
+}
+
+.messageInput {
+    flex: 1;
+    border: none;
+    width: 100%;
+    font-size: 0.95rem;
+    font-family: inherit;
+    resize: none;
+    height: 30px;
+    overflow-y: auto;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background-color: transparent;
+    color: var(--text-primary);
+}
+
+.contextButton {
+    color: var(--text-primary);
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    font-size: 13px;
+    font-family: inherit;
+    background-color: transparent;
+    border: 1px solid var(--border-primary);
+    padding: 6px 12px !important;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease-in-out;
+}
+
+.contextActive {
+    background-color: var(--blue-transparent) !important;
+    color: var(--blue);
+    border: 1px solid transparent;
+}
+
+.audioPlaying {
+    background-color: var(--blue-transparent);
+    color: var(--blue);
+    border: 1px solid transparent;
+}
+
+.contextButton:hover {
+    filter: brightness(1.2);
+}
+
+.inputActions {
+    display: flex;
+    padding-top: 8px;
+    align-items: flex-end;
+    justify-content: space-between;
+    width: 100%;
+}
+
+.messageInput:focus {
+    outline: none;
+    border-color: var(--blue);
+}
+
+.messageInput:focus-visible {
+    border-color: var(--blue);
+}
+
+.messageInput:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+.messageInput::placeholder {
+    color: var(--text-secondary);
+}
+
+.sendButton {
+    width: 36px !important;
+    height: 36px !important;
+    padding: 0;
+    padding-left: 4px;
+    border: none !important;
+    border-radius: 50%;
+    background: var(--blue);
+    color: var(--text-primary);
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.sendButton:disabled {
+    cursor: not-allowed;
+    opacity: 0.5;
+}
+
+/* Responsive */
+@media (max-width: 768px) {
+    .messageInputContainer {
+        padding: 10px;
+        gap: 6px;
+    }
+
+    .messageInput {
+        font-size: 0.9rem;
+        padding: 8px 12px;
+    }
+
+    .sendButton {
+        width: 36px;
+        height: 36px;
+    }
+
+    .sendButton svg {
+        width: 18px;
+        height: 18px;
+    }
+}
+
+@media (max-width: 480px) {
+    .messageInputContainer {
+        padding: 8px;
+    }
+}

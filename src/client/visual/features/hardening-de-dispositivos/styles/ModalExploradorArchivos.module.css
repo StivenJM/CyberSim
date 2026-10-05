@@ -1,0 +1,407 @@
+/* ═══ Windows 11 — File Explorer ═══ */
+
+/* ── Container ── */
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+  overflow: hidden;
+  background: #191919;
+}
+
+/* ── Address bar ── */
+.addressBar {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 8px 10px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  background: #202020;
+}
+
+.navButtons {
+  display: flex;
+  gap: 4px;
+  flex-shrink: 0;
+}
+
+.navBtn {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 30px !important;
+  height: 30px !important;
+  padding: 0 !important;
+  border-radius: 4px !important;
+  background: transparent !important;
+  color: #ffffff;
+  cursor: default;
+  user-select: none;
+}
+
+.addressPath {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 5px 10px;
+  background: #2b2b2b;
+  border: 1px solid rgba(255, 255, 255, 0.06);
+  border-radius: 4px;
+  font-size: 13px;
+  color: #ffffff;
+  min-width: 0;
+  overflow: hidden;
+}
+
+.addressSep {
+  color: #9e9e9e;
+  flex-shrink: 0;
+}
+
+/* ── Body (sidebar + file list + preview) ── */
+.body {
+  display: flex;
+  flex: 1;
+  min-height: 0;
+  overflow: hidden;
+}
+
+/* ── Sidebar ── */
+.sidebar {
+  width: 160px;
+  flex-shrink: 0;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  overflow-y: auto;
+  padding: 6px 4px;
+  background: #202020;
+}
+
+.sidebar::-webkit-scrollbar {
+  width: 4px;
+}
+
+.sidebar::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.sidebar::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 2px;
+}
+
+.sidebarSection {
+  padding: 2px 0;
+}
+
+.sidebarSection + .sidebarSection {
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  margin-top: 4px;
+  padding-top: 6px;
+}
+
+.sidebarItem {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  padding: 4px 12px;
+  font-size: 13px;
+  color: #ffffff;
+  cursor: default;
+  user-select: none;
+  border-radius: 4px;
+  transition: background 0.08s;
+}
+
+.sidebarItem:hover {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.sidebarItemActive {
+  background: rgba(255, 255, 255, 0.06);
+  color: #ffffff;
+}
+
+.sidebarItemActive:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+/* ── File list panel ── */
+.filePanel {
+  flex: 1;
+  display: flex;
+  flex-direction: column;
+  border-right: 1px solid rgba(255, 255, 255, 0.06);
+  overflow: hidden;
+  min-width: 0;
+  background: #191919;
+}
+
+/* ── Column headers (Win11 detail view) ── */
+.columnHeaders {
+  display: flex;
+  align-items: center;
+  padding: 0 10px;
+  height: 28px;
+  border-bottom: 1px solid rgba(255, 255, 255, 0.06);
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #9e9e9e;
+  user-select: none;
+  background: #191919;
+}
+
+.columnHeaders .colNombre {
+  flex: 1;
+  min-width: 0;
+}
+
+.columnHeaders .colTipo {
+  width: 100px;
+  flex-shrink: 0;
+  text-align: left;
+}
+
+.columnHeaders .colTamanio {
+  width: 70px;
+  flex-shrink: 0;
+  text-align: right;
+}
+
+/* ── File list ── */
+.listaArchivos {
+  flex: 1;
+  overflow-y: auto;
+  padding: 2px 0;
+}
+
+.listaArchivos::-webkit-scrollbar {
+  width: 5px;
+}
+
+.listaArchivos::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.listaArchivos::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+/* ── File row ── */
+.itemArchivo {
+  display: flex;
+  align-items: center;
+  padding: 3px 10px;
+  cursor: pointer;
+  user-select: none;
+  transition: background-color 0.08s;
+  border-radius: 4px;
+  margin: 0 4px;
+}
+
+.itemArchivo:hover:not(.seleccionado) {
+  background: rgba(255, 255, 255, 0.04);
+}
+
+.itemArchivo.seleccionado {
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.itemArchivo.seleccionado:hover {
+  background: rgba(255, 255, 255, 0.08);
+}
+
+.itemArchivo .colNombre {
+  flex: 1;
+  min-width: 0;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+}
+
+.itemArchivo .colNombre svg {
+  flex-shrink: 0;
+}
+
+.itemArchivo .colTipo {
+  width: 100px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #9e9e9e;
+  text-align: left;
+}
+
+.itemArchivo .colTamanio {
+  width: 70px;
+  flex-shrink: 0;
+  font-size: 12px;
+  color: #9e9e9e;
+  text-align: right;
+}
+
+.nombreArchivo {
+  font-size: 13px;
+  color: #ffffff;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  min-width: 0;
+}
+
+.extension {
+  color: #9e9e9e;
+}
+
+.sinArchivos {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  height: 100%;
+  color: #9e9e9e;
+  padding: 1.5rem 1rem;
+  text-align: center;
+  font-size: 13px;
+  gap: 6px;
+}
+
+/* ── Preview panel ── */
+.previewPanel {
+  width: 440px;
+  flex-shrink: 0;
+  display: flex;
+  background: #202020;
+  overflow: hidden;
+  min-width: 0;
+}
+
+.visorDocumento {
+  flex: 1;
+  padding: 16px;
+  overflow: auto;
+  display: flex;
+  justify-content: center;
+}
+
+.visorDocumento::-webkit-scrollbar {
+  width: 5px;
+}
+
+.visorDocumento::-webkit-scrollbar-track {
+  background: transparent;
+}
+
+.visorDocumento::-webkit-scrollbar-thumb {
+  background: rgba(255, 255, 255, 0.1);
+  border-radius: 3px;
+}
+
+.documento {
+  background: #2b2b2b;
+  width: 100%;
+  min-height: 100%;
+  padding: 16px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.05);
+  border-top-color: rgba(255, 255, 255, 0.08);
+  border-radius: 8px;
+}
+
+.documento pre {
+  margin: 0;
+  font-family: "Consolas", "Monaco", "Courier New", monospace;
+  font-size: 12px;
+  line-height: 1.5;
+  white-space: pre-wrap;
+  word-wrap: break-word;
+  color: #ffffff;
+}
+
+.sinSeleccion {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  gap: 6px;
+  width: 100%;
+  color: #9e9e9e;
+  text-align: center;
+  font-size: 13px;
+}
+
+/* ── Status bar ── */
+.statusBar {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 12px;
+  border-top: 1px solid rgba(255, 255, 255, 0.06);
+  font-size: 12px;
+  color: #9e9e9e;
+  flex-shrink: 0;
+  background: #202020;
+}
+
+.statusSep {
+  width: 1px;
+  height: 12px;
+  background: rgba(255, 255, 255, 0.1);
+}
+
+/* ═══════════════════════════════════════════════════════════
+   Ubuntu (Yaru) Dark — Archivos (Nautilus)
+   ═══════════════════════════════════════════════════════════ */
+.linux {
+  background: #1e1e1e;
+}
+
+.linux .addressBar {
+  background: #303030;
+  border-bottom-color: rgba(0, 0, 0, 0.35);
+}
+
+.linux .addressPath {
+  background: rgba(255, 255, 255, 0.06);
+  border-color: rgba(255, 255, 255, 0.1);
+  border-radius: 7px;
+}
+
+.linux .navBtn:hover {
+  background: rgba(255, 255, 255, 0.08) !important;
+}
+
+.linux .sidebar {
+  background: #262626;
+  border-right-color: rgba(0, 0, 0, 0.3);
+}
+
+.linux .sidebarItemActive,
+.linux .sidebarItemActive:hover {
+  background: rgba(233, 84, 32, 0.22);
+  color: #ffffff;
+}
+
+.linux .filePanel,
+.linux .columnHeaders {
+  background: #1e1e1e;
+}
+
+.linux .filePanel {
+  border-right-color: rgba(255, 255, 255, 0.06);
+}
+
+.linux .itemArchivo.seleccionado,
+.linux .itemArchivo.seleccionado:hover {
+  background: rgba(233, 84, 32, 0.22);
+}
+
+.linux .previewPanel,
+.linux .statusBar {
+  background: #262626;
+}
+
+.linux .documento {
+  background: #2a2a2a;
+}

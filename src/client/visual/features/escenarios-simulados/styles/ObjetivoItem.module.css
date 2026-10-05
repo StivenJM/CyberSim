@@ -1,0 +1,13 @@
+.objetivoItem {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+    padding: 16px 0;
+    border-bottom: 1px solid var(--border-primary);
+}
+
+.descripcion {
+    margin: 0;
+    line-height: 1.6;
+    flex: 1;
+}

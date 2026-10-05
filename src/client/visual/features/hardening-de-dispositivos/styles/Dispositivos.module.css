@@ -1,0 +1,394 @@
+.contenedor {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  gap: 0;
+}
+
+/* ═══ Device Tabs ═══ */
+.tabsDispositivos {
+  display: flex;
+  align-items: center;
+  gap: 2px;
+  padding: 6px 8px 0;
+  background: var(--surface-primary);
+  overflow-x: auto;
+  flex-shrink: 0;
+}
+
+.tabDispositivo {
+  padding: 6px 16px !important;
+  font-size: 12px;
+  font-weight: 500;
+  color: var(--text-muted) !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 8px 8px 0 0 !important;
+  cursor: pointer !important;
+  transition: all 0.15s ease !important;
+  white-space: nowrap;
+}
+
+.tabDispositivo:hover {
+  color: var(--text-primary) !important;
+  background: rgba(255, 255, 255, 0.05) !important;
+}
+
+.tabDispositivoActivo {
+  color: var(--text-primary) !important;
+  background: var(--surface-secondary) !important;
+}
+
+/* ═══ Desktop ═══ */
+.escritorio {
+  display: flex;
+  flex-direction: column;
+  flex: 1 1 auto;
+  min-height: 0;
+  min-width: 0;
+  background: linear-gradient(135deg, #1a1a2e 0%, #16213e 50%, #0f3460 100%);
+  border-radius: 0;
+  overflow: hidden;
+  transition: background 0.4s ease;
+}
+
+/* === OS x Device Type wallpapers === */
+.escritorioWindowsWorkstation {
+  background: linear-gradient(135deg, #001a3d 0%, #003580 40%, #0058b3 70%, #003a75 100%);
+}
+.escritorioWindowsServer {
+  background: linear-gradient(135deg, #0a0f1a 0%, #0d2137 50%, #102a4a 100%);
+}
+.escritorioLinuxWorkstation {
+  background: linear-gradient(135deg, #2c001e 0%, #3a1048 50%, #5e2750 100%);
+}
+.escritorioLinuxServer {
+  background: linear-gradient(135deg, #1a0a1e 0%, #1e1028 50%, #271535 100%);
+}
+.escritorioOtherServer {
+  background: linear-gradient(135deg, #0f0f1a 0%, #111828 50%, #0a1a30 100%);
+}
+
+.areaEscritorio {
+  position: relative;
+  flex: 1 1 auto;
+  min-height: 0;
+  padding: 12px;
+  overflow: hidden;
+}
+
+/* ═══ Windows 11 Taskbar ═══ */
+.barraTareas {
+  display: flex;
+  align-items: center;
+  height: 48px;
+  background: rgba(32, 32, 32, 0.8);
+  backdrop-filter: blur(30px) saturate(120%);
+  -webkit-backdrop-filter: blur(30px) saturate(120%);
+  padding: 0 12px;
+  gap: 0;
+  border-top: 1px solid rgba(255, 255, 255, 0.05);
+  transition: background 0.4s ease;
+}
+
+.barraTareasWindows {
+  background: rgba(24, 36, 56, 0.82);
+}
+
+/* Linux: vertical dock */
+.escritorioLinux {
+  flex-direction: row;
+}
+
+.barraTareasLinux {
+  background: rgba(34, 34, 34, 0.92);
+  backdrop-filter: blur(16px) saturate(120%);
+  -webkit-backdrop-filter: blur(16px) saturate(120%);
+  order: -1;
+  flex-direction: column;
+  align-items: center;
+  width: 62px;
+  height: auto;
+  padding: 6px 0;
+  gap: 6px;
+  border-top: none;
+  border-right: 1px solid rgba(0, 0, 0, 0.45);
+}
+
+.barraTareasLinux .appsTareas {
+  flex: 1 1 auto;
+  flex-direction: column;
+  justify-content: flex-start;
+  align-items: center;
+  gap: 6px;
+  width: 100%;
+  padding: 2px 0;
+  overflow-x: visible;
+  overflow-y: auto;
+}
+
+.barraTareasLinux .appsTareas::-webkit-scrollbar {
+  width: 0;
+}
+
+.barraTareasLinux .appTarea {
+  justify-content: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  padding: 0 !important;
+  margin: 0 auto;
+  border-radius: 14px !important;
+}
+
+.barraTareasLinux .appTarea svg {
+  width: 26px !important;
+  height: 26px !important;
+}
+
+.barraTareasLinux .appTarea:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.barraTareasLinux .appTareaNombre {
+  display: none;
+}
+
+.barraTareasLinux .appTareaActiva {
+  background: rgba(255, 255, 255, 0.1) !important;
+}
+
+.barraTareasLinux .appTareaActiva::after {
+  bottom: auto;
+  top: 50%;
+  left: -7px;
+  right: auto;
+  transform: translateY(-50%);
+  width: 4px;
+  height: 22px;
+  background: #e95420;
+  border-radius: 0 3px 3px 0;
+}
+
+.barraTareasLinux .bandejaSistema {
+  display: none;
+}
+
+.botonAppsLinux {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 48px !important;
+  height: 48px !important;
+  margin: 0 auto 2px !important;
+  padding: 0 !important;
+  flex-shrink: 0;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 14px !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+  cursor: pointer !important;
+  transition: background 0.08s ease !important;
+}
+
+.botonAppsLinux:hover {
+  background: rgba(255, 255, 255, 0.12) !important;
+}
+
+.appsTareas {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 1px;
+  overflow-x: auto;
+}
+
+/* ─── Start Button (Windows) ─── */
+.botonInicio {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  width: 44px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 4px !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+  cursor: pointer !important;
+  transition: background 0.08s ease !important;
+  margin-right: 4px;
+  gap: 0 !important;
+}
+
+.botonInicio:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+}
+
+.bandejaSistema {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  padding: 0 4px 0 8px;
+}
+
+.reloj {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  font-size: 11px;
+  line-height: 1.3;
+  color: rgba(255, 255, 255, 0.86);
+  user-select: none;
+  padding: 4px 8px;
+  border-radius: 4px;
+  transition: background 0.08s ease;
+}
+
+.reloj:hover {
+  background: rgba(255, 255, 255, 0.05);
+}
+
+/* ═══ Desktop Icons ═══ */
+.iconosEscritorio {
+  display: flex;
+  flex-wrap: wrap;
+  flex-direction: column;
+  align-content: flex-start;
+  gap: 2px;
+  height: 100%;
+}
+
+.iconosEscritorioLinux {
+  flex-direction: row;
+  align-content: flex-start;
+  height: auto;
+}
+
+.iconoApp {
+  display: flex !important;
+  flex-direction: column !important;
+  align-items: center !important;
+  gap: 2px !important;
+  width: 74px;
+  padding: 8px 4px 6px !important;
+  background: transparent !important;
+  border: 1px solid transparent !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: all 0.08s ease !important;
+  color: #ffffff !important;
+}
+
+.iconoApp:hover {
+  background: rgba(255, 255, 255, 0.06) !important;
+  border-color: rgba(255, 255, 255, 0.04) !important;
+}
+
+.iconoApp:active {
+  background: rgba(255, 255, 255, 0.03) !important;
+}
+
+.iconoAppSeleccionado {
+  background: rgba(255, 255, 255, 0.08) !important;
+  border-color: rgba(255, 255, 255, 0.08) !important;
+}
+
+.iconoAppImagen {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 48px;
+  height: 48px;
+  filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.4));
+}
+
+.iconoAppNombre {
+  font-size: 11px;
+  text-align: center;
+  line-height: 1.2;
+  color: #ffffff;
+  text-shadow:
+    0 1px 2px rgba(0, 0, 0, 0.9),
+    0 0 8px rgba(0, 0, 0, 0.6);
+  max-width: 100%;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+/* ═══ Taskbar Apps ═══ */
+.appTarea {
+  display: flex !important;
+  align-items: center !important;
+  justify-content: center !important;
+  gap: 0 !important;
+  width: 44px !important;
+  height: 40px !important;
+  padding: 0 !important;
+  background: transparent !important;
+  border: none !important;
+  border-radius: 4px !important;
+  cursor: pointer !important;
+  transition: background 0.08s ease !important;
+  color: rgba(255, 255, 255, 0.86) !important;
+  position: relative;
+}
+
+.appTareaNombre {
+  display: none;
+}
+
+.appTarea:hover {
+  background: rgba(255, 255, 255, 0.07) !important;
+  color: #ffffff !important;
+}
+
+.appTareaActiva {
+  background: rgba(255, 255, 255, 0.05) !important;
+  color: #ffffff !important;
+}
+
+.appTareaActiva::after {
+  content: "";
+  position: absolute;
+  bottom: 4px;
+  left: 50%;
+  transform: translateX(-50%);
+  width: 16px;
+  height: 3px;
+  background: #4cc2ff;
+  border-radius: 1.5px;
+}
+
+/* ═══ Snap Preview ═══ */
+.snapPreview {
+  position: absolute;
+  background: rgba(76, 194, 255, 0.12);
+  border: 2px solid rgba(76, 194, 255, 0.35);
+  border-radius: 8px;
+  pointer-events: none;
+  z-index: 5;
+}
+
+.snapPreviewLeft {
+  top: 4px;
+  left: 4px;
+  width: calc(50% - 6px);
+  height: calc(100% - 8px);
+}
+
+.snapPreviewRight {
+  top: 4px;
+  right: 4px;
+  width: calc(50% - 6px);
+  height: calc(100% - 8px);
+}
+
+.snapPreviewTop {
+  top: 4px;
+  left: 4px;
+  right: 4px;
+  height: calc(100% - 8px);
+}

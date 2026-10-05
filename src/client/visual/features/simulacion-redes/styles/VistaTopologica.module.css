@@ -1,0 +1,198 @@
+.container {
+  width: 100%;
+  height: 100%;
+  background: var(--surface-primary);
+  position: relative;
+  overflow: hidden;
+}
+.deviceNodeContainer {
+  display: flex;
+  flex-direction: column;
+  cursor: pointer;
+  align-items: center;
+  gap: 4px;
+  max-width: 40px;
+  position: relative;
+  padding-bottom: 4px;
+}
+.deviceLabel {
+  max-width: 105px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+.deviceNode {
+  background: #656565;
+  border-radius: 50%;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  color: white;
+  position: relative;
+}
+
+.handleTransparent {
+  background: transparent !important;
+  border: none !important;
+}
+
+.connectedDot {
+  position: absolute;
+  top: 2px;
+  right: 2px;
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  background: #52f88f;
+  outline: 2px solid var(--surface-primary);
+}
+
+.deviceLabel {
+  font-size: 11px;
+  white-space: nowrap;
+  color: var(--text-primary);
+  text-align: center;
+  width: max-content;
+}
+
+.groupLabel {
+  font-size: 13px;
+  font-weight: 400;
+  color: var(--text-primary);
+  position: absolute;
+  top: -25px;
+  left: 0;
+}
+
+.conexionesContainer {
+  position: absolute;
+  right: 16px;
+  top: 16px;
+  cursor: pointer;
+  z-index: 2;
+}
+.conexionesContainer > button {
+  border: 1px solid var(--border-primary);
+}
+.conexionesDisponibles {
+  position: absolute;
+  right: 0;
+  top: 115%;
+  border: 1px solid var(--border-primary);
+  border-radius: var(--border-radius);
+  padding: 16px;
+  background-color: var(--surface-secondary);
+  width: 150px;
+  text-align: right;
+}
+.redChipContainer {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+.redChipWrapper {
+  padding: 0.5rem 1rem;
+  cursor: pointer;
+  border-radius: var(--border-radius);
+  border: 1px solid var(--border-primary);
+}
+.redChipWrapper.selected {
+  opacity: 1;
+  background-color: var(--surface-secondary);
+}
+
+.redChipWrapper.disabled {
+  opacity: 0.5;
+  cursor: not-allowed;
+  pointer-events: none;
+}
+
+.panelLateral {
+  position: absolute;
+  top: 0;
+  right: 0;
+  bottom: 0;
+  padding: 16px;
+  width: 300px;
+  background-color: var(--surface-primary);
+  border-left: 1px solid var(--border-primary);
+  display: flex;
+  flex-direction: column;
+  transition: transform 0.3s ease, opacity 0.2s ease;
+  z-index: 2;
+}
+
+.panelLateral.hidden {
+  transform: translateX(100%);
+  opacity: 0;
+  pointer-events: none;
+}
+
+.panelLateral h3 {
+  font-weight: normal;
+  margin: 10px 0;
+}
+.panelLateral .tipoDispo {
+  font-size: 13px;
+  margin-top: -15px;
+  margin-bottom: 0.5rem;
+  color: var(--text-secondary);
+  text-transform: capitalize;
+}
+
+.botonCerrarPanel {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  background: transparent;
+  border: none;
+  color: var(--text-secondary);
+  cursor: pointer;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: var(--border-radius);
+  transition: all 0.2s ease;
+}
+
+.botonCerrarPanel:hover {
+  background: var(--border-primary);
+  color: var(--text-primary);
+}
+
+.botonCerrarPanel:active {
+  transform: scale(0.95);
+}
+.dispositivoInfoHeader {
+  display: flex;
+  gap: 2px;
+  align-items: center;
+  margin-bottom: 1rem;
+  width: fit-content;
+  /* border-bottom: 1px solid currentColor; */
+  transition: 0.15s all ease-in-out;
+}
+
+.networkBadges {
+  position: absolute;
+  top: -4px;
+  right: -4px;
+  display: flex;
+  gap: 4px;
+  z-index: 10;
+}
+
+.networkBadge {
+  width: 8px;
+  height: 8px;
+  border-radius: 50%;
+  overflow: hidden;
+  outline: 2px solid var(--surface-secondary);
+}
+
+:global(.react-flow__edge-path) {
+  stroke-width: 2 !important;
+}

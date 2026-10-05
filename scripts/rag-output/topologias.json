@@ -1,0 +1,1339 @@
+[
+  {
+    "slug": "tutorial",
+    "tipo": "topologia",
+    "titulo": "Tutorial: Introducción a la Seguridad",
+    "categoria": "Cap. 1 — Introducción",
+    "descripcion": "Tu primer día como administrador en TechStart. Aprende los tres pilares de la seguridad: Confidencialidad, Integridad y Disponibilidad (CIA).",
+    "presupuestoInicial": 500,
+    "zonas": [
+      {
+        "id": 1,
+        "nombre": "Oficina TechStart",
+        "dominio": "TechStart",
+        "redes": [
+          "LAN-Oficina",
+          "Internet"
+        ],
+        "personas": [
+          {
+            "nombre": "María López",
+            "correo": "maria.lopez@techstart.com",
+            "nivelConcienciaSeguridad": "Media"
+          },
+          {
+            "nombre": "Pedro Ramírez",
+            "correo": "pedro.ramirez@techstart.com",
+            "nivelConcienciaSeguridad": "Alta"
+          }
+        ],
+        "oficinas": [
+          {
+            "id": 101,
+            "nombre": "Oficina Principal",
+            "posicion": {
+              "x": 2,
+              "y": 0,
+              "z": 0,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1001,
+                    "nombre": "PC Empleado",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 11 Pro",
+                    "software": "Office 365, Navegador Web",
+                    "redes": [],
+                    "activos": [
+                      "reporte_mensual.docx"
+                    ],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1002,
+                    "nombre": "Servidor Interno",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu Server 22.04",
+                    "software": "Apache, MySQL, Management Service",
+                    "redes": [
+                      "LAN-Oficina"
+                    ],
+                    "activos": [
+                      "datos_clientes.db"
+                    ],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1003,
+                    "nombre": "Router Principal",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall",
+                    "redes": [
+                      "LAN-Oficina",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Internet",
+        "dominio": "WWW",
+        "redes": [
+          "Red-Externa",
+          "Internet"
+        ],
+        "personas": [],
+        "oficinas": [
+          {
+            "id": 201,
+            "nombre": "Servidor Externo",
+            "posicion": {
+              "x": 10,
+              "y": 0,
+              "z": 1,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 2001,
+                    "nombre": "Servidor Externo",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu Server 22.04",
+                    "software": "Apache, DNS",
+                    "redes": [
+                      "Red-Externa"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 1,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 2002,
+                    "nombre": "Router Externo",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, NAT",
+                    "redes": [
+                      "Red-Externa",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 1,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "text": "TOPOLOGÍA DEL ESCENARIO: Tutorial: Introducción a la Seguridad\nSlug: tutorial\nCategoría: Cap. 1 — Introducción\nDescripción: Tu primer día como administrador en TechStart. Aprende los tres pilares de la seguridad: Confidencialidad, Integridad y Disponibilidad (CIA).\nPresupuesto inicial: $500\n\n=== ZONAS Y DISPOSITIVOS ===\n\nZONA: Oficina TechStart (Dominio: TechStart)\n  Redes disponibles: LAN-Oficina, Internet\n  Personas:\n    - María López <maria.lopez@techstart.com> | Conciencia: Media\n    - Pedro Ramírez <pedro.ramirez@techstart.com> | Conciencia: Alta\n  Oficina: \"Oficina Principal\" (id: 101)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Empleado\" | tipo:workstation | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Windows 11 Pro | Software: Office 365, Navegador Web\n        Redes: ninguna\n        Activos: reporte_mensual.docx\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Servidor Interno\" | tipo:workstation | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: Ubuntu Server 22.04 | Software: Apache, MySQL, Management Service\n        Redes: LAN-Oficina\n        Activos: datos_clientes.db\n    Espacio id:3 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router Principal\" | tipo:router | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, Firewall\n        Redes: LAN-Oficina, Internet\n\nZONA: Internet (Dominio: WWW)\n  Redes disponibles: Red-Externa, Internet\n  Oficina: \"Servidor Externo\" (id: 201)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":1,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Servidor Externo\" | tipo:workstation | posicion:{\"x\":1,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Ubuntu Server 22.04 | Software: Apache, DNS\n        Redes: Red-Externa\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":1,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router Externo\" | tipo:router | posicion:{\"x\":1,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, NAT\n        Redes: Red-Externa, Internet"
+  },
+  {
+    "slug": "amenazas",
+    "tipo": "topologia",
+    "titulo": "Amenazas y Ataques Comunes",
+    "categoria": "Cap. 1 — Introducción",
+    "descripcion": "Una consultora está bajo alerta. Bloquea accesos no autorizados con firewall y endurece los workstations para frenar un troyano.",
+    "presupuestoInicial": 1000,
+    "zonas": [
+      {
+        "id": 1,
+        "nombre": "Consultora InfoTech",
+        "dominio": "InfoTech",
+        "redes": [
+          "LAN-Oficina",
+          "Internet"
+        ],
+        "personas": [
+          {
+            "nombre": "Ing. Patricia Morales",
+            "correo": "patricia.morales@infotech.com",
+            "nivelConcienciaSeguridad": "Alta"
+          },
+          {
+            "nombre": "Sandra Ruiz",
+            "correo": "sandra.ruiz@infotech.com",
+            "nivelConcienciaSeguridad": "Baja"
+          }
+        ],
+        "oficinas": [
+          {
+            "id": 801,
+            "nombre": "Oficina Principal",
+            "posicion": {
+              "x": 2,
+              "y": 0,
+              "z": 0,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 8001,
+                    "nombre": "PC Director",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 11 Pro",
+                    "software": "Office 365, Navegador",
+                    "redes": [
+                      "LAN-Oficina"
+                    ],
+                    "activos": [
+                      "contratos_clientes.pdf"
+                    ],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 8002,
+                    "nombre": "PC Secretaría",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 10 Pro",
+                    "software": "Office 365, Outlook",
+                    "redes": [
+                      "LAN-Oficina"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 8003,
+                    "nombre": "Router Oficina",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall",
+                    "redes": [
+                      "LAN-Oficina",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Internet",
+        "dominio": "WWW",
+        "redes": [
+          "Red-Externa",
+          "Internet"
+        ],
+        "personas": [],
+        "oficinas": [
+          {
+            "id": 802,
+            "nombre": "Servidor Externo",
+            "posicion": {
+              "x": 10,
+              "y": 0,
+              "z": 1,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 8004,
+                    "nombre": "Servidor Externo",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu Server 22.04",
+                    "software": "Apache, DNS",
+                    "redes": [
+                      "Red-Externa"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 1,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 8005,
+                    "nombre": "Router Externo",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, NAT",
+                    "redes": [
+                      "Red-Externa",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 1,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "text": "TOPOLOGÍA DEL ESCENARIO: Amenazas y Ataques Comunes\nSlug: amenazas\nCategoría: Cap. 1 — Introducción\nDescripción: Una consultora está bajo alerta. Bloquea accesos no autorizados con firewall y endurece los workstations para frenar un troyano.\nPresupuesto inicial: $1000\n\n=== ZONAS Y DISPOSITIVOS ===\n\nZONA: Consultora InfoTech (Dominio: InfoTech)\n  Redes disponibles: LAN-Oficina, Internet\n  Personas:\n    - Ing. Patricia Morales <patricia.morales@infotech.com> | Conciencia: Alta\n    - Sandra Ruiz <sandra.ruiz@infotech.com> | Conciencia: Baja\n  Oficina: \"Oficina Principal\" (id: 801)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Director\" | tipo:workstation | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Windows 11 Pro | Software: Office 365, Navegador\n        Redes: LAN-Oficina\n        Activos: contratos_clientes.pdf\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Secretaría\" | tipo:workstation | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: Windows 10 Pro | Software: Office 365, Outlook\n        Redes: LAN-Oficina\n    Espacio id:3 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router Oficina\" | tipo:router | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, Firewall\n        Redes: LAN-Oficina, Internet\n\nZONA: Internet (Dominio: WWW)\n  Redes disponibles: Red-Externa, Internet\n  Oficina: \"Servidor Externo\" (id: 802)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":1,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Servidor Externo\" | tipo:workstation | posicion:{\"x\":1,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Ubuntu Server 22.04 | Software: Apache, DNS\n        Redes: Red-Externa\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":1,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router Externo\" | tipo:router | posicion:{\"x\":1,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, NAT\n        Redes: Red-Externa, Internet"
+  },
+  {
+    "slug": "criptografia",
+    "tipo": "topologia",
+    "titulo": "Criptografía: Firma Digital y Comunicación Segura",
+    "categoria": "Cap. 2 — Criptografía",
+    "descripcion": "El bufete Mendoza & Asociados recibe contratos firmados digitalmente. Verifica firmas con PKI, detecta alteraciones y establece un canal VPN cifrado.",
+    "presupuestoInicial": 1500,
+    "zonas": [
+      {
+        "id": 1,
+        "nombre": "Bufete Legal Mendoza & Asociados",
+        "dominio": "Bufete-Mendoza",
+        "redes": [
+          "LAN-Bufete",
+          "Internet"
+        ],
+        "personas": [
+          {
+            "nombre": "Lic. Andrea Mendoza",
+            "correo": "andrea.mendoza@bufete.com",
+            "nivelConcienciaSeguridad": "Alta"
+          },
+          {
+            "nombre": "Sofía Herrera",
+            "correo": "sofia.herrera@bufete.com",
+            "nivelConcienciaSeguridad": "Media"
+          }
+        ],
+        "oficinas": [
+          {
+            "id": 101,
+            "nombre": "Oficina de Abogados",
+            "posicion": {
+              "x": 2,
+              "y": 0,
+              "z": 0,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1001,
+                    "nombre": "PC Abogado",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 11 Pro",
+                    "software": "Office 365, Adobe Acrobat, Verificador de Firmas",
+                    "redes": [
+                      "LAN-Bufete"
+                    ],
+                    "activos": [
+                      "Contrato Comercial",
+                      "Firma Contrato Comercial",
+                      "Clave_Publica_Cliente",
+                      "Factura Proveedor",
+                      "Firma Factura Proveedor",
+                      "Clave_Publica_Proveedor"
+                    ],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1002,
+                    "nombre": "PC Asistente",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 11 Pro",
+                    "software": "Office 365, Sistema de Gestión Documental",
+                    "redes": [
+                      "LAN-Bufete"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1003,
+                    "nombre": "Router Bufete",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall",
+                    "redes": [
+                      "LAN-Bufete",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1004,
+                    "nombre": "VPN Gateway Bufete",
+                    "tipo": "vpn",
+                    "sistemaOperativo": "FortiOS",
+                    "software": "VPN, IDS",
+                    "redes": [
+                      "LAN-Bufete",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Oficina del Cliente",
+        "dominio": "Cliente-Externo",
+        "redes": [
+          "Red-Cliente",
+          "Internet"
+        ],
+        "personas": [],
+        "oficinas": [
+          {
+            "id": 201,
+            "nombre": "Oficina Ramos Corp.",
+            "posicion": {
+              "x": 10,
+              "y": 0,
+              "z": 1,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -1,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 2001,
+                    "nombre": "PC Cliente",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 11 Pro",
+                    "software": "Office 365, VPN Client",
+                    "redes": [
+                      "Red-Cliente"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -1,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 2,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 2002,
+                    "nombre": "Router Cliente",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall, NAT",
+                    "redes": [
+                      "Red-Cliente",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 2,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "text": "TOPOLOGÍA DEL ESCENARIO: Criptografía: Firma Digital y Comunicación Segura\nSlug: criptografia\nCategoría: Cap. 2 — Criptografía\nDescripción: El bufete Mendoza & Asociados recibe contratos firmados digitalmente. Verifica firmas con PKI, detecta alteraciones y establece un canal VPN cifrado.\nPresupuesto inicial: $1500\n\n=== ZONAS Y DISPOSITIVOS ===\n\nZONA: Bufete Legal Mendoza & Asociados (Dominio: Bufete-Mendoza)\n  Redes disponibles: LAN-Bufete, Internet\n  Personas:\n    - Lic. Andrea Mendoza <andrea.mendoza@bufete.com> | Conciencia: Alta\n    - Sofía Herrera <sofia.herrera@bufete.com> | Conciencia: Media\n  Oficina: \"Oficina de Abogados\" (id: 101)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Abogado\" | tipo:workstation | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Windows 11 Pro | Software: Office 365, Adobe Acrobat, Verificador de Firmas\n        Redes: LAN-Bufete\n        Activos: Contrato Comercial, Firma Contrato Comercial, Clave_Publica_Cliente, Factura Proveedor, Firma Factura Proveedor, Clave_Publica_Proveedor\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Asistente\" | tipo:workstation | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: Windows 11 Pro | Software: Office 365, Sistema de Gestión Documental\n        Redes: LAN-Bufete\n    Espacio id:3 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router Bufete\" | tipo:router | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, Firewall\n        Redes: LAN-Bufete, Internet\n    Espacio id:4 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"VPN Gateway Bufete\" | tipo:vpn | posicion:{\"x\":-3,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: FortiOS | Software: VPN, IDS\n        Redes: LAN-Bufete, Internet\n\nZONA: Oficina del Cliente (Dominio: Cliente-Externo)\n  Redes disponibles: Red-Cliente, Internet\n  Oficina: \"Oficina Ramos Corp.\" (id: 201)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":-1,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Cliente\" | tipo:workstation | posicion:{\"x\":-1,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Windows 11 Pro | Software: Office 365, VPN Client\n        Redes: Red-Cliente\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Router Cliente\" | tipo:router | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: Cisco IOS | Software: Routing, Firewall, NAT\n        Redes: Red-Cliente, Internet"
+  },
+  {
+    "slug": "control-acceso",
+    "tipo": "topologia",
+    "titulo": "Control de Acceso y Protocolos Seguros",
+    "categoria": "Cap. 3 — Autenticación",
+    "descripcion": "La universidad TechU debe proteger sus laboratorios de investigación. Aplica hardening, segmenta la red y habilita VPN autenticada para investigadores remotos.",
+    "presupuestoInicial": 2500,
+    "zonas": [
+      {
+        "id": 1,
+        "nombre": "Campus TechU",
+        "dominio": "TechU",
+        "redes": [
+          "LAN-Lab",
+          "LAN-Aula",
+          "Internet"
+        ],
+        "personas": [
+          {
+            "nombre": "Dr. Felipe Castillo",
+            "correo": "felipe.castillo@techu.edu",
+            "nivelConcienciaSeguridad": "Alta"
+          },
+          {
+            "nombre": "Estudiante Martín",
+            "correo": "martin@techu.edu",
+            "nivelConcienciaSeguridad": "Baja"
+          }
+        ],
+        "oficinas": [
+          {
+            "id": 1001,
+            "nombre": "Laboratorio de Investigación",
+            "posicion": {
+              "x": 2,
+              "y": 0,
+              "z": 0,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 10001,
+                    "nombre": "PC Investigador",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu 24.04",
+                    "software": "MATLAB, Python, Jupyter",
+                    "redes": [],
+                    "activos": [
+                      "datos_investigacion.csv"
+                    ],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 10002,
+                    "nombre": "Servidor de Datos",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu Server 22.04",
+                    "software": "PostgreSQL, JupyterHub, NFS",
+                    "redes": [
+                      "LAN-Lab"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 10003,
+                    "nombre": "Router Universidad",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall, VLAN",
+                    "redes": [
+                      "LAN-Lab",
+                      "LAN-Aula",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 10004,
+                    "nombre": "VPN Gateway Universidad",
+                    "tipo": "vpn",
+                    "sistemaOperativo": "FortiOS",
+                    "software": "VPN, IDS/IPS",
+                    "redes": [
+                      "LAN-Lab",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          },
+          {
+            "id": 1002,
+            "nombre": "Aula de Computación",
+            "posicion": {
+              "x": 6,
+              "y": 0,
+              "z": 0,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 5,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 2,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 10005,
+                    "nombre": "PC Estudiante",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 10 Pro",
+                    "software": "Office 365, Navegador Web",
+                    "redes": [
+                      "LAN-Aula"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 2,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 6,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 4,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 180
+                },
+                "dispositivos": []
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "Casa Investigador",
+        "dominio": "Investigador-Remoto",
+        "redes": [
+          "Red-Casa",
+          "Internet"
+        ],
+        "personas": [],
+        "oficinas": [
+          {
+            "id": 1003,
+            "nombre": "Home Office",
+            "posicion": {
+              "x": 10,
+              "y": 0,
+              "z": 1,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -1,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 10006,
+                    "nombre": "PC Remoto Investigador",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu 24.04",
+                    "software": "VPN Client, SSH, Jupyter",
+                    "redes": [
+                      "Red-Casa"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -1,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 2,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 10007,
+                    "nombre": "Router Casa",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, NAT",
+                    "redes": [
+                      "Red-Casa",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 2,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "text": "TOPOLOGÍA DEL ESCENARIO: Control de Acceso y Protocolos Seguros\nSlug: control-acceso\nCategoría: Cap. 3 — Autenticación\nDescripción: La universidad TechU debe proteger sus laboratorios de investigación. Aplica hardening, segmenta la red y habilita VPN autenticada para investigadores remotos.\nPresupuesto inicial: $2500\n\n=== ZONAS Y DISPOSITIVOS ===\n\nZONA: Campus TechU (Dominio: TechU)\n  Redes disponibles: LAN-Lab, LAN-Aula, Internet\n  Personas:\n    - Dr. Felipe Castillo <felipe.castillo@techu.edu> | Conciencia: Alta\n    - Estudiante Martín <martin@techu.edu> | Conciencia: Baja\n  Oficina: \"Laboratorio de Investigación\" (id: 1001)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Investigador\" | tipo:workstation | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Ubuntu 24.04 | Software: MATLAB, Python, Jupyter\n        Redes: ninguna\n        Activos: datos_investigacion.csv\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Servidor de Datos\" | tipo:workstation | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: Ubuntu Server 22.04 | Software: PostgreSQL, JupyterHub, NFS\n        Redes: LAN-Lab\n    Espacio id:3 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router Universidad\" | tipo:router | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, Firewall, VLAN\n        Redes: LAN-Lab, LAN-Aula, Internet\n    Espacio id:4 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"VPN Gateway Universidad\" | tipo:vpn | posicion:{\"x\":-3,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: FortiOS | Software: VPN, IDS/IPS\n        Redes: LAN-Lab, Internet\n  Oficina: \"Aula de Computación\" (id: 1002)\n    Espacio id:5 | mueble:\"mesa\" | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Estudiante\" | tipo:workstation | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Windows 10 Pro | Software: Office 365, Navegador Web\n        Redes: LAN-Aula\n    Espacio id:6 | mueble:\"mesa\" | posicion:{\"x\":4,\"y\":0,\"z\":2.5,\"rotacionY\":180}\n\nZONA: Casa Investigador (Dominio: Investigador-Remoto)\n  Redes disponibles: Red-Casa, Internet\n  Oficina: \"Home Office\" (id: 1003)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":-1,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"PC Remoto Investigador\" | tipo:workstation | posicion:{\"x\":-1,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Ubuntu 24.04 | Software: VPN Client, SSH, Jupyter\n        Redes: Red-Casa\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Router Casa\" | tipo:router | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: Cisco IOS | Software: Routing, NAT\n        Redes: Red-Casa, Internet"
+  },
+  {
+    "slug": "hacking-etico",
+    "tipo": "topologia",
+    "titulo": "Hacking Ético y Análisis de Vulnerabilidades",
+    "categoria": "Cap. 5 — Administración de Riesgos",
+    "descripcion": "Eres Lisa Rodríguez, aficionada al hacking ético. Sigue las fases del proceso aplicando ingeniería social para obtener información de la empresa 'Corporación'.",
+    "presupuestoInicial": 1000,
+    "zonas": [
+      {
+        "id": 1,
+        "nombre": "Corporación - Edificio Principal",
+        "dominio": "Corporación",
+        "redes": [
+          "LAN1",
+          "LAN2",
+          "Internet"
+        ],
+        "personas": [
+          {
+            "nombre": "Carlos Mendoza",
+            "correo": "carlos.mendoza@corp.com",
+            "nivelConcienciaSeguridad": "Alta"
+          },
+          {
+            "nombre": "Jacob García",
+            "correo": "jacob.garcia@corp.com",
+            "nivelConcienciaSeguridad": "Baja"
+          },
+          {
+            "nombre": "Ana Torres",
+            "correo": "ana.torres@corp.com",
+            "nivelConcienciaSeguridad": "Media"
+          }
+        ],
+        "oficinas": [
+          {
+            "id": 101,
+            "nombre": "Sala de Servidores",
+            "posicion": {
+              "x": 2,
+              "y": 0,
+              "z": 0,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1001,
+                    "nombre": "Computadora Administrativa",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu Server 22.04",
+                    "software": "Apache, MySQL, PHP, Management Service",
+                    "redes": [],
+                    "activos": [
+                      "Documento Jacob",
+                      "Firma Documento Jacob",
+                      "Clave_Publica_Jacob",
+                      "Activo genérico",
+                      "Activo genérico 2",
+                      "Activo2"
+                    ],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1007,
+                    "nombre": "Computadora Jacob",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "pfSense",
+                    "software": "IDS/IPS, VPN",
+                    "redes": [
+                      "LAN2"
+                    ],
+                    "activos": [
+                      "credenciales",
+                      "secret_keys"
+                    ],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 3,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 0,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1004,
+                    "nombre": "Router Principal",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall",
+                    "redes": [
+                      "LAN1",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 0,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 4,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -3,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 1008,
+                    "nombre": "VPN Gateway",
+                    "tipo": "vpn",
+                    "sistemaOperativo": "VPN OS",
+                    "software": "VPN",
+                    "redes": [
+                      "LAN2",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -3,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 2,
+        "nombre": "WWW - Red Externa",
+        "dominio": "WWW",
+        "redes": [
+          "RedWWW",
+          "Internet"
+        ],
+        "personas": [],
+        "oficinas": [
+          {
+            "id": 201,
+            "nombre": "Datacenter Externo",
+            "posicion": {
+              "x": 10,
+              "y": 0,
+              "z": 1,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 2001,
+                    "nombre": "Servidor Web Externo",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Ubuntu Server 22.04",
+                    "software": "Apache, MySQL, DNS",
+                    "redes": [
+                      "RedWWW"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 1,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 1,
+                  "y": 0,
+                  "z": 2.5,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 2002,
+                    "nombre": "Router WWW",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall, NAT",
+                    "redes": [
+                      "RedWWW",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 1,
+                      "y": 0,
+                      "z": 2.5,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      },
+      {
+        "id": 3,
+        "nombre": "Casa Atacante",
+        "dominio": "Off-site",
+        "redes": [
+          "Red-Lisa",
+          "Internet"
+        ],
+        "personas": [],
+        "oficinas": [
+          {
+            "id": 301,
+            "nombre": "Estudio de Lisa",
+            "posicion": {
+              "x": 10,
+              "y": 0,
+              "z": 1,
+              "rotacionY": 0
+            },
+            "espacios": [
+              {
+                "id": 1,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": -1,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 3001,
+                    "nombre": "Computadora Lisa",
+                    "tipo": "workstation",
+                    "sistemaOperativo": "Windows 11",
+                    "software": "IDS/IPS, VPN",
+                    "redes": [
+                      "Red-Lisa"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": -1,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 0
+                    }
+                  }
+                ]
+              },
+              {
+                "id": 2,
+                "mueble": "mesa",
+                "posicion": {
+                  "x": 2,
+                  "y": 0,
+                  "z": 0,
+                  "rotacionY": 0
+                },
+                "dispositivos": [
+                  {
+                    "id": 3002,
+                    "nombre": "Router Lisa",
+                    "tipo": "router",
+                    "sistemaOperativo": "Cisco IOS",
+                    "software": "Routing, Firewall, NAT",
+                    "redes": [
+                      "Red-Lisa",
+                      "Internet"
+                    ],
+                    "activos": [],
+                    "posicion": {
+                      "x": 2,
+                      "y": 0,
+                      "z": 0,
+                      "rotacionY": 180
+                    }
+                  }
+                ]
+              }
+            ]
+          }
+        ]
+      }
+    ],
+    "text": "TOPOLOGÍA DEL ESCENARIO: Hacking Ético y Análisis de Vulnerabilidades\nSlug: hacking-etico\nCategoría: Cap. 5 — Administración de Riesgos\nDescripción: Eres Lisa Rodríguez, aficionada al hacking ético. Sigue las fases del proceso aplicando ingeniería social para obtener información de la empresa 'Corporación'.\nPresupuesto inicial: $1000\n\n=== ZONAS Y DISPOSITIVOS ===\n\nZONA: Corporación - Edificio Principal (Dominio: Corporación)\n  Redes disponibles: LAN1, LAN2, Internet\n  Personas:\n    - Carlos Mendoza <carlos.mendoza@corp.com> | Conciencia: Alta\n    - Jacob García <jacob.garcia@corp.com> | Conciencia: Baja\n    - Ana Torres <ana.torres@corp.com> | Conciencia: Media\n  Oficina: \"Sala de Servidores\" (id: 101)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Computadora Administrativa\" | tipo:workstation | posicion:{\"x\":0,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Ubuntu Server 22.04 | Software: Apache, MySQL, PHP, Management Service\n        Redes: ninguna\n        Activos: Documento Jacob, Firma Documento Jacob, Clave_Publica_Jacob, Activo genérico, Activo genérico 2, Activo2\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Computadora Jacob\" | tipo:workstation | posicion:{\"x\":-3,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: pfSense | Software: IDS/IPS, VPN\n        Redes: LAN2\n        Activos: credenciales, secret_keys\n    Espacio id:3 | mueble:\"mesa\" | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router Principal\" | tipo:router | posicion:{\"x\":0,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, Firewall\n        Redes: LAN1, Internet\n    Espacio id:4 | mueble:\"mesa\" | posicion:{\"x\":-3,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"VPN Gateway\" | tipo:vpn | posicion:{\"x\":-3,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: VPN OS | Software: VPN\n        Redes: LAN2, Internet\n\nZONA: WWW - Red Externa (Dominio: WWW)\n  Redes disponibles: RedWWW, Internet\n  Oficina: \"Datacenter Externo\" (id: 201)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":1,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Servidor Web Externo\" | tipo:workstation | posicion:{\"x\":1,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Ubuntu Server 22.04 | Software: Apache, MySQL, DNS\n        Redes: RedWWW\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":1,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n      Dispositivo: \"Router WWW\" | tipo:router | posicion:{\"x\":1,\"y\":0,\"z\":2.5,\"rotacionY\":0}\n        SO: Cisco IOS | Software: Routing, Firewall, NAT\n        Redes: RedWWW, Internet\n\nZONA: Casa Atacante (Dominio: Off-site)\n  Redes disponibles: Red-Lisa, Internet\n  Oficina: \"Estudio de Lisa\" (id: 301)\n    Espacio id:1 | mueble:\"mesa\" | posicion:{\"x\":-1,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Computadora Lisa\" | tipo:workstation | posicion:{\"x\":-1,\"y\":0,\"z\":0,\"rotacionY\":0}\n        SO: Windows 11 | Software: IDS/IPS, VPN\n        Redes: Red-Lisa\n    Espacio id:2 | mueble:\"mesa\" | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":0}\n      Dispositivo: \"Router Lisa\" | tipo:router | posicion:{\"x\":2,\"y\":0,\"z\":0,\"rotacionY\":180}\n        SO: Cisco IOS | Software: Routing, Firewall, NAT\n        Redes: Red-Lisa, Internet"
+  }
+]

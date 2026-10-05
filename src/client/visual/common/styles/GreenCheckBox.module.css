@@ -1,0 +1,14 @@
+.greenCheckBox {
+  border-radius: 9999px;
+  width: 20px;
+  height: 20px;
+  background-color: var(--surface-secondary);
+  border: 1px solid var(--border-primary);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+.checked {
+  background-color: #52ab7b33;
+  border: 1px solid #52ab7b;
+}

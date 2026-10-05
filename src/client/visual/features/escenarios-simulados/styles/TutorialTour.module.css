@@ -1,0 +1,130 @@
+.overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    pointer-events: none;
+}
+
+.overlayBackground {
+    position: fixed;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.7);
+    z-index: 100000;
+    pointer-events: auto;
+}
+
+.spotlight {
+    position: fixed;
+    z-index: 100001;
+    border-radius: var(--border-radius);
+    box-shadow: 0 0 0 9999px rgba(0, 0, 0, 0.7);
+    pointer-events: none;
+    transition: all 0.3s ease;
+}
+
+.tooltip {
+    position: fixed;
+    z-index: 100002;
+    background: var(--surface-primary);
+    border: 1px solid var(--border-primary);
+    border-radius: var(--border-radius);
+    padding: 24px;
+    max-width: 420px;
+    width: max-content;
+    pointer-events: auto;
+    animation: tooltipIn 0.2s ease-out;
+    transition: top 0.25s ease, left 0.25s ease;
+}
+
+.tooltipCentered {
+    inset: 0;
+    margin: auto;
+    width: fit-content;
+    height: fit-content;
+}
+
+.header {
+    display: flex;
+    align-items: flex-start;
+    justify-content: space-between;
+    gap: 16px;
+    margin-bottom: 12px;
+}
+
+.title {
+    margin: 0;
+    font-size: 16px;
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.closeButton {
+    all: unset;
+    flex-shrink: 0;
+    width: 28px;
+    height: 28px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 6px;
+    color: var(--text-secondary);
+    cursor: pointer;
+    background: transparent;
+    padding: 0;
+    transition: background 0.15s ease;
+}
+
+.closeButton:hover {
+    background: var(--surface-tertiary);
+}
+
+.body {
+    color: var(--text-muted);
+    line-height: 1.6;
+    white-space: pre-line;
+    margin-bottom: 20px;
+}
+
+.footerRight {
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+}
+
+.footerActions {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+}
+
+.progress {
+    font-size: 12px;
+    color: var(--text-secondary);
+}
+
+@keyframes tooltipIn {
+    from {
+        opacity: 0;
+        transform: translateY(4px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+.tooltipCentered {
+    animation-name: tooltipCenterIn;
+}
+
+@keyframes tooltipCenterIn {
+    from {
+        opacity: 0;
+        transform: scale(0.97) translateY(-2%);
+    }
+    to {
+        opacity: 1;
+        transform: none;
+    }
+}

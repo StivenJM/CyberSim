@@ -71,7 +71,7 @@ router.get("/health", async (_req: Request, res: Response) => {
 
     res.json({
       status: isHealthy ? "healthy" : "degraded",
-      services: { qdrant: isHealthy, gemini: true, tts: true },
+      services: { qdrant: isHealthy, gpt: true, tts: true },
       memory: memoryStats,
     });
   } catch (error) {

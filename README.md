@@ -57,7 +57,9 @@ Servicios opcionales según la funcionalidad utilizada:
 
 | Variable | Funcionalidad |
 |---|---|
-| `GOOGLE_GEMINI_API_KEY` | Chat y embeddings de Gemini |
+| `OPENAI_API_KEY` | Chat y embeddings de GPT |
+| `OPENAI_MODEL` | Modelo GPT usado para generar respuestas |
+| `OPENAI_EMBEDDING_MODEL` | Modelo de embeddings usado para la búsqueda RAG |
 | `QDRANT_URL` | Búsqueda semántica del chat |
 | `QDRANT_API_KEY` | Autenticación contra Qdrant, si corresponde |
 | `N8N_FEEDBACK_WEBHOOK_URL` | Generación de retroalimentación |
@@ -66,6 +68,8 @@ Servicios opcionales según la funcionalidad utilizada:
 | `PIPER_TTS_API_URL` o `PIPER_TTS_BASE_URL` | Síntesis de voz del chat |
 
 La configuración avanzada de Qdrant acepta también `QDRANT_PORT`, `QDRANT_HTTPS`, `QDRANT_COLLECTION_SECURITY`, `QDRANT_COLLECTION_CONTEXT`, `RAG_TOP_K` y `RAG_SCORE_THRESHOLD`.
+
+Al cambiar el proveedor de embeddings, las colecciones de Qdrant deben volver a indexarse con el modelo configurado en `OPENAI_EMBEDDING_MODEL`. Los vectores generados por otro proveedor no son compatibles semánticamente con las consultas nuevas.
 
 ## Comandos disponibles
 
@@ -109,7 +113,7 @@ src/
 └── server/
     ├── auth/               # Registro, login, correo y progreso
     ├── groups/             # Grupos, cursos y matrículas
-    ├── chat/               # Chat, memoria conversacional, Gemini y Qdrant
+    ├── chat/               # Chat, memoria conversacional, GPT y Qdrant
     ├── feedback/           # Retroalimentación generada por n8n
     ├── course-analysis/    # Análisis de cursos generado por n8n
     └── agent-malvado/      # Generación y sanitización de escenarios
@@ -191,6 +195,7 @@ En producción, configurá las variables de entorno mediante el proveedor de hos
 ## Documentación adicional
 
 - [`DEVELOPMENT.md`](DEVELOPMENT.md): flujo breve de desarrollo local.
+- [`docs/arquitectura.md`](docs/arquitectura.md): arquitectura, flujos e integraciones del sistema.
 - [`prisma/schema.prisma`](prisma/schema.prisma): modelo de datos.
 - [`docker-compose.yml`](docker-compose.yml): servicio PostgreSQL local.
 - [`.github/workflows/ci.yml`](.github/workflows/ci.yml): validaciones automáticas de pull requests.

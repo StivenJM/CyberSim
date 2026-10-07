@@ -1,4 +1,4 @@
-import type { ChatMessage } from "./GeminiService.js";
+import type { ChatMessage } from "./GPTService.js";
 
 export interface IConversationMemory {
   getHistory(sessionId: string): ChatMessage[];

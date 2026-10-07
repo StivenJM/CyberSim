@@ -1,9 +1,9 @@
 import type { IChatRepository, ChatMessagePayload, ChatResponse } from "../../domain/repositories/IChatRepository.js";
-import type { ILLMService, ITopicAnalyzer, ToolResult } from "../services/GeminiService.js";
+import type { ILLMService, ITopicAnalyzer, ToolResult } from "../services/GPTService.js";
 import type { IVectorSearchService } from "../services/QdrantService.js";
 import type { ITTSService } from "../services/PiperTTSService.js";
 import type { IConversationMemory } from "../services/ConversationMemoryManager.js";
-import { GeminiService } from "../services/GeminiService.js";
+import { GPTService } from "../services/GPTService.js";
 import { QdrantService } from "../services/QdrantService.js";
 import { PiperTTSService } from "../services/PiperTTSService.js";
 import { getMemoryManager } from "../services/ConversationMemoryManager.js";
@@ -23,7 +23,7 @@ export class NativeChatRepository implements IChatRepository {
   private readonly memoryManager: IConversationMemory;
 
   constructor({
-    llmService = new GeminiService(), 
+    llmService = new GPTService(),
     vectorService = new QdrantService(),
     ttsService = new PiperTTSService(),
     memoryManager = getMemoryManager()

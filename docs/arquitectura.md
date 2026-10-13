@@ -386,7 +386,7 @@ El estado de una partida y sus configuraciones de simulación se mantienen princ
 | SMTP | Confirmación y recuperación de cuentas | `SMTP_*` y `FROM_EMAIL` |
 | PostgreSQL | Persistencia relacional | `DATABASE_URL` o configuración Prisma |
 
-n8n no está desplegado en el repositorio ni en `docker-compose.yml`; los workflows y su operación pertenecen a infraestructura externa.
+n8n no está desplegado en el repositorio; los workflows y su operación pertenecen a infraestructura externa.
 
 ## Desarrollo y despliegue
 
@@ -394,13 +394,14 @@ n8n no está desplegado en el repositorio ni en `docker-compose.yml`; los workfl
 
 ```mermaid
 flowchart LR
-    npm[npm run dev:full]
+    frontend[npm run dev --workspace @cybersim/frontend]
+    backend[npm run dev --workspace @cybersim/backend]
     vite[Vite\n:5173]
     nodemon[Nodemon + tsx\n:3000]
-    postgres[Docker PostgreSQL\n:5432]
+    postgres[PostgreSQL configurado]
 
-    npm --> vite
-    npm --> nodemon
+    frontend --> vite
+    backend --> nodemon
     nodemon --> postgres
     vite -->|proxy /api| nodemon
 ```
@@ -409,30 +410,32 @@ Comandos principales:
 
 ```bash
 npm install
-npm run docker:up
-npm run db:push
-npm run dev:full
+# Con PostgreSQL disponible y las variables de conexión configuradas:
+npm run db:push --workspace @cybersim/backend
+# En terminales separadas:
+npm run dev --workspace @cybersim/frontend
+npm run dev --workspace @cybersim/backend
 ```
 
 ### Producción
 
 ```bash
 npm ci
-npm run build:all
-npm start
+npm run build --workspaces
+npm run start --workspace @cybersim/backend
 ```
 
-El frontend se compila con Vite y el backend se compila con `tsconfig.server.json`. Las credenciales y URLs de servicios externos se configuran en el entorno de despliegue; no deben incluirse en el repositorio.
+El frontend se compila con Vite y el backend con su propio `tsconfig.json`. Cada aplicación define sus scripts en su workspace; la raíz declara ambos workspaces y permite instalar sus dependencias conjuntamente. Las credenciales y URLs de servicios externos se configuran en el entorno de despliegue; no deben incluirse en el repositorio.
 
 ## Pruebas y validación
 
 | Tipo | Comando | Alcance |
 |---|---|---|
-| Unitarias | `npm test -- --run` | Casos de uso, ECS, autenticación, grupos, progreso y correo |
-| E2E | `npm run test:e2e` | Rutas, autenticación y flujos principales del frontend |
-| Lint | `npm run lint` | Reglas estáticas de TypeScript y React |
-| Build | `npm run build:all` | Compilación de frontend y backend |
-| Cobertura | `npm run coverage` | Reporte de cobertura de Vitest |
+| Unitarias | `npm run test --workspaces` | Casos de uso, ECS, autenticación, grupos, progreso y correo |
+| E2E | `npm run test:e2e --workspace @cybersim/frontend` | Rutas, autenticación y flujos principales del frontend |
+| Lint | `npm run lint --workspaces` | Reglas estáticas de TypeScript y React |
+| Build | `npm run build --workspaces` | Compilación de frontend y backend |
+| Cobertura | `npm run coverage --workspace @cybersim/frontend` | Reporte de cobertura de Vitest |
 
 Las pruebas E2E que dependen del backend requieren PostgreSQL y las variables de entorno correspondientes. Las integraciones externas deben probarse con sus servicios configurados o mediante mocks.
 

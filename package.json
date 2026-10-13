@@ -4,27 +4,5 @@
   "version": "5.0.0",
   "type": "module",
   "workspaces": ["apps/frontend", "apps/backend"],
-  "scripts": {
-    "dev": "concurrently \"npm run dev -w @cybersim/backend\" \"npm run dev -w @cybersim/frontend\"",
-    "dev:frontend": "npm run dev -w @cybersim/frontend",
-    "dev:backend": "npm run dev -w @cybersim/backend",
-    "build": "npm run build -w @cybersim/frontend && npm run build -w @cybersim/backend",
-    "build:frontend": "npm run build -w @cybersim/frontend",
-    "build:backend": "npm run build -w @cybersim/backend",
-    "typecheck": "npm run typecheck --workspaces --if-present",
-    "lint": "npm run lint --workspaces --if-present",
-    "test": "npm run test --workspaces --if-present",
-    "test:e2e": "npm run test:e2e -w @cybersim/frontend --",
-    "docker:up": "docker-compose up -d",
-    "docker:down": "docker-compose down",
-    "docker:logs": "docker-compose logs -f postgres",
-    "docker:reset": "docker-compose down -v && docker-compose up -d",
-    "db:generate": "npm run db:generate -w @cybersim/backend",
-    "db:migrate": "npm run db:migrate -w @cybersim/backend",
-    "db:push": "npm run db:push -w @cybersim/backend",
-    "db:studio": "npm run db:studio -w @cybersim/backend",
-    "db:seed": "npm run db:seed -w @cybersim/backend"
-  },
-  "engines": {"node": ">=20.19.0", "npm": ">=9.0.0"},
-  "devDependencies": {"concurrently": "^9.2.1"}
+  "engines": {"node": ">=20.19.0", "npm": ">=9.0.0"}
 }

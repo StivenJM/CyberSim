@@ -40,13 +40,13 @@ jobs:
         run: npm ci
 
       - name: Ejecutar ESLint
-        run: npm run lint
+        run: npm run lint --workspaces
 
       - name: Ejecutar Pruebas Automatizadas
-        run: npm run test
+        run: npm run test --workspaces
 
       - name: Ejecutar Build
-        run: npm run build
+        run: npm run build --workspaces
 
   e2e:
     name: Pruebas E2E (Playwright)
@@ -73,11 +73,11 @@ jobs:
 
       # Tests DOM (auth + rutas): deterministas, bloquean el PR si fallan.
       - name: Ejecutar E2E (auth y rutas)
-        run: npm run test:e2e -- --grep-invert @slow
+        run: npm run test:e2e --workspace @cybersim/frontend -- --grep-invert @slow
 
       # Smoke de la escena 3D: usa WebGL por software, no bloquea el pipeline.
       - name: Ejecutar E2E (escena 3D)
-        run: npm run test:e2e -- --grep @slow
+        run: npm run test:e2e --workspace @cybersim/frontend -- --grep @slow
         continue-on-error: true
 
       - name: Subir reporte de Playwright

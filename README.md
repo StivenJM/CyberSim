@@ -8,15 +8,13 @@ CyberSim es una plataforma educativa de ciberseguridad. Combina una simulación 
 
 - Node.js `20.19` o superior
 - npm `9` o superior
-- Docker Desktop, para ejecutar PostgreSQL localmente
+- PostgreSQL disponible para la conexión configurada en el backend
 
 ### Instalación
 
 ```bash
 npm install
 copy apps\backend\.env.example apps\backend\.env
-npm run docker:up
-npm run db:push
 ```
 
 En PowerShell, `copy` es el comando equivalente a copiar el archivo de variables. En Linux o macOS se puede usar:
@@ -27,10 +25,24 @@ cp apps/backend/.env.example apps/backend/.env
 
 Completá `apps/backend/.env` con las credenciales y URLs de los servicios externos y, si hace falta, `apps/frontend/.env` con las variables `VITE_*`. Estos archivos no deben versionarse.
 
-### Desarrollo
+Con PostgreSQL disponible y las variables de conexión configuradas, sincronizá el esquema:
 
 ```bash
-npm run dev
+npm run db:push --workspace @cybersim/backend
+```
+
+### Desarrollo
+
+Desde la raíz, abrí una terminal para cada aplicación:
+
+```bash
+# Terminal del frontend
+npm run dev --workspace @cybersim/frontend
+```
+
+```bash
+# Terminal del backend
+npm run dev --workspace @cybersim/backend
 ```
 
 La aplicación queda disponible en:
@@ -73,32 +85,39 @@ Al cambiar el proveedor de embeddings, las colecciones de Qdrant deben volver a 
 
 ## Comandos disponibles
 
-| Comando | Descripción |
-|---|---|
-| `npm run dev` | Inicia frontend y backend en desarrollo |
-| `npm run dev:frontend` | Inicia solamente el frontend |
-| `npm run dev:backend` | Inicia solamente el backend |
-| `npm run build` | Compila ambos workspaces |
-| `npm run build:frontend` | Compila el frontend |
-| `npm run build:backend` | Compila el backend TypeScript |
-| `npm run lint` | Ejecuta ESLint |
-| `npm test` | Ejecuta las pruebas unitarias de ambos workspaces |
-| `npm run test:e2e` | Ejecuta las pruebas E2E con Playwright |
-| `npm run coverage` | Genera el reporte de cobertura |
-| `npm run docker:up` | Inicia PostgreSQL |
-| `npm run docker:down` | Detiene PostgreSQL |
-| `npm run docker:logs` | Muestra los logs de PostgreSQL |
-| `npm run db:push` | Sincroniza el esquema Prisma con la base local |
-| `npm run db:migrate` | Ejecuta migraciones de desarrollo |
-| `npm run db:seed` | Carga datos iniciales |
-| `npm run db:studio` | Abre Prisma Studio |
+Cada comando se define y se ejecuta en el workspace indicado. Desde la raíz, añadí `--workspace @cybersim/frontend` o `--workspace @cybersim/backend`; dentro de `apps/frontend` o `apps/backend`, usá el comando directamente. El `package.json` de la raíz declara los workspaces y los requisitos del entorno.
+
+| Workspace | Comando | Descripción |
+|---|---|---|
+| Frontend | `npm run dev` | Inicia Vite |
+| Frontend | `npm run build` | Comprueba los tipos y compila el frontend |
+| Frontend | `npm run preview` | Sirve el frontend compilado |
+| Frontend | `npm run typecheck` | Comprueba los tipos del frontend |
+| Frontend | `npm run lint` | Ejecuta ESLint del frontend |
+| Frontend | `npm test` | Ejecuta las pruebas unitarias del frontend |
+| Frontend | `npm run test:e2e` | Ejecuta Playwright |
+| Frontend | `npm run test:e2e:ui` | Abre la interfaz de Playwright |
+| Frontend | `npm run coverage` | Genera el reporte de cobertura |
+| Frontend | `npm run export:rag` | Exporta el conocimiento de escenarios para RAG |
+| Backend | `npm run dev` | Inicia la API en desarrollo |
+| Backend | `npm run build` | Compila la API y empaqueta el cliente Prisma |
+| Backend | `npm start` | Inicia la API compilada |
+| Backend | `npm run typecheck` | Comprueba los tipos del backend |
+| Backend | `npm run lint` | Ejecuta ESLint del backend |
+| Backend | `npm test` | Ejecuta las pruebas unitarias del backend |
+| Backend | `npm run db:generate` | Genera el cliente Prisma |
+| Backend | `npm run db:push` | Sincroniza el esquema Prisma con la base local |
+| Backend | `npm run db:migrate` | Ejecuta migraciones de desarrollo |
+| Backend | `npm run db:seed` | Carga datos iniciales |
+| Backend | `npm run db:studio` | Abre Prisma Studio |
+| Backend | `npm run migrate:deploy` | Aplica migraciones en despliegue |
 
 Antes de abrir un pull request, ejecutá como mínimo:
 
 ```bash
-npm run lint
-npm test
-npm run build
+npm run lint --workspaces
+npm run test --workspaces
+npm run build --workspaces
 semgrep scan --config auto .
 ```
 
@@ -155,25 +174,22 @@ Las pruebas unitarias están en `apps/frontend/tests/` y `apps/backend/tests/`. 
 
 ```bash
 # Unitarias
-npm test
+npm run test --workspaces
 
 # E2E
 npx playwright install --with-deps chromium
-npm run test:e2e
+npm run test:e2e --workspace @cybersim/frontend
 ```
 
 Las pruebas E2E que necesitan backend y base de datos deben ejecutarse con los servicios locales configurados y PostgreSQL activo.
 
-## Base de datos local
+## Base de datos
 
-El servicio PostgreSQL se define en `docker-compose.yml` y usa el volumen `postgres_data`. Para recrear la base desde cero:
+Configurá la conexión a PostgreSQL en `apps/backend/.env`. Los scripts del backend administran el esquema y los datos mediante Prisma; el aprovisionamiento de PostgreSQL se gestiona por separado.
 
 ```bash
-npm run docker:reset
-npm run db:push
+npm run db:push --workspace @cybersim/backend
 ```
-
-El comando `docker:reset` elimina el volumen y, por lo tanto, borra los datos locales.
 
 ## Producción
 
@@ -181,7 +197,7 @@ Para compilar el proyecto completo:
 
 ```bash
 npm ci
-npm run build
+npm run build --workspaces
 ```
 
 El backend compilado se inicia con:
@@ -197,5 +213,4 @@ En producción, configurá las variables de entorno mediante el proveedor de hos
 - [`DEVELOPMENT.md`](DEVELOPMENT.md): flujo breve de desarrollo local.
 - [`docs/arquitectura.md`](docs/arquitectura.md): arquitectura, flujos e integraciones del sistema.
 - [`apps/backend/prisma/schema.prisma`](apps/backend/prisma/schema.prisma): modelo de datos.
-- [`docker-compose.yml`](docker-compose.yml): servicio PostgreSQL local.
 - [`.github/workflows/ci.yml`](.github/workflows/ci.yml): validaciones automáticas de pull requests.

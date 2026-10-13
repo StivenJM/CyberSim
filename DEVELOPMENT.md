@@ -2,7 +2,7 @@
 
 ## Requisitos
 
-- [Node.js](https://nodejs.org/) >= 18.0.0
+- [Node.js](https://nodejs.org/) >= 20.19.0
 - [Docker Desktop](https://www.docker.com/products/docker-desktop/)
 
 ## Configuración Inicial (solo una vez)
@@ -11,7 +11,7 @@
 git clone https://github.com/TIC-GR17-2025B/TIC-Laboratorios-GR17.git
 cd TIC-Laboratorios-GR17
 npm install
-cp .env.docker .env
+cp apps/backend/.env.example apps/backend/.env
 npm run docker:up
 npm run db:push
 ```
@@ -19,7 +19,7 @@ npm run db:push
 ## Desarrollo
 
 ```bash
-npm run dev:full
+npm run dev
 ```
 
 Requiere Docker Desktop abierto.

@@ -6,7 +6,7 @@ CyberSim es una plataforma educativa de ciberseguridad. Combina una simulación 
 
 ### Requisitos
 
-- Node.js `18` o superior
+- Node.js `20.19` o superior
 - npm `9` o superior
 - Docker Desktop, para ejecutar PostgreSQL localmente
 
@@ -14,7 +14,7 @@ CyberSim es una plataforma educativa de ciberseguridad. Combina una simulación 
 
 ```bash
 npm install
-copy .env.docker .env
+copy apps\backend\.env.example apps\backend\.env
 npm run docker:up
 npm run db:push
 ```
@@ -22,15 +22,15 @@ npm run db:push
 En PowerShell, `copy` es el comando equivalente a copiar el archivo de variables. En Linux o macOS se puede usar:
 
 ```bash
-cp .env.docker .env
+cp apps/backend/.env.example apps/backend/.env
 ```
 
-Completá en `.env` las credenciales y URLs de los servicios externos antes de iniciar la aplicación. El archivo `.env` no debe versionarse.
+Completá `apps/backend/.env` con las credenciales y URLs de los servicios externos y, si hace falta, `apps/frontend/.env` con las variables `VITE_*`. Estos archivos no deben versionarse.
 
 ### Desarrollo
 
 ```bash
-npm run dev:full
+npm run dev
 ```
 
 La aplicación queda disponible en:
@@ -41,7 +41,7 @@ La aplicación queda disponible en:
 
 ## Configuración
 
-El backend carga las variables desde `.env`. Las variables obligatorias para iniciar el servidor son:
+El backend carga las variables desde `apps/backend/.env`. Las variables obligatorias para iniciar el servidor son:
 
 | Variable | Uso |
 |---|---|
@@ -75,14 +75,14 @@ Al cambiar el proveedor de embeddings, las colecciones de Qdrant deben volver a 
 
 | Comando | Descripción |
 |---|---|
-| `npm run dev:full` | Inicia frontend y backend en desarrollo |
-| `npm run dev` | Inicia solamente Vite |
-| `npm run dev:server` | Inicia solamente el backend con Nodemon |
-| `npm run build` | Compila el frontend |
-| `npm run build:server` | Compila el backend TypeScript |
-| `npm run build:all` | Compila frontend y backend |
+| `npm run dev` | Inicia frontend y backend en desarrollo |
+| `npm run dev:frontend` | Inicia solamente el frontend |
+| `npm run dev:backend` | Inicia solamente el backend |
+| `npm run build` | Compila ambos workspaces |
+| `npm run build:frontend` | Compila el frontend |
+| `npm run build:backend` | Compila el backend TypeScript |
 | `npm run lint` | Ejecuta ESLint |
-| `npm test -- --run` | Ejecuta las pruebas unitarias |
+| `npm test` | Ejecuta las pruebas unitarias de ambos workspaces |
 | `npm run test:e2e` | Ejecuta las pruebas E2E con Playwright |
 | `npm run coverage` | Genera el reporte de cobertura |
 | `npm run docker:up` | Inicia PostgreSQL |
@@ -97,8 +97,8 @@ Antes de abrir un pull request, ejecutá como mínimo:
 
 ```bash
 npm run lint
-npm test -- --run
-npm run build:all
+npm test
+npm run build
 semgrep scan --config auto .
 ```
 
@@ -107,22 +107,22 @@ semgrep scan --config auto .
 El proyecto usa una aplicación React con Vite y un backend Express en TypeScript. El código está organizado por funcionalidades y separa dominio, casos de uso e infraestructura cuando corresponde.
 
 ```text
-src/
-├── client/
-│   └── visual/             # Interfaz React, simulación 3D y features
-└── server/
-    ├── auth/               # Registro, login, correo y progreso
-    ├── groups/             # Grupos, cursos y matrículas
-    ├── chat/               # Chat, memoria conversacional, GPT y Qdrant
-    ├── feedback/           # Retroalimentación generada por n8n
-    ├── course-analysis/    # Análisis de cursos generado por n8n
-    └── agent-malvado/      # Generación y sanitización de escenarios
+apps/
+├── frontend/               # Aplicación React, simulación 3D y datos de escenarios
+│   ├── src/
+│   └── tests/
+└── backend/                # API Express, Prisma, chat e integraciones
+    ├── src/
+    ├── prisma/
+    └── tests/
+
+Cada workspace mantiene sus dependencias, configuración, pruebas y código ejecutable. No existe un paquete compartido entre ellos: la comunicación se realiza exclusivamente mediante HTTP.
 ```
 
 Persistencia:
 
 - PostgreSQL almacena usuarios, cursos, grupos, progreso y análisis.
-- Prisma gestiona el esquema y las migraciones en `prisma/`.
+- Prisma gestiona el esquema y las migraciones en `apps/backend/prisma/`.
 - Qdrant almacena las colecciones vectoriales utilizadas por el chat.
 - n8n integra los flujos de retroalimentación y generación de contenido.
 
@@ -151,11 +151,11 @@ GET /course-analysis/health
 
 ## Pruebas
 
-Las pruebas unitarias están en `tests/` y cubren casos de uso, sistemas ECS, autenticación, grupos, progreso y correo. Las pruebas E2E están en `tests/e2e/` y usan Playwright.
+Las pruebas unitarias están en `apps/frontend/tests/` y `apps/backend/tests/`. Las pruebas E2E del frontend están en `apps/frontend/tests/e2e/` y usan Playwright.
 
 ```bash
 # Unitarias
-npm test -- --run
+npm test
 
 # E2E
 npx playwright install --with-deps chromium
@@ -181,13 +181,13 @@ Para compilar el proyecto completo:
 
 ```bash
 npm ci
-npm run build:all
+npm run build
 ```
 
 El backend compilado se inicia con:
 
 ```bash
-npm start
+npm run start -w @cybersim/backend
 ```
 
 En producción, configurá las variables de entorno mediante el proveedor de hosting. No incluyas secretos, claves de API, contraseñas ni archivos `.env` en el repositorio.
@@ -196,6 +196,6 @@ En producción, configurá las variables de entorno mediante el proveedor de hos
 
 - [`DEVELOPMENT.md`](DEVELOPMENT.md): flujo breve de desarrollo local.
 - [`docs/arquitectura.md`](docs/arquitectura.md): arquitectura, flujos e integraciones del sistema.
-- [`prisma/schema.prisma`](prisma/schema.prisma): modelo de datos.
+- [`apps/backend/prisma/schema.prisma`](apps/backend/prisma/schema.prisma): modelo de datos.
 - [`docker-compose.yml`](docker-compose.yml): servicio PostgreSQL local.
 - [`.github/workflows/ci.yml`](.github/workflows/ci.yml): validaciones automáticas de pull requests.

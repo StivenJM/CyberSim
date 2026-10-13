@@ -40,10 +40,13 @@ dist-ssr
 !.env.docker
 
 /src/generated/prisma
+/apps/backend/src/generated/prisma
+/apps/backend/dist
+/apps/frontend/dist
 .env.docker
 
 # Playwright (E2E)
-/test-results
-/playwright-report
-/blob-report
+test-results/
+playwright-report/
+blob-report/
 /.playwright/.cache

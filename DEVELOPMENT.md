@@ -1,42 +1,27 @@
-# Guía de Desarrollo
+# Desarrollo de CyberSim
 
-## Requisitos
+El procedimiento completo está en [desarrollo local](docs/guides/desarrollo-local.md). La raíz instala ambos npm workspaces; cada aplicación define sus scripts.
 
-- [Node.js](https://nodejs.org/) >= 20.19.0
-- PostgreSQL disponible y configurado mediante las variables de conexión del backend
-
-## Configuración Inicial (solo una vez)
-
-```bash
-git clone https://github.com/TIC-GR17-2025B/TIC-Laboratorios-GR17.git
-cd TIC-Laboratorios-GR17
-npm install
-cp apps/backend/.env.example apps/backend/.env
+```powershell
+npm ci
+# Preparar .env de ambas apps y PostgreSQL según la guía.
+npm run db:generate --workspace @cybersim/backend
+npm run migrate:deploy --workspace @cybersim/backend
 ```
 
-Completá las variables de `apps/backend/.env` con la conexión a PostgreSQL y los servicios utilizados. Luego sincronizá el esquema:
+En terminales separadas:
 
-```bash
-npm run db:push --workspace @cybersim/backend
-```
-
-## Desarrollo
-
-Abrí dos terminales desde la raíz del repositorio:
-
-```bash
-# Terminal del frontend
-npm run dev --workspace @cybersim/frontend
-```
-
-```bash
-# Terminal del backend
+```powershell
 npm run dev --workspace @cybersim/backend
 ```
 
-También podés entrar a `apps/frontend` o `apps/backend` y ejecutar `npm run dev` directamente. Los scripts de cada aplicación están definidos en su propio workspace; la raíz mantiene la instalación conjunta de dependencias.
+```powershell
+npm run dev --workspace @cybersim/frontend
+```
 
-El backend requiere PostgreSQL disponible en la conexión configurada.
-
-- Frontend: http://localhost:5173
-- Backend: http://localhost:3000
+- [Requisitos y variables](docs/guides/configuracion.md), incluidas las integraciones exigidas durante arranque.
+- [Pruebas y calidad](docs/guides/pruebas-y-calidad.md).
+- [Mantenimiento para humanos e IA](docs/guides/mantenimiento.md).
+- [Crear escenarios](docs/guides/escenarios.md).
+- [Resolución de problemas](docs/guides/resolucion-de-problemas.md).
+- [Documentación general](docs/README.md).

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE "progreso" ADD COLUMN "fecha_creacion" TIMESTAMP(3) DEFAULT CURRENT_TIMESTAMP;

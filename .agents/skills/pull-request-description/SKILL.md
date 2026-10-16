@@ -56,7 +56,7 @@ Consultar [el formato y los criterios de escritura](references/pr-writing.md) pa
 
 ## Entrega en campos copiables
 
-Cuando haya evidencia suficiente, entregar exclusivamente estas dos etiquetas y bloques, sin explicación adicional, salvo que el usuario la solicite:
+Cuando haya evidencia suficiente, entregar siempre el título del PR y su descripción en estas dos etiquetas y bloques separados, sin explicación adicional, salvo que el usuario la solicite. En este proyecto, pedir la «descripción del PR» incluye ambos campos por defecto:
 
 Título
 
@@ -72,6 +72,6 @@ Descripción
 
 El título no debe repetirse dentro del cuerpo. Mantener los encabezados Markdown como texto literal dentro del segundo bloque para pegarlos en el campo de descripción. No imprimir metavariables ni instrucciones de plantilla en la entrega. Si el cuerpo incluye bloques de código, usar una cerca exterior más larga que las interiores.
 
-Si el usuario pide únicamente la descripción, devolver solo un bloque `text` con el cuerpo. Una aclaración indispensable, una referencia inaccesible o un diff vacío se comunican directamente antes de generar campos; el formato no obliga a inventar contenido.
+Omitir el título únicamente cuando el usuario indique expresamente que lo quiere «sin título» o que no se incluya ese campo; en ese caso, devolver solo un bloque `text` con el cuerpo. Pedir la descripción por sí solo no activa esa excepción. Respetar también una petición expresa de entregar únicamente el título. Una aclaración indispensable, una referencia inaccesible o un diff vacío se comunican directamente antes de generar campos; el formato no obliga a inventar contenido.
 
-Antes de responder, comprobar que los campos cubren el diff completo del origen contra el destino resueltos, que no incluyen trabajo local pendiente y que cada afirmación de validación tiene evidencia aplicable. Omitir secciones opcionales vacías y listas de comprobación genéricas.
+Antes de responder, comprobar que hay un título concreto y un cuerpo en bloques separados, salvo excepción explícita del usuario; que los campos cubren el diff completo del origen contra el destino resueltos; que no incluyen trabajo local pendiente; y que cada afirmación de validación tiene evidencia aplicable. Omitir secciones opcionales vacías y listas de comprobación genéricas.

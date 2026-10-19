@@ -2,6 +2,8 @@
 
 > Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
 
+La única plantilla vigente es [.env.example](../../.env.example) en la raíz. Las plantillas de los workspaces se retiraron porque el flujo Docker no las utiliza.
+
 El backend carga `.env` mediante `dotenv/config` desde su directorio de trabajo. Los comandos de workspace usan `apps/backend`. El frontend usa variables Vite desde `apps/frontend`; las variables `VITE_*` se incrustan en el JavaScript público durante build y nunca deben contener secretos.
 
 ## Backend: requisitos de arranque
@@ -48,7 +50,7 @@ Estos defaults son los del código revisado, no promesas de disponibilidad de mo
 
 ### Particularidades de Qdrant
 
-El adaptador elimina protocolo y `/dashboard` de la URL y reconstruye protocolo con `QDRANT_HTTPS`. Una URL escrita con HTTPS no basta si la bandera dice `false`. La plantilla backend contiene precisamente esa combinación contradictoria.
+El adaptador elimina protocolo y `/dashboard` de la URL y reconstruye protocolo con `QDRANT_HTTPS`. Una URL escrita con HTTPS no basta si la bandera dice `false`. La antigua plantilla backend contenía esa combinación contradictoria; ya fue retirada.
 
 Ejemplo local de configuración, si existe una instancia Qdrant HTTP:
 
@@ -68,13 +70,13 @@ Para un host externo TLS, ajustar host, puerto REST y `QDRANT_HTTPS=true` según
 | `VITE_API_URL` | `useGenerateCourseAnalysis` | Misma URL de Express para análisis |
 | `BACKEND_URL` | Archivo de configuración Vite en modos distintos de development | Destino de proxy de preview; no configura por sí solo el cliente publicado |
 
-La plantilla frontend declara solo `VITE_BACKEND_URL`; añadir `VITE_API_URL` cuando se prepara otro entorno. En development el proxy apunta siempre a `http://localhost:3000`, aunque `BACKEND_URL` tenga otro valor.
+En el procedimiento anterior se debían definir `VITE_BACKEND_URL` y `VITE_API_URL` para preparar otro entorno. En aquella revisión, en development el proxy apuntaba siempre a `http://localhost:3000`, aunque `BACKEND_URL` tuviera otro valor.
 
 Sin `VITE_BACKEND_URL`, auth y progreso usan `/api` y Vite elimina ese prefijo; chat termina llamando `/api/api/chat`, que sí llega a `/api/chat`. El generador usa `replace('/api', '')` y termina en un path incorrecto tras el proxy. La configuración local propuesta evita esa combinación, pero el adaptador sigue requiriendo corrección para soportar todas las bases.
 
 Un servidor estático de producción no hereda proxies de Vite. Configurar las dos URLs públicas antes de `npm run build`, o definir un reverse proxy que respete los paths reales y verificar cada módulo. Usar bases sin slash final para evitar dobles separadores en los adaptadores.
 
-## Variables de plantillas sin consumidor actual
+## Variables por workspace (referencia histórica)
 
 `BACKEND_URL` y `VITE_BACKEND_URL` dentro de `apps/backend/.env` no configuran Express ni el frontend: Vite lee el entorno de su propio workspace. El único consumidor de `BACKEND_URL` encontrado es `vite.config.ts`. No asumir que un archivo backend configura las dos apps.
 
@@ -82,4 +84,4 @@ Un servidor estático de producción no hereda proxies de Vite. Configurar las d
 
 Conservar secretos en entorno privado. Las plantillas permiten conocer nombres y formatos; no usar valores de prueba como credenciales de producción. Cambiar una variable `VITE_*` requiere reiniciar dev o reconstruir el bundle publicado. Cambiar el modelo de embeddings exige regenerar el conocimiento vectorial compatible.
 
-Fuentes: [AuthController](../../apps/backend/src/auth/infrastructure/controllers/AuthController.ts), [GPT](../../apps/backend/src/chat/infrastructure/services/GPTService.ts), [Qdrant](../../apps/backend/src/chat/infrastructure/services/QdrantService.ts), [Piper](../../apps/backend/src/chat/infrastructure/services/PiperTTSService.ts), [memoria](../../apps/backend/src/chat/infrastructure/services/ConversationMemoryManager.ts), [Vite](../../apps/frontend/vite.config.ts) y [plantilla backend](../../apps/backend/.env.example).
+Fuentes: [AuthController](../../apps/backend/src/auth/infrastructure/controllers/AuthController.ts), [GPT](../../apps/backend/src/chat/infrastructure/services/GPTService.ts), [Qdrant](../../apps/backend/src/chat/infrastructure/services/QdrantService.ts), [Piper](../../apps/backend/src/chat/infrastructure/services/PiperTTSService.ts), [memoria](../../apps/backend/src/chat/infrastructure/services/ConversationMemoryManager.ts), [Vite](../../apps/frontend/vite.config.ts) y [plantilla raíz vigente](../../.env.example).

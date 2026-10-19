@@ -46,7 +46,7 @@ Las respuestas n8n y el material RAG son entradas externas. No existe un validad
 
 Los `.env` y artefactos generados están ignorados. Las plantillas contienen valores de desarrollo; el seed usa cuentas y contraseña conocidas. Compose publica PostgreSQL con credenciales locales. Para un entorno remoto se necesitan secretos propios, HTTPS y políticas de acceso de la infraestructura.
 
-Qdrant reconstruye protocolo a partir de `QDRANT_HTTPS`, no simplemente de la URL. La plantilla combina una URL HTTPS con `QDRANT_HTTPS=false`; debe corregirse en la configuración efectiva del entorno. El generador tiene un webhook externo de respaldo; configurar una URL explícita evita depender de un destino implícito.
+Qdrant reconstruye protocolo a partir de `QDRANT_HTTPS`, no simplemente de la URL. La antigua plantilla backend, ya retirada, combinaba una URL HTTPS con `QDRANT_HTTPS=false`; comprobar la coherencia de ambos valores si se reutiliza aquella configuración. El generador tiene un webhook externo de respaldo; configurar una URL explícita evita depender de un destino implícito.
 
 Los logs y errores pueden contener mensajes internos de servicios. La API no centraliza redacción, correlación o manejo de errores. El manejador global de tres parámetros no actúa como middleware de errores de Express.
 
@@ -66,4 +66,4 @@ Estas acciones son propuestas pendientes. El [ADR 0005](../project/adrs/0005-aut
 - [Middleware JWT](../../apps/backend/src/auth/infrastructure/middlewares/authMiddleware.ts) y [montajes Express](../../apps/backend/src/server.ts).
 - [Grupos](../../apps/backend/src/groups/infrastructure/controller/GroupsController.ts), [progreso](../../apps/backend/src/auth/infrastructure/controllers/ProgresoController.ts) y [chat](../../apps/backend/src/chat/infrastructure/controllers/ChatController.ts).
 - [Sesión del navegador](../../apps/frontend/src/visual/features/admin-docente-y-estudiante/hooks/useAuth.ts), [login](../../apps/backend/src/auth/application/useCases/LoginUseCase.ts) y [registro profesor](../../apps/backend/src/auth/application/useCases/RegisterProfesorUseCase.ts).
-- [Plantilla de entorno](../../apps/backend/.env.example), [seed](../../apps/backend/prisma/seed.ts) y [Compose](../../compose.yaml).
+- [Plantilla de entorno raíz vigente](../../.env.example), [seed](../../apps/backend/prisma/seed.ts) y [Compose](../../compose.yaml).

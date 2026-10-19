@@ -1,148 +1,201 @@
 # Guía del desarrollador: primer arranque y trabajo local
 
-Esta guía lleva desde una máquina sin el proyecto preparado hasta la aplicación abierta y el primer cambio de código. Para comprender antes el producto y sus componentes, leer el [resumen de CyberSim](../architecture/resumen.md).
+Esta guía explica cómo iniciar CyberSim en Windows y hacer tu primer cambio. Para conocer los componentes y encontrar dónde trabajar en el código, consulta el [resumen de CyberSim](../architecture/resumen.md).
 
-Ejecutar desde la raíz de CyberSim en PowerShell. El editor trabaja sobre Windows; Node, npm y Prisma se ejecutan en contenedores. No se exige Node instalado en Windows para este recorrido.
+## 1. Prepara las herramientas y el proyecto
 
-## 1. Prepara Docker y obtén el proyecto
+Necesitas:
 
 - Windows 11 con Docker Desktop, WSL y contenedores Linux.
-- Compose con Watch; mínimo funcional del contrato 2.32.2. La ejecución local revisada utilizó Compose 5.5.1.
-- 16 GB RAM física; objetivo de 8 GB Docker pendiente de medición bajo carga.
-- Internet para imágenes/dependencias/voz y para OpenAI, Google Drive y SMTP durante su uso.
+- Docker Compose 2.32.2 o superior, con soporte para Watch (sincronización de cambios).
+- Git y un editor de código.
+- Un equipo con 16 GB de RAM.
+- Conexión a Internet para descargar imágenes, dependencias y el modelo de voz, y para utilizar las integraciones externas.
 
-Instalar Git si aún no está disponible. Clonar el repositorio desde la URL facilitada por el equipo, abrir su carpeta en el editor y abrir una terminal PowerShell en esa raíz, donde están `compose.yaml` y `package.json`. Si ya tienes el clon, utiliza esa carpeta y conserva su configuración y datos.
+Clona el repositorio desde la URL facilitada por el equipo y abre su carpeta en el editor. Ejecuta los comandos de esta guía en una terminal PowerShell situada en la raíz del proyecto, donde están `compose.yaml` y `package.json`.
 
-Iniciar Docker Desktop y comprobar que usa contenedores Linux. Desde la terminal:
+Inicia Docker Desktop y comprueba que usa contenedores Linux:
 
 ```powershell
 docker version
 docker compose version
 ```
 
-El primer comando debe mostrar cliente y servidor accesibles. Si Docker Desktop aún no ha iniciado o pide habilitar WSL/integración Linux, resolverlo antes de continuar. No es necesario ejecutar `npm install` ni preparar un PostgreSQL independiente en Windows.
+`docker version` debe mostrar tanto el cliente como el servidor. Si el servidor no responde, termina de iniciar Docker Desktop y revisa su configuración de WSL.
 
-## 2. Crea la configuración privada
+Docker ejecuta Node, npm, Prisma y PostgreSQL. Puedes trabajar con el editor en Windows sin instalar esas herramientas por separado.
 
-Crear configuración privada una vez:
+## 2. Crea la configuración local
+
+Prepara los secretos de los servicios locales:
 
 ```powershell
 ./scripts/dev.ps1 init
 ```
 
-El script genera secretos locales estables desde [.env.example](../../.env.example). Si `.env` existe, lo conserva. No publicar sus valores. Los `.env` heredados dentro de los workspaces no son la configuración Docker: las imágenes los excluyen y Compose proyecta las variables raíz por servicio.
+El script crea `.env` en la raíz a partir de [.env.example](../../.env.example) y genera los secretos que usan los servicios locales. Si el archivo ya existe, completa los secretos vacíos o ausentes y conserva los valores configurados. Puedes repetir el comando sin cambiar los secretos ya generados. Al terminar muestra `Configuracion local lista`.
 
-Antes de reutilizar datos, comprobar `POSTGRES_USER`, `POSTGRES_PASSWORD` y `POSTGRES_DB`. Cambiar estas variables no cambia las credenciales que el volumen PostgreSQL ya guarda.
+Toda la configuración local se edita en ese `.env` raíz. Mantén sus valores privados y fuera de Git. Las credenciales de OpenAI, Google y correo pueden completarse después del primer arranque, como indica el paso 5.
 
-## 3. Inicia el entorno
+Antes de arrancar, comprueba que Compose puede leer la configuración:
+
+```powershell
+docker compose config --quiet
+```
+
+Si termina sin errores, continúa al paso 3. Esta comprobación no inicia contenedores ni muestra los secretos. Si indica que falta una variable como `JWT_SECRET`, `INTERNAL_SIGNING_KEY` o `N8N_ENCRYPTION_KEY`, vuelve a ejecutar `./scripts/dev.ps1 init` y repite la comprobación. Estos secretos se generan localmente; no tienes que solicitarlos a un proveedor.
+
+## 3. Inicia la aplicación
 
 ```powershell
 docker compose up --build --watch
 ```
 
-`./scripts/dev.ps1 up` ejecuta el mismo comando. La terminal permanece abierta para Watch y logs. El primer arranque descarga/construye imágenes y voz; los siguientes reutilizan capas y volúmenes.
+Mantén esta terminal abierta: muestra los logs y sincroniza los cambios del código con los contenedores. El primer arranque tarda más porque descarga dependencias, construye las imágenes y prepara el modelo de voz.
 
-| Acceso desde Windows | Uso |
+El arranque prepara la base de datos, aplica las migraciones y crea las cuentas y los datos de demostración que falten. También inicia frontend, backend y los servicios de automatización, búsqueda y voz. Espera a que el frontend muestre el mensaje de Vite con la dirección del servidor antes de abrir la aplicación. La construcción de las imágenes puede terminar antes de que los servicios estén listos.
+
+| Dirección | Qué encontrarás |
 |---|---|
 | `http://localhost:5173` | Aplicación y diagnóstico de preparación |
-| `http://localhost:5678` | Editor n8n, owner y consentimiento OAuth |
-| `http://localhost:5173/api/health/live` | Backend accesible mediante Vite |
-| `http://localhost:5173/api/health/ready` | Estado agregado de preparación |
+| `http://localhost:5678` | n8n, la herramienta de automatización de las integraciones |
 
-Backend 3000/3001, PostgreSQL, Qdrant y Piper no publican puertos al host. Usar Vite o herramientas dentro de Docker.
+Accede a la API desde el frontend, que dirige las solicitudes al backend. La base de datos y los demás servicios internos se utilizan desde los contenedores.
 
-## Qué prepara Docker y qué datos conserva
+## 4. Comprueba el arranque e inicia sesión
 
-1. Preflight de solo lectura: volumen vacío o PostgreSQL major 15.
-2. Conexión comprobada, migraciones versionadas y seed de fixtures faltantes.
-3. Aplicaciones, Qdrant, n8n con SQLite persistido, runner JS y Piper.
-4. Preparación de workflows y baseline cuando la configuración necesaria está disponible.
-5. Diagnóstico por capacidad; no se declara aceptación externa por tener procesos vivos.
-
-Se reutiliza `cybersim_postgres_data`. El seed conserva contraseñas y progreso existentes. Las cuentas nuevas de demostración son `profesor@test.com`, `estudiante1@test.com` y `estudiante2@test.com`, con contraseña inicial `password123`. En un volumen reutilizado pueden conservar otra contraseña.
-
-## 4. Completa los accesos externos de tu instalación
-
-La provisión y las pruebas reales siguen siendo manuales. Completar el `.env` privado raíz:
-
-| Integración | Datos y procedimiento |
-|---|---|
-| OpenAI | `OPENAI_API_KEY` y acceso a modelos configurados; los valores de plantilla no prueban acceso ni calidad |
-| n8n | Crear owner en la UI y clave de API pública; guardar `N8N_ADMIN_API_KEY` |
-| Google Drive | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET`, `GOOGLE_DRIVE_FOLDER_ID`; cliente del equipo y cuenta individual con lectura de la carpeta común |
-| Consentimiento Google | Autorizar credencial en n8n. Callback `http://localhost:5678/rest/oauth2-credential/callback`, comprobándolo con la UI de n8n |
-| SMTP externo | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS`, `FROM_EMAIL`; enlaces al frontend local |
-
-Tras editar `.env`, recrear los servicios afectados mediante el comando de arranque. Watch no sincroniza secretos. No borrar SQLite ni regenerar su clave para resolver un consentimiento pendiente.
-
-Puedes realizar el primer arranque con esos campos vacíos para acceder a la aplicación y crear el owner n8n. Solicita al responsable del equipo las credenciales compartidas y acceso de lectura a la carpeta común; no hace falta crear un proyecto Google independiente por desarrollador.
-
-Con el owner creado y `N8N_ADMIN_API_KEY` configurada, volver a arrancar permite al preparador gestionar los workflows y las credenciales correspondientes. Después completa el consentimiento de tu cuenta Google en la credencial n8n. Ese consentimiento se conserva en SQLite; puede requerir renovación si Google lo revoca o caduca.
-
-## 5. Comprueba tu instalación y entra
-
-Abrir `http://localhost:5173` y revisar el diagnóstico de preparación. En otra terminal, desde la misma carpeta:
+Comprueba primero los contenedores desde otra terminal PowerShell:
 
 ```powershell
-docker compose ps
+docker compose ps -a
 ```
 
-Las etapas auxiliares que terminan correctamente pueden aparecer como finalizadas; los servicios permanentes deben permanecer activos. Si falla `migrate`, revisar su log antes de intentar login. No ejecutar un reset automáticamente para ocultar ese fallo.
+Antes de abrir `http://localhost:5173`, comprueba estos estados:
 
-Para entrar con fixtures nuevos, usar `estudiante1@test.com` o `profesor@test.com` y `password123`. Si el volumen ya tenía esas cuentas, se conserva su contraseña previa. Comprobar que se puede acceder a la aplicación y consultar los datos de demostración.
+| Servicio | Estado esperado |
+|---|---|
+| `volume-check` y `migrate` | `Exited (0)`: tareas completadas correctamente |
+| `postgres` y `backend` | `Up` y, tras sus comprobaciones, `healthy` |
+| `frontend` | `Up`, con el puerto `127.0.0.1:5173` publicado |
 
-Un login correcto confirma ese recorrido, no las llamadas de IA, la recepción SMTP ni OAuth. Si el diagnóstico indica configuración pendiente, revisar la integración nombrada en el paso 4. Si señala validación pendiente, consultar la sección de pruebas: la aceptación real de proveedores se ejecuta expresamente y puede tener coste.
+`Created` significa que un contenedor todavía no ha arrancado. Si alguno de los servicios anteriores muestra `Created` o `Exited` con un código distinto de cero, consulta los logs antes de continuar:
+
+```powershell
+docker compose logs --tail=100 volume-check postgres migrate backend frontend
+```
+
+PostgreSQL espera a `volume-check`; la migración espera a PostgreSQL; el backend espera a la migración, y el frontend espera al backend. Un fallo al principio de esta cadena impide que se publique el puerto 5173, aunque n8n u otros servicios estén activos.
+
+Con el frontend activo, abre `http://localhost:5173` y revisa el diagnóstico de preparación.
+
+En una instalación nueva puedes entrar con estas cuentas:
+
+| Perfil | Correo | Contraseña inicial |
+|---|---|---|
+| Profesor | `profesor@test.com` | `password123` |
+| Estudiante | `estudiante1@test.com` | `password123` |
+| Estudiante | `estudiante2@test.com` | `password123` |
+
+Comprueba que puedes iniciar sesión y consultar los datos de demostración. Las cuentas vienen confirmadas, por lo que este primer acceso no requiere enviar correo.
+
+Si faltan credenciales externas, el diagnóstico indicará qué funciones requieren configuración. Puedes abrir la aplicación y trabajar en el código mientras completas esos accesos; las funciones de IA, Google Drive y correo necesitan sus respectivas integraciones.
+
+## 5. Configura las integraciones que necesites
+
+Solicita al responsable del equipo las credenciales y el acceso de lectura a la carpeta compartida de Google Drive. Completa los siguientes campos en el `.env` raíz:
+
+| Integración | Configuración |
+|---|---|
+| OpenAI | `OPENAI_API_KEY`, con acceso a los modelos indicados en `.env.example` |
+| Google Drive | `GOOGLE_CLIENT_ID`, `GOOGLE_CLIENT_SECRET` y `GOOGLE_DRIVE_FOLDER_ID` proporcionados por el equipo |
+| Correo SMTP | `SMTP_HOST`, `SMTP_PORT`, `SMTP_SECURE`, `SMTP_USER`, `SMTP_PASS` y `FROM_EMAIL` |
+
+Para configurar n8n y autorizar Google Drive:
+
+1. Abre `http://localhost:5678` y crea la cuenta administradora de tu instalación local.
+2. Crea una clave de API pública en n8n y guárdala como `N8N_ADMIN_API_KEY` en el `.env` raíz.
+3. Detén el comando de arranque con `Ctrl+C` y vuelve a ejecutar `docker compose up --build --watch`. Así los servicios reciben las variables que acabas de editar.
+4. Comprueba la preparación desde otra terminal con `docker compose logs --tail=50 preparation`. El servicio crea las credenciales `cybersim-service`, `cybersim-webhook` y, si configuraste `GOOGLE_CLIENT_ID` y `GOOGLE_CLIENT_SECRET`, `cybersim-google`. También importa los seis workflows del repositorio; el de Drive necesita además `GOOGLE_DRIVE_FOLDER_ID`.
+5. Actualiza la página de n8n. En **Credentials** debe aparecer `cybersim-google`, y en **Workflows** deben aparecer los flujos de CyberSim. Si faltan y el log muestra `preparation_pending` repetidamente, resuelve el error antes de continuar. Tener el contenedor activo no garantiza que la preparación haya terminado.
+
+   La credencial de Google Drive se encuentra en **Overview → Credentials**, resaltada en la imagen:
+
+   ![Ubicación de la credencial cybersim-google en Overview → Credentials de n8n](resources/n8n-google.png)
+
+6. Abre la credencial Google Drive `cybersim-google` y autoriza tu cuenta con acceso a la carpeta compartida. Comprueba en esa pantalla la URL de retorno OAuth; la configuración local usa `http://localhost:5678/rest/oauth2-credential/callback`. La credencial solicita acceso de solo lectura a Drive.
+
+Cada vez que edites `.env`, detén y vuelve a ejecutar el comando de arranque para aplicar los valores. Watch sincroniza código; los cambios de configuración requieren recrear los servicios.
+
+Abre `http://localhost:5173` y despliega **Entorno de desarrollo**, en la esquina inferior izquierda. Allí puedes ver el estado de OpenAI, Correo, Google Drive y los demás servicios. Si alguno indica **requiere configuración**, revisa sus datos en este paso.
+
+![Ubicación de popup de entorno de desarrollo](resources/general-dev-environment.png)
+
+El estado **configurado** significa que CyberSim detectó los datos necesarios para intentar la conexión. Por ejemplo, Correo puede aparecer configurado porque completaste las variables SMTP, aunque una contraseña incorrecta impida enviar mensajes. Para confirmar que funciona hay que realizar un envío y comprobar que el correo llega.
+
+**Verificación: pendiente** indica que aún faltan comprobaciones de funcionamiento con los proveedores. La sección [pruebas de integraciones](#pruebas-de-integraciones) explica cómo ejecutar esas comprobaciones. Puedes continuar con el primer cambio de código del paso 6; para utilizar las funciones de IA, Drive o correo, completa también la configuración y las pruebas de los servicios correspondientes.
 
 ## 6. Haz tu primer cambio
 
-Mantener abierta la terminal con Watch. Editar un texto de un componente en `apps/frontend/src/visual`, guardar y comprobar el cambio en el navegador; restaurarlo si era una prueba. Para cambios de backend, editar sus fuentes y observar el reinicio en los logs. El [mapa del código del resumen](../architecture/resumen.md#dónde-trabajar-en-el-repositorio) permite elegir el módulo correcto.
+Con `docker compose up --build --watch` activo:
 
-Con la aplicación accesible, el login comprobado y Watch propagando cambios, ya puedes trabajar sobre frontend/backend. Las funciones externas concretas necesitan además su configuración y validación. En días posteriores basta con el comando del paso 3: no recrear `.env` ni volver a configurar todo desde cero.
+1. Edita un texto de un componente en `apps/frontend/src/visual` y guarda el archivo.
+2. Comprueba el cambio en el navegador; el frontend se actualiza automáticamente.
+3. Para trabajar en el backend, edita sus fuentes en `apps/backend/src` y observa el reinicio en los logs.
 
-## Referencia de mantenimiento
+El [mapa del código](../architecture/resumen.md#dónde-trabajar-en-el-repositorio) te ayuda a elegir el módulo. Si estás haciendo una prueba de edición, restaura el texto al terminar.
 
-Los apartados siguientes se consultan cuando la tarea los requiere; no forman parte de la lectura inicial obligatoria.
+Al reiniciar el backend se pierde el historial temporal de las conversaciones del tutor. La aplicación informa de la pérdida de contexto para que puedas iniciar una conversación nueva.
 
-## Edición y mantenimiento
+## Trabajo diario y cierre
 
-Watch sincroniza fuentes: HMR frontend y reinicio backend. Reiniciar backend pierde el historial temporal del tutor; la UI informa pérdida de contexto y no reenvía automáticamente el mensaje fallido.
-
-Schema, migraciones y dependencias requieren mantenimiento explícito. Detener Watch antes y revisar SQL/lockfile:
+En los siguientes días, inicia Docker Desktop y ejecuta desde la raíz:
 
 ```powershell
-./scripts/dev.ps1 status
+docker compose up --build --watch
+```
+
+La configuración, la base de datos y los accesos guardados por n8n se conservan entre arranques. El inicio completa los datos de demostración que falten y conserva las contraseñas y el progreso existentes.
+
+Para terminar, pulsa `Ctrl+C` dos veces. Puedes retirar los contenedores conservando los datos con:
+
+```powershell
+docker compose down
+```
+
+Usa `down` sin `-v`: la opción `-v` elimina los volúmenes que contienen datos. Mantén las credenciales PostgreSQL de `.env` coherentes con las de tu base de datos; editar esas variables no cambia las credenciales ya guardadas en ella.
+
+## Consulta para tareas de mantenimiento
+
+Estos apartados se usan cuando necesitas modificar el esquema, las dependencias o las integraciones.
+
+### Migraciones y dependencias
+
+Detén Watch antes de ejecutar mantenimiento. Para crear una migración tras editar el esquema, o aplicar migraciones existentes:
+
+```powershell
 ./scripts/dev.ps1 migrate create --name descripcion_del_cambio
 ./scripts/dev.ps1 migrate apply
 ```
 
-El script pausa admisión, detiene aplicaciones/preparador, ejecuta herramientas y reconstruye. Ante fallo conserva la pausa. El verbo `deps` actualiza el lockfile mediante npm y exige revisar el diff. No hay reset automático. Consultar [estado y límites](../project/estado-desarrollo-docker.md) antes de operaciones importantes: la existencia del comando no acredita todos los casos de mantenimiento Windows.
+El script pausa las operaciones de integración, detiene las aplicaciones, ejecuta la tarea y reconstruye los servicios. Revisa el SQL generado antes de incluirlo en Git. Si falla, las integraciones permanecen pausadas: revisa el error antes de continuar.
 
-Cambios de corpus/catálogos/workflows requieren reconstruir las imágenes correspondientes; workflows instalados usan además actualización explícita.
+La acción `./scripts/dev.ps1 deps` actualiza el lockfile mediante npm; revisa también ese cambio. Consulta [mantenimiento](mantenimiento.md) y [estado del entorno](../project/estado-desarrollo-docker.md) para los detalles y límites de estas herramientas.
 
-Las imágenes se construyen por destino desde el Dockerfile común. Para reconstruir solo una aplicación:
+### Flujos de n8n
 
-```powershell
-docker compose build frontend
-docker compose build backend
-```
-
-Frontend no genera Prisma; backend no exporta el catálogo frontend. El preparador usa una etapa propia con los JSON de conocimiento, y `tools` conserva ambas toolchains para ejecutar los checks de esta guía. El arranque completo sigue usando el comando del paso 3. Consultar [el mapa de etapas](../architecture/desarrollo-docker.md#etapas-e-imágenes-de-desarrollo) si necesitas cambiar la construcción.
-
-## Workflows: versión compartida en Git
-
-Los JSON y manifiesto están en [infra/n8n](../../infra/n8n). El bootstrap prepara los faltantes; reiniciar no reemplaza ediciones guardadas.
+Los flujos compartidos se versionan en [infra/n8n](../../infra/n8n). Para exportar tus cambios locales o aplicar los del repositorio:
 
 ```powershell
 ./scripts/dev.ps1 workflows export
-# Revisar JSON y diff antes de incluirlos en Git.
+# Revisar los JSON y el diff antes de incluirlos en Git.
 ./scripts/dev.ps1 workflows apply
 ```
 
-`export` escribe en el host: conservar antes cambios Git no resueltos en esos archivos. `apply` pausa y respalda. Resolver/exportar ediciones divergentes; `--discard-local` significa descarte explícito y no forma parte del arranque cotidiano. No versionar credenciales ni SQLite. La validación contra API n8n real y el saneamiento completo siguen sujetos a la aceptación correspondiente.
+`export` escribe archivos en el repositorio; conserva primero cualquier edición pendiente en esos archivos. `apply` realiza una copia de respaldo y actualiza los flujos instalados. Si detecta ediciones divergentes, resuélvelas o expórtalas antes de aplicar. Conserva las credenciales y los datos privados de n8n fuera de Git.
 
-## Pruebas y aceptación
+### Comprobaciones del código
 
-Checks sin llamadas de pago, ejecutados en contenedores:
+Con el entorno iniciado, ejecuta los checks en contenedores:
 
 ```powershell
 docker compose --profile tools run --rm tools npm run typecheck --workspace @cybersim/backend
@@ -152,117 +205,10 @@ docker compose --profile tools run --rm tools npm run test --workspace @cybersim
 docker compose --profile tools run --rm tools node infra/test-db.mjs
 ```
 
-`test-db.mjs` crea una base aleatoria, aplica migraciones/seed, ejecuta tests backend y elimina exclusivamente esa base al terminar. No ejecutar la suite de integración contra la base educativa reutilizada.
+`test-db.mjs` crea una base temporal, aplica migraciones y datos de prueba, ejecuta los tests backend y elimina esa base al terminar. Usa este comando para mantener las pruebas separadas de los datos con los que trabajas en la aplicación.
 
-`./scripts/dev.ps1 verify` sin autorización externa informa la aceptación pendiente. Con `--external --budget-ack` puede consumir OpenAI y enviar correo al destinatario configurado; reservarlo para la tarea manual autorizada. Los criterios están en C11 del [contrato](../architecture/contrato-desarrollo-docker.md).
+### Pruebas de integraciones
 
-## Detención y diagnóstico
+`./scripts/dev.ps1 verify` informa las verificaciones externas pendientes. La variante `./scripts/dev.ps1 verify --external --budget-ack` utiliza proveedores reales: puede consumir OpenAI y enviar correo al destinatario indicado en `VERIFY_RECIPIENT`. Ejecútala cuando hayas acordado el presupuesto y el destinatario de prueba. Los criterios están en C11 del [contrato de desarrollo](../architecture/contrato-desarrollo-docker.md).
 
-`Ctrl+C` termina el arranque adjunto. Para retirar contenedores conservando datos:
-
-```powershell
-docker compose down
-```
-
-No usar `down -v` como cierre cotidiano. Corregir incompatibilidades de versión, conexión o estados inciertos sin borrar volúmenes ni regenerar secretos. No publicar configuración resuelta ni logs con tokens.
-
-Preparación incompleta, índice pendiente y OAuth ausente se muestran como capacidades pendientes. Piper puede fallar sin descartar texto; una búsqueda RAG técnicamente fallida bloquea generación. Consultar [arquitectura Docker](../architecture/desarrollo-docker.md), [D01–D26](../project/decisiones-desarrollo-docker.md) y [evidencia](../project/estado-desarrollo-docker.md).
-
-
-<details>
-<summary>Referencia conservada: ejecución anterior con Node en el host</summary>
-
-Procedimiento documentado antes del entorno Docker integrado. Sus puertos, requisitos de variables y comportamiento del seed corresponden a aquella revisión; para el uso actual seguir los apartados anteriores. Se conserva para mantener el detalle y contexto del cambio.
-
-# Desarrollo local
-
-## Requisitos
-
-- Node.js `>=20.19.0` y npm `>=9.0.0`, según el manifiesto raíz.
-- PostgreSQL; el Compose del repositorio proporciona PostgreSQL 15.
-- Docker con Compose si se usa esa base local.
-- Configuración SMTP, OpenAI, Qdrant, Piper y webhook de feedback. Sus variables se exigen durante el arranque actual; consultar [configuración](configuracion.md).
-
-Las pruebas unitarias y E2E simuladas pueden ejecutarse sin PostgreSQL ni esos servicios. Para validar interacciones reales se necesitan sus endpoints accesibles.
-
-## Instalar y copiar plantillas
-
-Desde la raíz, en PowerShell:
-
-```powershell
-npm ci
-Copy-Item apps/backend/.env.example apps/backend/.env
-Copy-Item apps/frontend/.env.example apps/frontend/.env
-```
-
-Copiar solamente si no existen los archivos de destino; conservar la configuración personal ya creada. En Linux/macOS usar `cp` en lugar de `Copy-Item`. No versionar `.env`.
-
-Completar la plantilla backend con valores del entorno. Una clave ficticia satisface algunas comprobaciones de presencia, pero no hace funcionar una integración. El servidor no dispone de un modo oficial que desactive todos los servicios de IA y correo. Para desarrollo aislado se necesitan endpoints de prueba compatibles o una adaptación explícita de composición.
-
-Configurar en `apps/frontend/.env`:
-
-```dotenv
-VITE_BACKEND_URL=http://localhost:3000
-VITE_API_URL=http://localhost:3000
-```
-
-La primera variable evita el fallo de ruta del generador con el fallback `/api`. La segunda cubre el hook de análisis de curso, que usa configuración separada. Reiniciar Vite después de modificar variables.
-
-## Preparar PostgreSQL
-
-```powershell
-docker compose up -d postgres
-docker compose ps
-npm run db:generate --workspace @cybersim/backend
-npm run migrate:deploy --workspace @cybersim/backend
-```
-
-La plantilla conecta a `postgresql://postgres:postgres@localhost:5432/cybersim`. `DATABASE_URL` se usa durante ejecución; `DIRECT_URL`, si está definida, se utiliza por la CLI. Asegurar que ambas apunten a la base local prevista.
-
-`migrate:deploy` aplica las migraciones versionadas a una base nueva sin generar una migración adicional. Si se está diseñando un cambio de esquema, usar `db:migrate`. En una base desechable se puede optar por `db:push`, que sincroniza sin historial de migraciones; no mezclar ese flujo indiscriminadamente con una base administrada por migraciones.
-
-## Datos de demostración opcionales
-
-```powershell
-npm run db:seed --workspace @cybersim/backend
-```
-
-Ejecutar solo en una base de prueba preparada para ello. El seed inserta directamente, no hace `upsert`: repetirlo falla por correos/códigos únicos y puede dejar inserciones parciales. Crea usuarios ya confirmados y un curso. Sus cuentas locales son `profesor@test.com`, `estudiante1@test.com`, `estudiante2@test.com`, con contraseña `password123`. Esos correos no necesitan pasar la validación del registro porque el seed usa Prisma directamente.
-
-## Iniciar las aplicaciones
-
-En una terminal:
-
-```powershell
-npm run dev --workspace @cybersim/backend
-```
-
-En otra:
-
-```powershell
-npm run dev --workspace @cybersim/frontend
-```
-
-URLs por defecto:
-
-- Aplicación: `http://localhost:5173`.
-- API: `http://localhost:3000`.
-- Salud básica: `http://localhost:3000/health`.
-
-```powershell
-Invoke-RestMethod http://localhost:3000/health
-Invoke-RestMethod http://localhost:3000/api/chat/health
-Invoke-RestMethod http://localhost:3000/course-analysis/health
-```
-
-La primera llamada no comprueba la base; la segunda solo verifica realmente Qdrant; la tercera comprueba que haya URL de análisis. Verificar login y un intento con datos de prueba para comprobar persistencia.
-
-## Cierre y siguientes pasos
-
-Detener frontend y backend con `Ctrl+C`. `docker compose stop postgres` conserva el volumen. No borrar volúmenes para resolver un error sin revisar sus datos.
-
-Ejecutar [los checks](pruebas-y-calidad.md) antes de proponer cambios. Si falla una etapa, consultar [resolución de problemas](resolucion-de-problemas.md).
-
-Fuentes: [scripts backend](../../apps/backend/package.json), [scripts frontend](../../apps/frontend/package.json), [Compose](../../compose.yaml), [Prisma config](../../apps/backend/prisma.config.ts) y [seed](../../apps/backend/prisma/seed.ts).
-
-</details>
+Para investigar un fallo, consulta la [arquitectura del entorno Docker](../architecture/desarrollo-docker.md) y el [estado de las verificaciones](../project/estado-desarrollo-docker.md). Puedes comprobar el backend mediante `http://localhost:5173/api/health/live` y su preparación mediante `http://localhost:5173/api/health/ready`.

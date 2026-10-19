@@ -9,16 +9,40 @@ Push-Location -LiteralPath $projectRoot
 try {
  if ($Action -eq "init") {
   $envPath = Join-Path $projectRoot ".env"
-  if (Test-Path -LiteralPath $envPath) { Write-Host ".env existente conservado."; exit 0 }
-  $template = [IO.File]::ReadAllText((Join-Path $projectRoot ".env.example"))
-  foreach ($key in @("JWT_SECRET","INTERNAL_SIGNING_KEY","N8N_ENCRYPTION_KEY","N8N_RUNNERS_AUTH_TOKEN","N8N_TO_BACKEND_TOKEN","BACKEND_TO_N8N_TOKEN","MAINTENANCE_TOKEN")) {
-   $secretBytes = New-Object byte[] 48
-   [Security.Cryptography.RandomNumberGenerator]::Create().GetBytes($secretBytes)
-   $secretValue = [Convert]::ToBase64String($secretBytes)
-   $template = [regex]::Replace($template, "(?m)^" + $key + "=[ \t]*$", $key + "=" + $secretValue)
+  $envExists = Test-Path -LiteralPath $envPath
+  $sourcePath = if ($envExists) { $envPath } else { Join-Path $projectRoot ".env.example" }
+  $envContent = [IO.File]::ReadAllText($sourcePath)
+  $lineEnding = if ($envContent.Contains("`r`n")) { "`r`n" } else { "`n" }
+  $generatedCount = 0
+  $random = [Security.Cryptography.RandomNumberGenerator]::Create()
+  try {
+   foreach ($key in @("JWT_SECRET","INTERNAL_SIGNING_KEY","N8N_ENCRYPTION_KEY","N8N_RUNNERS_AUTH_TOKEN","N8N_TO_BACKEND_TOKEN","BACKEND_TO_N8N_TOKEN","MAINTENANCE_TOKEN")) {
+    $pattern = "(?m)^[ \t]*" + $key + "[ \t]*=(?<value>[^\r\n]*)"
+    $entries = [regex]::Matches($envContent, $pattern)
+    if ($entries.Count -gt 1) { throw "Variable $key duplicada en .env; conserva una sola definicion y vuelve a ejecutar init." }
+    $entry = if ($entries.Count) { $entries[0] } else { $null }
+    if ($entry) {
+     $value = $entry.Groups['value'].Value.Trim()
+     $valueWithoutComment = ($value -split '[ \t]+#', 2)[0].Trim()
+     if (!$value.StartsWith('#') -and $valueWithoutComment -notin @('', '""', "''")) { continue }
+    }
+    $secretBytes = New-Object byte[] 48
+    $random.GetBytes($secretBytes)
+    $secretLine = $key + "=" + [Convert]::ToBase64String($secretBytes)
+    if ($entry) {
+     $envContent = $envContent.Remove($entry.Index, $entry.Length).Insert($entry.Index, $secretLine)
+    } else {
+     if ($envContent.Length -gt 0 -and !$envContent.EndsWith("`n")) { $envContent += $lineEnding }
+     $envContent += $secretLine + $lineEnding
+    }
+    $generatedCount++
+   }
+  } finally { $random.Dispose() }
+  if (!$envExists -or $generatedCount -gt 0) {
+   [IO.File]::WriteAllText($envPath, $envContent, (New-Object Text.UTF8Encoding($false)))
   }
-  [IO.File]::WriteAllText($envPath, $template, (New-Object Text.UTF8Encoding($false)))
-  Write-Host ".env creado. Completa proveedores después; no compartas su contenido."
+  Write-Host "Configuracion local lista: $generatedCount secretos generados; valores configurados conservados."
+  Write-Host "Completa proveedores despues; no compartas el contenido de .env."
   exit 0
  }
  if ($Action -eq "up") { & docker compose up --build --watch; exit $LASTEXITCODE }
@@ -28,7 +52,7 @@ try {
   if ($LASTEXITCODE -ne 0) { throw "No se pudo pausar." }
   & docker compose stop backend frontend preparation
   if ($Action -eq "migrate") {
-   if ($Subcommand -notin @("create","apply")) { throw "Usa migrate create|apply; reset no está automatizado." }
+   if ($Subcommand -notin @("create","apply")) { throw "Usa migrate create|apply; reset no esta automatizado." }
    $npmTask = if ($Subcommand -eq "create") { "db:migrate" } else { "migrate:deploy" }
    & docker compose --profile tools run --rm -w /host tools npm run $npmTask --workspace @cybersim/backend -- @ToolArguments
   } else {
@@ -36,7 +60,7 @@ try {
   }
   if ($LASTEXITCODE -ne 0) { throw "Mantenimiento fallido; sigue pausado." }
   & docker compose up -d --build --force-recreate migrate backend frontend preparation
-  if ($LASTEXITCODE -ne 0) { throw "Reconstrucción fallida." }
+  if ($LASTEXITCODE -ne 0) { throw "Reconstruccion fallida." }
   & docker compose --profile tools run --rm tools node infra/tools.mjs maintenance resume
   exit $LASTEXITCODE
  }

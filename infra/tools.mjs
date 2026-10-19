@@ -8,8 +8,9 @@ const sha=v=>createHash('sha256').update(typeof v==='string'?v:JSON.stringify(v)
 async function read(n,f={}){try{return JSON.parse(await readFile(root+'/'+n+'.json','utf8'));}catch{return f;}}
 async function save(n,v){await writeFile(root+'/'+n+'.json',JSON.stringify(v,null,2),{mode:0o600});}
 async function request(url,body,headers={},method){
- const r=await fetch(url,{method:method||(body?'POST':'GET'),headers:{'Content-Type':'application/json',...headers},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(300000)});
- const text=await r.text();if(!r.ok)throw Object.assign(new Error('HTTP_'+r.status),{status:r.status});
+ const verb=method||(body?'POST':'GET');
+ const r=await fetch(url,{method:verb,headers:{'Content-Type':'application/json',...headers},...(body?{body:JSON.stringify(body)}:{}),signal:AbortSignal.timeout(300000)});
+ const text=await r.text();if(!r.ok){const target=new URL(url);throw Object.assign(new Error('HTTP_'+r.status+' '+verb+' '+target.hostname+target.pathname),{status:r.status});}
  return text?JSON.parse(text):{};
 }
 const backend=(v,b,m)=>request(base+'/internal/v1/'+v,b,{'X-Maintenance-Token':process.env.MAINTENANCE_TOKEN||''},m);
@@ -28,7 +29,7 @@ async function bootstrap(apply=false,discard=false){
  for(const [key,type,data]of [
   ['cybersim-service','httpHeaderAuth',{name:'X-Service-Token',value:process.env.N8N_TO_BACKEND_TOKEN}],
   ['cybersim-webhook','httpHeaderAuth',{name:'X-Cybersim-Webhook',value:process.env.BACKEND_TO_N8N_TOKEN}],
-  ['cybersim-google','googleDriveOAuth2Api',{clientId:process.env.GOOGLE_CLIENT_ID,clientSecret:process.env.GOOGLE_CLIENT_SECRET,scope:'https://www.googleapis.com/auth/drive.readonly'}]
+  ['cybersim-google','googleDriveOAuth2Api',{clientId:process.env.GOOGLE_CLIENT_ID,clientSecret:process.env.GOOGLE_CLIENT_SECRET,customScopes:true,enabledScopes:'https://www.googleapis.com/auth/drive.readonly'}]
  ]){
   if(map.credentials[key]||Object.values(data).some(v=>!v))continue;
   map.credentials[key]=(await api('credentials',{name:key,type,data})).id;await save('workflows',map);

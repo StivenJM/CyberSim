@@ -104,7 +104,7 @@ Impacto: el reloj total conserva referencias y actividad tras finalizar/reinicia
 
 Routers crean servicios al importar: feedback exige webhook, chat exige clave OpenAI, Qdrant y ambas URLs Piper; SMTP también exige configuración. Se corrigió la documentación de opcionalidad, no la composición.
 
-La [plantilla backend](../../apps/backend/.env.example) combina URL Qdrant HTTPS y bandera false; el [adaptador](../../apps/backend/src/chat/infrastructure/services/QdrantService.ts) reconstruye HTTP según la bandera. El [controller generador](../../apps/backend/src/agent-malvado/infrastructure/controllers/ScenarioBuilderController.ts) tiene URL externa fija de respaldo.
+La plantilla backend de la revisión `cc0c9cb` combinaba URL Qdrant HTTPS y bandera false; esa plantilla se retiró al unificar la configuración Docker en la raíz. El [adaptador](../../apps/backend/src/chat/infrastructure/services/QdrantService.ts) reconstruye HTTP según la bandera. El [controller generador](../../apps/backend/src/agent-malvado/infrastructure/controllers/ScenarioBuilderController.ts) tiene URL externa fija de respaldo.
 
 Propuesta: centralizar URLs, validar entorno por módulo y hacer explícitos destinos/servicios habilitados. Las guías ya explican el estado actual.
 

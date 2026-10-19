@@ -6,6 +6,7 @@
 - Alcance: progreso, cursos, matrículas, feedback, análisis, chat y generador.
 - Origen: hallazgos H-01 a H-03 de la revisión.
 - Aprobación: pendiente; no se asignan responsables o plazos.
+- Cierre parcial posterior, 18 de octubre: el usuario encargó concretar la autorización limitada de los recorridos de IA en el [contrato Docker v1 C06](../../architecture/contrato-desarrollo-docker.md) y [ADR 0009](0009-contrato-tecnico-desarrollo-docker.md). El resto de esta propuesta transversal sigue fuera de ese alcance; no se declara implementado.
 
 ## Contexto
 

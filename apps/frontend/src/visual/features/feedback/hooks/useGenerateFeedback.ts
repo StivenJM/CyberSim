@@ -1,3 +1,4 @@
+import { authorizedFetch } from '../../../../shared/http';
 import { API_BASE_URL } from "../../../common/utils/apiConfig";
 import { useAsyncState } from "../../../common/hooks";
 import type { FeedbackData } from '../types/feedback.types';
@@ -15,7 +16,7 @@ export const useGenerateFeedback = () => {
     slugEscenario: string
   ): Promise<{ feedback: FeedbackData } | null> =>
     runAsync(async () => {
-      const response = await fetch(`${API_BASE_URL}/feedback/generate`, {
+      const response = await authorizedFetch(`${API_BASE_URL}/feedback/generate`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({

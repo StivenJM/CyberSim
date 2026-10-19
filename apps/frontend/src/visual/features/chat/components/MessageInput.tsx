@@ -2,7 +2,7 @@ import React, { useState, type FormEvent } from 'react';
 import styles from '../styles/MessageInput.module.css';
 
 interface MessageInputProps {
-  onSendMessage: (message: string) => void;
+  onSendMessage: (message: string) => void | Promise<void>;
   disabled?: boolean;
   isContextMode?: boolean;
   onToggleContextMode?: () => void;
@@ -16,19 +16,19 @@ const MessageInput: React.FC<MessageInputProps> = ({
 }) => {
   const [inputValue, setInputValue] = useState('');
 
-  const handleSubmit = (e: FormEvent) => {
+  const handleSubmit = async (e: FormEvent) => {
     e.preventDefault();
 
     if (inputValue.trim() && !disabled) {
-      onSendMessage(inputValue.trim());
-      setInputValue('');
+      try { await onSendMessage(inputValue.trim()); setInputValue(''); }
+      catch { /* Keep the draft; the chat displays the error. No automatic resend. */ }
     }
   };
 
   const handleKeyPress = (e: React.KeyboardEvent<HTMLTextAreaElement>) => {
     if (e.key === 'Enter' && !e.shiftKey) {
       e.preventDefault();
-      handleSubmit(e);
+      void handleSubmit(e);
     }
   };
 

@@ -1,5 +1,7 @@
 # Configuración del entorno
 
+> Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
+
 El backend carga `.env` mediante `dotenv/config` desde su directorio de trabajo. Los comandos de workspace usan `apps/backend`. El frontend usa variables Vite desde `apps/frontend`; las variables `VITE_*` se incrustan en el JavaScript público durante build y nunca deben contener secretos.
 
 ## Backend: requisitos de arranque

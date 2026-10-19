@@ -1,5 +1,7 @@
 # Crear y mantener escenarios
 
+> Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
+
 Un escenario es una definición educativa declarativa. El cliente la transforma en entidades ECS; el backend conoce principalmente su slug y título. Consultar primero [simulación ECS](../architecture/simulacion-ecs.md) y los ejemplos activos.
 
 ## Crear un nivel estático

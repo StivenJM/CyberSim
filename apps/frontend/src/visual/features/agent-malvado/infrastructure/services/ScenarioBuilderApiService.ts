@@ -1,3 +1,4 @@
+import { authorizedFetch } from '../../../../../shared/http';
 import { API_BASE_URL } from '../../../../common/utils/apiConfig';
 import type { IScenarioBuilderService } from '../../domain/repositories/IScenarioBuilderService';
 import type { ScenarioGenerationRequestDTO, ScenarioGenerationResponseDTO } from '../../domain/models/ScenarioBuilderDTOs';
@@ -5,7 +6,7 @@ import type { ScenarioGenerationRequestDTO, ScenarioGenerationResponseDTO } from
 export class ScenarioBuilderApiService implements IScenarioBuilderService {
   async generateScenario(request: ScenarioGenerationRequestDTO): Promise<ScenarioGenerationResponseDTO> {
     try {
-      const response = await fetch(`${API_BASE_URL.replace('/api', '')}/api/agent-malvado/generate`, {
+      const response = await authorizedFetch(`${API_BASE_URL.replace('/api', '')}/api/agent-malvado/generate`, {
         method: 'POST',
         headers: {
           'Content-Type': 'application/json',

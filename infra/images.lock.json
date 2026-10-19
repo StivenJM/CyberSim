@@ -1,0 +1,13 @@
+{
+  "checked": "2026-10-18",
+  "platform": "linux/amd64",
+  "images": {
+    "node": "node:24.22.0-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5",
+    "postgres": "postgres:15.19-bookworm@sha256:d4a8e1f88f475ee3e0137fa89d21ebc59f6c6ab16bf369ee92907607cc3455ae",
+    "n8n": "n8nio/n8n:2.43.7@sha256:3db21366be1d3c77c1708963129c051948573019659e8873e0294be035ffc1b2",
+    "runners": "n8nio/runners:2.43.7@sha256:3aaa4194b4ba84548bb04d1761b74df7c9cab36a0b20e74cfaa7bac39504f9ea",
+    "qdrant": "qdrant/qdrant:v1.18.3@sha256:0bd98fa7977f1e75694779359ca4e212822e5a71334e28421182f72f209d5286",
+    "python": "python:3.12-slim-bookworm@sha256:34386ef0cb081344d7ec1c103ba398e6e9f64e9ab3a1509accc92a4e24a07258"
+  }
+}
+

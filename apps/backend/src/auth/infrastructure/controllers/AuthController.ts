@@ -1,3 +1,4 @@
+import { coordination } from '../../../integrations/coordinator.js'
 import express from "express"
 import type { TransportOptions } from "nodemailer"
 import type { Request, Response } from "express"
@@ -17,21 +18,15 @@ const router = express.Router()
 const repo = new PrismaAuthRepository()
 
 // Validar variables de entorno
-const jwtSecret = process.env.JWT_SECRET
-const fromEmail = process.env.FROM_EMAIL
-const frontendUrl = process.env.FRONTEND_URL
+const jwtSecret = process.env.JWT_SECRET || ''
+const fromEmail = process.env.FROM_EMAIL || ''
+const frontendUrl = process.env.FRONTEND_URL || 'http://localhost:5173'
 
-if (!jwtSecret) {
-  throw new Error("Falta la variable de entorno JWT_SECRET")
-}
 
-if (!fromEmail) {
-  throw new Error("Falta la variable de entorno FROM_EMAIL")
-}
 
-if (!frontendUrl) {
-  throw new Error("Falta la variable de entorno FRONTEND_URL")
-}
+
+
+
 
 const {
   SMTP_HOST,
@@ -41,14 +36,14 @@ const {
   SMTP_PASS,
 } = process.env
 
-if (!SMTP_HOST || !SMTP_USER || !SMTP_PASS) {
-  throw new Error('Faltan variables de entorno para la configuración de SMTP')
-}
+
 
 const smtpConfig = {
   host: SMTP_HOST,
   port: Number(SMTP_PORT ?? 587),
   secure: SMTP_SECURE === 'true',
+  requireTLS: SMTP_SECURE !== 'true',
+  connectionTimeout: 10000, greetingTimeout: 10000, socketTimeout: 20000,
   auth: {
     user: SMTP_USER,
     pass: SMTP_PASS,
@@ -61,7 +56,7 @@ const emailService = new NodemailerEmailService(smtpConfig, fromEmail, frontendU
 // Inicializar use cases
 const registerEstudiante = new RegisterEstudianteUseCase(repo, emailService)
 const registerProfesor = new RegisterProfesorUseCase(repo, emailService)
-const loginUseCase = new LoginUseCase(repo, jwtSecret)
+const loginUseCase = new LoginUseCase(repo, jwtSecret, async () => (await coordination()).installation_id)
 const confirmEmailUseCase = new ConfirmarEmailUseCase(repo)
 const resendConfirmationUseCase = new ReenviarConfirmacionEmailUseCase(repo, emailService)
 const obtenerEstudianteProfesor = new ObtenerEstudianteProfesorUseCase(repo)
@@ -75,7 +70,7 @@ router.post('/register/estudiante', async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       data: created,
-      message: 'Estudiante registrado. Por favor, verifica tu correo electrónico.'
+      message: created.emailStatus === 'failed' ? 'Cuenta creada; envío no confirmado. Puedes reenviar la confirmación.' : 'Estudiante registrado. Verifica tu correo electrónico.'
     })
   } catch (err) {
     if (err instanceof Error) {
@@ -91,7 +86,7 @@ router.post('/register/profesor', async (req: Request, res: Response) => {
     res.status(201).json({
       success: true,
       data: created,
-      message: 'Profesor registrado. Por favor, verifica tu correo electrónico.'
+      message: created.emailStatus === 'failed' ? 'Cuenta creada; envío no confirmado. Puedes reenviar la confirmación.' : 'Profesor registrado. Verifica tu correo electrónico.'
     })
   } catch (err) {
     if (err instanceof Error) {

@@ -10,14 +10,17 @@ export class NodemailerEmailService implements EmailService {
   private transporter: nodemailer.Transporter
   private fromEmail: string
   private frontendUrl: string
+  private configured: boolean
 
   constructor(smtpConfig: TransportOptions, fromEmail: string, frontendUrl: string) {
+    this.configured = !!process.env.SMTP_HOST && !!process.env.SMTP_USER && !!process.env.SMTP_PASS && !!fromEmail
     this.transporter = nodemailer.createTransport(smtpConfig)
     this.fromEmail = fromEmail
     this.frontendUrl = frontendUrl
   }
 
   async sendConfirmationEmail(email: string, token: string, nombre: string): Promise<void> {
+    if (!this.configured) throw new Error('SMTP externo pendiente de configuración')
     const confirmationUrl = `${this.frontendUrl}/auth/confirm?token=${token}`
 
     try {
@@ -27,13 +30,14 @@ export class NodemailerEmailService implements EmailService {
         subject: 'Confirma tu cuenta - CyberSim',
         html: this.getConfirmationEmailTemplate(nombre, confirmationUrl),
       })
-    } catch (error) {
-      console.error('Error al enviar email de confirmación:', error)
+    } catch {
+      console.error('SMTP_CONFIRMATION_FAILED')
       throw new Error('No se pudo enviar el email de confirmación. Inténtalo más tarde.')
     }
   }
 
   async sendPasswordResetEmail(email: string, token: string, nombre: string): Promise<void> {
+    if (!this.configured) throw new Error('SMTP externo pendiente de configuración')
     const resetUrl = `${this.frontendUrl}/auth/reset-password?token=${token}`
 
     try {
@@ -43,8 +47,8 @@ export class NodemailerEmailService implements EmailService {
         subject: 'Recuperación de contraseña - CyberSim',
         html: this.getPasswordResetEmailTemplate(nombre, resetUrl),
       })
-    } catch (error) {
-      console.error('Error al enviar email de recuperación:', error)
+    } catch {
+      console.error('SMTP_RECOVERY_FAILED')
       throw new Error('No se pudo enviar el email de recuperación. Inténtalo más tarde.')
     }
   }
@@ -200,7 +204,7 @@ export class NodemailerEmailService implements EmailService {
                         <tr>
                           <td width="48%" style="vertical-align: top;">
                             <p style="margin: 0 0 6px; font-size: 10px; color: #444; letter-spacing: 1.5px; text-transform: uppercase;">Validez del enlace</p>
-                            <p style="margin: 0; font-size: 13px; color: #555;">24 horas desde su emisión</p>
+                            <p style="margin: 0; font-size: 13px; color: #555;">1 hora desde su emisión</p>
                           </td>
                           <td width="4%" style="background-color: #1e1e1e;"></td>
                           <td width="48%" style="padding-left: 20px; vertical-align: top;">

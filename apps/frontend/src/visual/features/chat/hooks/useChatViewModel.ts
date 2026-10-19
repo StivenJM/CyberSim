@@ -59,6 +59,7 @@ export const useChatViewModel = (
       } catch (error) {
         console.error("Error al enviar mensaje:", error);
         syncState();
+        throw error;
       }
     },
     [chatFacade, syncState]

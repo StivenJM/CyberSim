@@ -1,5 +1,7 @@
 # Resolución de problemas
 
+> Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
+
 Diagnosticar primero el proceso que falla: Vite, Express, PostgreSQL o integración. Registrar comando, status HTTP y mensaje sin incluir secretos. Esta guía se basa en el código actual y en [la revisión](../architecture/revision-del-sistema.md).
 
 | Síntoma | Causa probable en esta implementación | Acción |

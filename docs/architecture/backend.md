@@ -1,5 +1,7 @@
 # Backend
 
+> Actualización Docker del 18 de octubre de 2026: para composición, integraciones, permisos de IA y estado funcional actuales consultar [arquitectura Docker](desarrollo-docker.md), [contrato vigente](contrato-desarrollo-docker.md) y [evidencia](../project/estado-desarrollo-docker.md). El detalle siguiente conserva la revisión anterior donde no se ha sustituido expresamente; sus afirmaciones sobre puertos, rutas antiguas o servicios externos no prevalecen sobre esas referencias.
+
 Express se inicia en [`src/server.ts`](../../apps/backend/src/server.ts), carga `dotenv/config`, configura CORS y parsers, monta routers y escucha en `0.0.0.0`, puerto `PORT` o `3000`. No sirve el frontend compilado.
 
 ## Organización y dependencias

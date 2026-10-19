@@ -1,3 +1,4 @@
+import type { Prisma } from '../../../generated/prisma/index.js'
 import type { IAuthRepository } from "../../domain/repositories/IAuthRepository.js"
 import type { Estudiante, EstudianteInput, EstudiantePublic } from "../../domain/models/Estudiante.js"
 import type { Profesor, ProfesorInput } from "../../domain/models/Profesor.js"
@@ -16,6 +17,10 @@ interface UsuarioAuthPersistence {
 }
 
 export class PrismaAuthRepository implements IAuthRepository {
+  constructor(private readonly db: Prisma.TransactionClient = prisma) {}
+  transaction<T>(work: (repository: IAuthRepository) => Promise<T>): Promise<T> {
+    return prisma.$transaction(tx => work(new PrismaAuthRepository(tx)));
+  }
 
   //Conversiones
   private mapUsuarioAuthToModel(prismaUser: UsuarioAuthPersistence): UsuarioAuth {
@@ -34,7 +39,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   // UsuarioAuth
 
   async createUsuarioAuth(data: UsuarioAuthInput): Promise<UsuarioAuth> {
-    const created = await prisma.usuario_auth.create({
+    const created = await this.db.usuario_auth.create({
       data: {
         correo_electronico: data.correo_electronico,
         contrasenia_hash: data.contrasenia_hash,
@@ -47,35 +52,35 @@ export class PrismaAuthRepository implements IAuthRepository {
   }
 
   async findUsuarioAuthByEmail(correo_electronico: string): Promise<UsuarioAuth | null> {
-    const found = await prisma.usuario_auth.findUnique({
+    const found = await this.db.usuario_auth.findUnique({
       where: { correo_electronico }
     })
     return found ? this.mapUsuarioAuthToModel(found) : null
   }
 
   async findUsuarioAuthById(id_usuario_auth: number): Promise<UsuarioAuth | null> {
-    const found = await prisma.usuario_auth.findUnique({
+    const found = await this.db.usuario_auth.findUnique({
       where: { id_usuario_auth }
     })
     return found ? this.mapUsuarioAuthToModel(found) : null
   }
 
   async findUsuarioAuthByToken(token: string): Promise<UsuarioAuth | null> {
-    const found = await prisma.usuario_auth.findFirst({
+    const found = await this.db.usuario_auth.findFirst({
       where: { token_confirmacion: token }
     })
     return found ? this.mapUsuarioAuthToModel(found) : null
   }
 
   async findUsuarioAuthByRecoveryToken(token: string): Promise<UsuarioAuth | null> {
-    const found = await prisma.usuario_auth.findFirst({
+    const found = await this.db.usuario_auth.findFirst({
       where: { token_recuperacion: token }
     })
     return found ? this.mapUsuarioAuthToModel(found) : null
   }
 
   async confirmUsuarioAuth(id_usuario_auth: number): Promise<void> {
-    await prisma.usuario_auth.update({
+    await this.db.usuario_auth.update({
       where: { id_usuario_auth },
       data: {
         confirmado: true,
@@ -86,7 +91,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   }
 
   async updateTokenRecuperacion(id_usuario_auth: number, token: string, expira: string): Promise<void> {
-    await prisma.usuario_auth.update({
+    await this.db.usuario_auth.update({
       where: { id_usuario_auth },
       data: {
         token_recuperacion: token,
@@ -96,7 +101,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   }
 
   async updateTokenConfirmacion(id_usuario_auth: number, token: string, expira: string): Promise<void> {
-    await prisma.usuario_auth.update({
+    await this.db.usuario_auth.update({
       where: { id_usuario_auth },
       data: {
         token_confirmacion: token,
@@ -106,7 +111,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   }
 
   async updatePassword(id_usuario_auth: number, nuevaContrasenia: string): Promise<void> {
-    await prisma.usuario_auth.update({
+    await this.db.usuario_auth.update({
       where: { id_usuario_auth },
       data: {
         contrasenia_hash: nuevaContrasenia,
@@ -119,7 +124,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   // Estudiante
 
   async createEstudiante(data: EstudianteInput & { id_usuario_auth: number }): Promise<Estudiante> {
-    const created = await prisma.estudiante.create({
+    const created = await this.db.estudiante.create({
       data: {
         id_usuario_auth: data.id_usuario_auth,
         codigo_unico: data.codigo_unico,
@@ -133,21 +138,21 @@ export class PrismaAuthRepository implements IAuthRepository {
   }
 
   async findEstudianteByUsuarioAuth(id_usuario_auth: number): Promise<Estudiante | null> {
-    const found = await prisma.estudiante.findUnique({
+    const found = await this.db.estudiante.findUnique({
       where: { id_usuario_auth }
     })
     return found as Estudiante | null
   }
 
   async findEstudianteById(id_estudiante: number): Promise<Estudiante | null> {
-    const found = await prisma.estudiante.findUnique({
+    const found = await this.db.estudiante.findUnique({
       where: { id_estudiante }
     })
     return found as Estudiante | null
   }
 
   async findEstudiantesByProfesor(id_profesor: number): Promise<EstudiantePublic[]> {
-    const estudiantes = await prisma.estudiante.findMany({
+    const estudiantes = await this.db.estudiante.findMany({
       where: {
         matricula: {
           some: {
@@ -166,7 +171,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   }
 
   async findEstudianteByCodigoUnico(codigo_unico: number): Promise<Estudiante | null> {
-    const found = await prisma.estudiante.findUnique({
+    const found = await this.db.estudiante.findUnique({
       where: { codigo_unico }
     })
     return found as Estudiante | null
@@ -175,7 +180,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   // Profesor
 
   async createProfesor(data: ProfesorInput & { id_usuario_auth: number }): Promise<Profesor> {
-    const created = await prisma.profesor.create({
+    const created = await this.db.profesor.create({
       data: {
         id_usuario_auth: data.id_usuario_auth,
         primernombre: data.primernombre,
@@ -188,7 +193,7 @@ export class PrismaAuthRepository implements IAuthRepository {
   }
 
   async findProfesorByUsuarioAuth(id_usuario_auth: number): Promise<Profesor | null> {
-    const found = await prisma.profesor.findUnique({
+    const found = await this.db.profesor.findUnique({
       where: { id_usuario_auth }
     })
     return found as Profesor | null

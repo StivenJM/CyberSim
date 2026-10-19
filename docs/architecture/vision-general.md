@@ -1,5 +1,7 @@
 # Visión técnica general
 
+> Actualización Docker del 18 de octubre de 2026: para composición, integraciones, permisos de IA y estado funcional actuales consultar [arquitectura Docker](desarrollo-docker.md), [contrato vigente](contrato-desarrollo-docker.md) y [evidencia](../project/estado-desarrollo-docker.md). El detalle siguiente conserva la revisión anterior donde no se ha sustituido expresamente; sus afirmaciones sobre puertos, rutas antiguas o servicios externos no prevalecen sobre esas referencias.
+
 CyberSim es un monorepositorio con dos aplicaciones TypeScript. El navegador ejecuta la simulación educativa; la API administra identidad, cursos, intentos y conexiones con servicios externos. Las aplicaciones se comunican por HTTP y no tienen un paquete de dominio compartido.
 
 Para una lectura rápida con diagrama y responsabilidades, consultar [arquitectura de un vistazo](resumen.md).
@@ -82,5 +84,5 @@ Las reglas del juego se calculan en el navegador. La API guarda resultados, pero
 ## Evidencia y decisiones relacionadas
 
 - [Manifiesto raíz](../../package.json), [frontend](../../apps/frontend/package.json) y [backend](../../apps/backend/package.json).
-- [Composición HTTP](../../apps/backend/src/server.ts), [entrada React](../../apps/frontend/src/visual/main.tsx) y [Compose](../../docker-compose.yml).
+- [Composición HTTP](../../apps/backend/src/server.ts), [entrada React](../../apps/frontend/src/visual/main.tsx) y [Compose](../../compose.yaml).
 - [ADR 0001: workspaces y módulos](../project/adrs/0001-workspaces-y-modulos.md) y [ADR 0002: simulación local](../project/adrs/0002-simulacion-ecs-en-cliente.md).

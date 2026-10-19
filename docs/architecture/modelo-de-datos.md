@@ -1,5 +1,7 @@
 # Modelo de datos
 
+> Actualización Docker del 18 de octubre de 2026: para composición, integraciones, permisos de IA y estado funcional actuales consultar [arquitectura Docker](desarrollo-docker.md), [contrato vigente](contrato-desarrollo-docker.md) y [evidencia](../project/estado-desarrollo-docker.md). El detalle siguiente conserva la revisión anterior donde no se ha sustituido expresamente; sus afirmaciones sobre puertos, rutas antiguas o servicios externos no prevalecen sobre esas referencias.
+
 PostgreSQL persiste identidad y actividad educativa. El esquema vigente está en [`schema.prisma`](../../apps/backend/prisma/schema.prisma), con ocho modelos. No existe una tabla activa de escenarios: el catálogo vive en TypeScript y el progreso se identifica por slug.
 
 ## Relaciones

@@ -50,3 +50,7 @@ test-results/
 playwright-report/
 blob-report/
 /.playwright/.cache
+# Estado, copias y evidencias locales de desarrollo
+.dev/
+**/__pycache__/
+apps/frontend/scripts/rag-output/

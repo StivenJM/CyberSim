@@ -3,6 +3,7 @@ import type { Profesor, ProfesorInput } from "../models/Profesor.js"
 import type { UsuarioAuth, UsuarioAuthInput } from "../models/UsuarioAuth.js"
 
 export interface IAuthRepository {
+  transaction?<T>(work: (repository: IAuthRepository) => Promise<T>): Promise<T>
 
   createUsuarioAuth(data: UsuarioAuthInput): Promise<UsuarioAuth>
   findUsuarioAuthByEmail(correo_electronico: string): Promise<UsuarioAuth | null>

@@ -20,11 +20,7 @@ const __filename = fileURLToPath(import.meta.url);
 const __dirname = path.dirname(__filename);
 
 // ─── Imports de los 5 escenarios activos ─────────────────────────────────────
-import { escenarioTutorial } from '../src/data/escenarios/escenarioTutorial.js';
-import { escenarioAmenazas } from '../src/data/escenarios/escenarioAmenazas.js';
-import { escenarioCriptografia } from '../src/data/escenarios/escenarioCriptografia.js';
-import { escenarioControlAcceso } from '../src/data/escenarios/escenarioControlAcceso.js';
-import { escenarioHackingEtico } from '../src/data/escenarios/escenarioHackingEtico.js';
+import { escenariosActivos } from '../src/data/escenarios/activos.js';
 
 // ─── Tipos internos para el script ───────────────────────────────────────────
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -111,13 +107,7 @@ interface AtaqueRAG {
 }
 
 // ─── Escenarios activos ───────────────────────────────────────────────────────
-const ESCENARIOS_ACTIVOS: EscenarioRaw[] = [
-  escenarioTutorial as EscenarioRaw,
-  escenarioAmenazas as EscenarioRaw,
-  escenarioCriptografia as EscenarioRaw,
-  escenarioControlAcceso as EscenarioRaw,
-  escenarioHackingEtico as EscenarioRaw,
-];
+const ESCENARIOS_ACTIVOS = escenariosActivos as unknown as EscenarioRaw[];
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function extraerNombreRed(red: unknown): string {
@@ -341,7 +331,7 @@ function main() {
     console.log(`\n📦 Procesando: ${esc.slug} — ${esc.titulo}`);
 
     const topologia = buildTopologia(esc);
-    topologias.push(topologia);
+    topologias.push({...topologia, definicion: esc} as DocumentoTopologia);
     console.log(`  ✅ Topología: ${topologia.zonas.length} zonas, ${topologia.zonas.reduce((acc, z) => acc + z.oficinas.reduce((a, o) => a + o.espacios.reduce((b, esp) => b + esp.dispositivos.length, 0), 0), 0)} dispositivos`);
 
     const desafio = buildDesafio(esc);

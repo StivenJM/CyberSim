@@ -1,3 +1,4 @@
+import PreparationStatus from './common/components/PreparationStatus.tsx';
 import { createRoot } from 'react-dom/client'
 import "./common/styles/global.css"
 import VistaOficina from './features/escenarios-simulados/pages/VistaOficina.tsx'
@@ -128,6 +129,7 @@ function AnimatedRoutes() {
 
 createRoot(document.getElementById('root')!).render(
   <BrowserRouter>
+    <PreparationStatus />
     <AgentMalvadoProvider>
       <SelectedLevelProvider>
         <AnimatedRoutes />

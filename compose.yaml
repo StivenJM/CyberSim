@@ -1,0 +1,602 @@
+{
+  "name": "${COMPOSE_PROJECT_NAME:-cybersim}",
+  "services": {
+    "volume-check": {
+      "image": "postgres:15.19-bookworm@sha256:d4a8e1f88f475ee3e0137fa89d21ebc59f6c6ab16bf369ee92907607cc3455ae",
+      "entrypoint": [
+        "/bin/sh",
+        "/preflight.sh"
+      ],
+      "volumes": [
+        "postgres_data:/data:ro",
+        "./infra/preflight.sh:/preflight.sh:ro"
+      ],
+      "network_mode": "none",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "postgres": {
+      "image": "postgres:15.19-bookworm@sha256:d4a8e1f88f475ee3e0137fa89d21ebc59f6c6ab16bf369ee92907607cc3455ae",
+      "depends_on": {
+        "volume-check": {
+          "condition": "service_completed_successfully"
+        }
+      },
+      "environment": {
+        "POSTGRES_USER": "${POSTGRES_USER:-postgres}",
+        "POSTGRES_PASSWORD": "${POSTGRES_PASSWORD:-postgres}",
+        "POSTGRES_DB": "${POSTGRES_DB:-cybersim}"
+      },
+      "volumes": [
+        "postgres_data:/var/lib/postgresql/data"
+      ],
+      "healthcheck": {
+        "test": [
+          "CMD-SHELL",
+          "pg_isready -U $$POSTGRES_USER -d $$POSTGRES_DB"
+        ],
+        "interval": "5s",
+        "timeout": "3s",
+        "retries": 24
+      },
+      "mem_limit": "768m",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "migrate": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/node.Dockerfile",
+        "target": "tools-dev"
+      },
+      "image": "cybersim-tools-dev:local",
+      "init": true,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "command": [
+        "node",
+        "infra/db-init.mjs"
+      ],
+      "environment": {
+        "NODE_ENV": "development",
+        "PORT": "3000",
+        "INTERNAL_PORT": "3001",
+        "PGHOST": "postgres",
+        "PGPORT": "5432",
+        "PGUSER": "${POSTGRES_USER:-postgres}",
+        "PGPASSWORD": "${POSTGRES_PASSWORD:-postgres}",
+        "PGDATABASE": "${POSTGRES_DB:-cybersim}",
+        "JWT_SECRET": "${JWT_SECRET:?Ejecuta ./scripts/dev.ps1 init}",
+        "INTERNAL_SIGNING_KEY": "${INTERNAL_SIGNING_KEY:?Ejecuta ./scripts/dev.ps1 init}",
+        "N8N_TO_BACKEND_TOKEN": "${N8N_TO_BACKEND_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "BACKEND_TO_N8N_TOKEN": "${BACKEND_TO_N8N_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "MAINTENANCE_TOKEN": "${MAINTENANCE_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY:-}",
+        "OPENAI_TUTOR_MODEL": "${OPENAI_TUTOR_MODEL:-gpt-6-luna}",
+        "OPENAI_COMPLEX_MODEL": "${OPENAI_COMPLEX_MODEL:-gpt-6.1-sol}",
+        "OPENAI_EMBEDDING_MODEL": "${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}",
+        "QDRANT_URL": "http://qdrant:6333",
+        "PIPER_URL": "http://piper:5000",
+        "N8N_URL": "http://n8n:5678",
+        "FRONTEND_URL": "http://localhost:5173",
+        "SMTP_HOST": "${SMTP_HOST:-}",
+        "SMTP_PORT": "${SMTP_PORT:-587}",
+        "SMTP_SECURE": "${SMTP_SECURE:-false}",
+        "SMTP_USER": "${SMTP_USER:-}",
+        "SMTP_PASS": "${SMTP_PASS:-}",
+        "FROM_EMAIL": "${FROM_EMAIL:-}",
+        "PREPARATION_DIR": "/state",
+        "DOTENV_CONFIG_PATH": "/dev/null",
+        "DATABASE_URL": "",
+        "DIRECT_URL": ""
+      },
+      "depends_on": {
+        "postgres": {
+          "condition": "service_healthy"
+        }
+      },
+      "volumes": [
+        "preparation:/state"
+      ],
+      "mem_limit": "256m"
+    },
+    "backend": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/node.Dockerfile",
+        "target": "backend-dev"
+      },
+      "image": "cybersim-backend-dev:local",
+      "init": true,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "environment": {
+        "NODE_ENV": "development",
+        "PORT": "3000",
+        "INTERNAL_PORT": "3001",
+        "PGHOST": "postgres",
+        "PGPORT": "5432",
+        "PGUSER": "${POSTGRES_USER:-postgres}",
+        "PGPASSWORD": "${POSTGRES_PASSWORD:-postgres}",
+        "PGDATABASE": "${POSTGRES_DB:-cybersim}",
+        "JWT_SECRET": "${JWT_SECRET:?Ejecuta ./scripts/dev.ps1 init}",
+        "INTERNAL_SIGNING_KEY": "${INTERNAL_SIGNING_KEY:?Ejecuta ./scripts/dev.ps1 init}",
+        "N8N_TO_BACKEND_TOKEN": "${N8N_TO_BACKEND_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "BACKEND_TO_N8N_TOKEN": "${BACKEND_TO_N8N_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "MAINTENANCE_TOKEN": "${MAINTENANCE_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY:-}",
+        "OPENAI_TUTOR_MODEL": "${OPENAI_TUTOR_MODEL:-gpt-6-luna}",
+        "OPENAI_COMPLEX_MODEL": "${OPENAI_COMPLEX_MODEL:-gpt-6.1-sol}",
+        "OPENAI_EMBEDDING_MODEL": "${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}",
+        "QDRANT_URL": "http://qdrant:6333",
+        "PIPER_URL": "http://piper:5000",
+        "N8N_URL": "http://n8n:5678",
+        "FRONTEND_URL": "http://localhost:5173",
+        "SMTP_HOST": "${SMTP_HOST:-}",
+        "SMTP_PORT": "${SMTP_PORT:-587}",
+        "SMTP_SECURE": "${SMTP_SECURE:-false}",
+        "SMTP_USER": "${SMTP_USER:-}",
+        "SMTP_PASS": "${SMTP_PASS:-}",
+        "FROM_EMAIL": "${FROM_EMAIL:-}",
+        "PREPARATION_DIR": "/state",
+        "KNOWLEDGE_CACHE_DIR": "/cache",
+        "DOTENV_CONFIG_PATH": "/dev/null",
+        "DATABASE_URL": "",
+        "DIRECT_URL": ""
+      },
+      "depends_on": {
+        "migrate": {
+          "condition": "service_completed_successfully"
+        }
+      },
+      "volumes": [
+        "preparation:/state",
+        "knowledge_cache:/cache"
+      ],
+      "stop_grace_period": "35s",
+      "mem_limit": "768m",
+      "healthcheck": {
+        "test": [
+          "CMD",
+          "node",
+          "-e",
+          "fetch('http://localhost:3000/health/live').then(r=>process.exit(r.ok?0:1)).catch(()=>process.exit(1))"
+        ],
+        "interval": "10s",
+        "timeout": "3s",
+        "retries": 12
+      },
+      "develop": {
+        "watch": [
+          {
+            "action": "sync",
+            "path": "./apps/backend/src",
+            "target": "/workspace/apps/backend/src",
+            "ignore": [
+              "generated/"
+            ],
+            "initial_sync": true
+          },
+          {
+            "action": "rebuild",
+            "path": "./apps/backend/prisma"
+          },
+          {
+            "action": "rebuild",
+            "path": "./apps/backend/package.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./package-lock.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./package.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./infra/node.Dockerfile"
+          },
+          {
+            "action": "rebuild",
+            "path": "./knowledge"
+          },
+          {
+            "action": "rebuild",
+            "path": "./infra/n8n"
+          }
+        ]
+      }
+    },
+    "frontend": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/node.Dockerfile",
+        "target": "frontend-dev"
+      },
+      "image": "cybersim-frontend-dev:local",
+      "init": true,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "command": [
+        "npm",
+        "run",
+        "dev",
+        "--workspace",
+        "@cybersim/frontend",
+        "--",
+        "--host",
+        "0.0.0.0",
+        "--port",
+        "5173",
+        "--strictPort"
+      ],
+      "environment": {
+        "BACKEND_URL": "http://backend:3000"
+      },
+      "ports": [
+        "127.0.0.1:5173:5173"
+      ],
+      "depends_on": {
+        "backend": {
+          "condition": "service_started"
+        }
+      },
+      "mem_limit": "512m",
+      "develop": {
+        "watch": [
+          {
+            "action": "sync",
+            "path": "./apps/frontend",
+            "target": "/workspace/apps/frontend",
+            "ignore": [
+              "node_modules/",
+              "dist/",
+              "scripts/rag-output/"
+            ],
+            "initial_sync": true
+          },
+          {
+            "action": "rebuild",
+            "path": "./apps/frontend/package.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./package-lock.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./package.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./infra/node.Dockerfile"
+          }
+        ]
+      }
+    },
+    "qdrant": {
+      "image": "qdrant/qdrant:v1.18.3@sha256:0bd98fa7977f1e75694779359ca4e212822e5a71334e28421182f72f209d5286",
+      "volumes": [
+        "qdrant_data:/qdrant/storage"
+      ],
+      "mem_limit": "1024m",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "n8n": {
+      "image": "n8nio/n8n:2.43.7@sha256:3db21366be1d3c77c1708963129c051948573019659e8873e0294be035ffc1b2",
+      "init": true,
+      "environment": {
+        "DB_TYPE": "sqlite",
+        "N8N_ENCRYPTION_KEY": "${N8N_ENCRYPTION_KEY:?Ejecuta ./scripts/dev.ps1 init}",
+        "N8N_HOST": "localhost",
+        "N8N_PORT": "5678",
+        "N8N_PROTOCOL": "http",
+        "N8N_EDITOR_BASE_URL": "http://localhost:5678",
+        "WEBHOOK_URL": "http://localhost:5678/",
+        "N8N_SECURE_COOKIE": "false",
+        "N8N_RUNNERS_ENABLED": "true",
+        "N8N_RUNNERS_MODE": "external",
+        "N8N_RUNNERS_BROKER_LISTEN_ADDRESS": "0.0.0.0",
+        "N8N_RUNNERS_AUTH_TOKEN": "${N8N_RUNNERS_AUTH_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "N8N_CONCURRENCY_PRODUCTION_LIMIT": "2",
+        "N8N_DIAGNOSTICS_ENABLED": "false",
+        "N8N_VERSION_NOTIFICATIONS_ENABLED": "false",
+        "N8N_TEMPLATES_ENABLED": "false",
+        "EXECUTIONS_DATA_SAVE_ON_SUCCESS": "none",
+        "EXECUTIONS_DATA_SAVE_ON_ERROR": "all",
+        "EXECUTIONS_DATA_SAVE_ON_PROGRESS": "false",
+        "EXECUTIONS_DATA_SAVE_MANUAL_EXECUTIONS": "true",
+        "EXECUTIONS_DATA_PRUNE": "true",
+        "EXECUTIONS_DATA_MAX_AGE": "72",
+        "EXECUTIONS_DATA_PRUNE_MAX_COUNT": "1000"
+      },
+      "ports": [
+        "127.0.0.1:5678:5678"
+      ],
+      "volumes": [
+        "n8n_data:/home/node/.n8n"
+      ],
+      "mem_limit": "1536m",
+      "stop_grace_period": "40s",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "runner": {
+      "image": "n8nio/runners:2.43.7@sha256:3aaa4194b4ba84548bb04d1761b74df7c9cab36a0b20e74cfaa7bac39504f9ea",
+      "environment": {
+        "N8N_RUNNERS_TASK_BROKER_URI": "http://n8n:5679",
+        "N8N_RUNNERS_AUTH_TOKEN": "${N8N_RUNNERS_AUTH_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "N8N_RUNNERS_AUTO_SHUTDOWN_TIMEOUT": "60"
+      },
+      "depends_on": [
+        "n8n"
+      ],
+      "mem_limit": "512m",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "volumes": [
+        "./infra/n8n/runners.json:/etc/n8n-task-runners.json:ro"
+      ],
+      "command": [
+        "javascript"
+      ]
+    },
+    "piper": {
+      "build": {
+        "context": "./infra/piper"
+      },
+      "init": true,
+      "volumes": [
+        "piper_voices:/voices"
+      ],
+      "mem_limit": "1024m",
+      "stop_grace_period": "3s",
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      }
+    },
+    "preparation": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/node.Dockerfile",
+        "target": "preparation-dev"
+      },
+      "image": "cybersim-preparation-dev:local",
+      "init": true,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "command": [
+        "node",
+        "infra/tools.mjs",
+        "prepare"
+      ],
+      "environment": {
+        "BACKEND_INTERNAL_URL": "http://backend:3001",
+        "N8N_URL": "http://n8n:5678",
+        "N8N_ADMIN_API_KEY": "${N8N_ADMIN_API_KEY:-}",
+        "N8N_TO_BACKEND_TOKEN": "${N8N_TO_BACKEND_TOKEN:-}",
+        "BACKEND_TO_N8N_TOKEN": "${BACKEND_TO_N8N_TOKEN:-}",
+        "MAINTENANCE_TOKEN": "${MAINTENANCE_TOKEN:-}",
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID:-}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET:-}",
+        "GOOGLE_DRIVE_FOLDER_ID": "${GOOGLE_DRIVE_FOLDER_ID:-}",
+        "PREPARATION_DIR": "/state"
+      },
+      "depends_on": [
+        "backend",
+        "n8n",
+        "qdrant",
+        "piper"
+      ],
+      "volumes": [
+        "preparation:/state"
+      ],
+      "mem_limit": "256m",
+      "develop": {
+        "watch": [
+          {
+            "action": "rebuild",
+            "path": "./apps/frontend/src/data/escenarios"
+          },
+          {
+            "action": "rebuild",
+            "path": "./apps/frontend/scripts/export-rag-knowledge.ts"
+          },
+          {
+            "action": "rebuild",
+            "path": "./apps/frontend/package.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./knowledge"
+          },
+          {
+            "action": "rebuild",
+            "path": "./infra/n8n"
+          },
+          {
+            "action": "rebuild",
+            "path": "./infra/tools.mjs"
+          },
+          {
+            "action": "rebuild",
+            "path": "./infra/verify.mjs"
+          },
+          {
+            "action": "rebuild",
+            "path": "./infra/node.Dockerfile"
+          },
+          {
+            "action": "rebuild",
+            "path": "./package.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./package-lock.json"
+          }
+        ]
+      }
+    },
+    "tools": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/node.Dockerfile",
+        "target": "tools-dev"
+      },
+      "image": "cybersim-tools-dev:local",
+      "init": true,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "profiles": [
+        "tools"
+      ],
+      "command": [
+        "node",
+        "infra/tools.mjs",
+        "status"
+      ],
+      "environment": {
+        "NODE_ENV": "development",
+        "PORT": "3000",
+        "INTERNAL_PORT": "3001",
+        "PGHOST": "postgres",
+        "PGPORT": "5432",
+        "PGUSER": "${POSTGRES_USER:-postgres}",
+        "PGPASSWORD": "${POSTGRES_PASSWORD:-postgres}",
+        "PGDATABASE": "${POSTGRES_DB:-cybersim}",
+        "JWT_SECRET": "${JWT_SECRET:?Ejecuta ./scripts/dev.ps1 init}",
+        "INTERNAL_SIGNING_KEY": "${INTERNAL_SIGNING_KEY:?Ejecuta ./scripts/dev.ps1 init}",
+        "N8N_TO_BACKEND_TOKEN": "${N8N_TO_BACKEND_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "BACKEND_TO_N8N_TOKEN": "${BACKEND_TO_N8N_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "MAINTENANCE_TOKEN": "${MAINTENANCE_TOKEN:?Ejecuta ./scripts/dev.ps1 init}",
+        "OPENAI_API_KEY": "${OPENAI_API_KEY:-}",
+        "OPENAI_TUTOR_MODEL": "${OPENAI_TUTOR_MODEL:-gpt-6-luna}",
+        "OPENAI_COMPLEX_MODEL": "${OPENAI_COMPLEX_MODEL:-gpt-6.1-sol}",
+        "OPENAI_EMBEDDING_MODEL": "${OPENAI_EMBEDDING_MODEL:-text-embedding-3-small}",
+        "QDRANT_URL": "http://qdrant:6333",
+        "PIPER_URL": "http://piper:5000",
+        "N8N_URL": "http://n8n:5678",
+        "FRONTEND_URL": "http://localhost:5173",
+        "SMTP_HOST": "${SMTP_HOST:-}",
+        "SMTP_PORT": "${SMTP_PORT:-587}",
+        "SMTP_SECURE": "${SMTP_SECURE:-false}",
+        "SMTP_USER": "${SMTP_USER:-}",
+        "SMTP_PASS": "${SMTP_PASS:-}",
+        "FROM_EMAIL": "${FROM_EMAIL:-}",
+        "PREPARATION_DIR": "/state",
+        "BACKEND_INTERNAL_URL": "http://backend:3001",
+        "N8N_ADMIN_API_KEY": "${N8N_ADMIN_API_KEY:-}",
+        "GOOGLE_CLIENT_ID": "${GOOGLE_CLIENT_ID:-}",
+        "GOOGLE_CLIENT_SECRET": "${GOOGLE_CLIENT_SECRET:-}",
+        "GOOGLE_DRIVE_FOLDER_ID": "${GOOGLE_DRIVE_FOLDER_ID:-}",
+        "VERIFY_RECIPIENT": "${VERIFY_RECIPIENT:-}",
+        "DOTENV_CONFIG_PATH": "/dev/null",
+        "DATABASE_URL": "",
+        "DIRECT_URL": ""
+      },
+      "volumes": [
+        "preparation:/state",
+        ".:/host"
+      ],
+      "working_dir": "/workspace"
+    },
+    "verify": {
+      "build": {
+        "context": ".",
+        "dockerfile": "infra/node.Dockerfile",
+        "target": "preparation-dev"
+      },
+      "image": "cybersim-preparation-dev:local",
+      "init": true,
+      "logging": {
+        "driver": "local",
+        "options": {
+          "max-size": "10m",
+          "max-file": "3"
+        }
+      },
+      "profiles": [
+        "verify"
+      ],
+      "command": [
+        "node",
+        "infra/tools.mjs",
+        "verify"
+      ],
+      "environment": {
+        "BACKEND_INTERNAL_URL": "http://backend:3001",
+        "MAINTENANCE_TOKEN": "${MAINTENANCE_TOKEN:-}",
+        "VERIFY_RECIPIENT": "${VERIFY_RECIPIENT:-}"
+      },
+      "volumes": [
+        "preparation:/state"
+      ]
+    }
+  },
+  "volumes": {
+    "postgres_data": {
+      "name": "cybersim_postgres_data"
+    },
+    "n8n_data": {},
+    "qdrant_data": {},
+    "piper_voices": {},
+    "preparation": {},
+    "knowledge_cache": {}
+  }
+}

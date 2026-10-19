@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/test';
 import { sembrarSesion, mockDatosVacios } from './helpers/auth';
 
 test.describe('Rutas protegidas y roles', () => {

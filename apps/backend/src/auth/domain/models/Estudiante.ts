@@ -9,4 +9,4 @@ export interface Estudiante {
 }
 
 export type EstudianteInput = Omit<Estudiante, 'id_estudiante'>
-export type EstudiantePublic = Estudiante & { correo_electronico?: string }
+export type EstudiantePublic = Estudiante & { correo_electronico?: string; emailStatus?: "accepted" | "failed" }

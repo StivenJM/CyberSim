@@ -1,7 +1,8 @@
+import { authorizedFetch } from '../../../../shared/http';
 import { useAsyncState } from '../../../common/hooks/useAsyncState';
 import type { CourseAnalysisResponse } from '../types/courseAnalysis.types';
 
-const API_BASE_URL = import.meta.env.VITE_API_URL || 'http://localhost:3000';
+const API_BASE_URL = '/api';
 
 interface UseGenerateCourseAnalysisResult {
   generateAnalysis: (idCurso: number, idProfesor: number) => Promise<{ success: boolean; analysis?: CourseAnalysisResponse; error?: string }>;
@@ -15,7 +16,7 @@ export function useGenerateCourseAnalysis(): UseGenerateCourseAnalysisResult {
 
   const generateAnalysis = async (idCurso: number, idProfesor: number) => {
     const result = await runAsync(async () => {
-      const response = await fetch(`${API_BASE_URL}/course-analysis/generate`, {
+      const response = await authorizedFetch(`${API_BASE_URL}/course-analysis/generate`, {
         method: 'POST',
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({ id_curso: idCurso, id_profesor: idProfesor }),
@@ -39,7 +40,7 @@ export function useGenerateCourseAnalysis(): UseGenerateCourseAnalysisResult {
 
   const checkLatestAnalysis = async (idCurso: number) => {
     const result = await runAsync(async () => {
-      const response = await fetch(`${API_BASE_URL}/course-analysis/latest/${idCurso}`);
+      const response = await authorizedFetch(`${API_BASE_URL}/course-analysis/latest/${idCurso}`);
       const data = await response.json();
 
       if (response.ok && data.success && data.data) {

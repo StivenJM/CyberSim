@@ -10,6 +10,10 @@ Contexto no técnico de CyberSim: propósito, actores, alcance, reglas educativa
 | [Reglas funcionales](reglas-funcionales.md) | Comportamiento observable y restricciones del producto |
 | [Glosario](glosario.md) | Lenguaje común para usuarios, equipo y asistentes |
 | [Riesgos y pendientes](riesgos-y-pendientes.md) | Impacto en personas/operación y prioridades propuestas |
+| [Decisiones del entorno Docker](decisiones-desarrollo-docker.md) | Decisiones D01–D26 vigentes, razones y evolución completa |
+| [Fundamentos de las selecciones Docker](recomendaciones-desarrollo-docker.md) | Alternativas investigadas, fuentes y consecuencias para el equipo |
+| [Resultados de la auditoría Docker](resultados-auditoria-docker.md) | Hallazgos y motivos de las correcciones incorporadas al contrato |
+| [Estado del entorno Docker](estado-desarrollo-docker.md) | Implementación, evidencia local y aceptación/configuración externa pendientes |
 | [ADRs](adrs/README.md) | Decisiones documentadas, contexto y consecuencias |
 
 Esta base se reconstruyó a partir del repositorio el 13 de octubre de 2026. No se encontraron documentos que establezcan responsables institucionales, cronograma, presupuesto, criterios de aprobación pedagógica o políticas de retención. No se inventan esos compromisos; se registran como pendientes cuando son relevantes.

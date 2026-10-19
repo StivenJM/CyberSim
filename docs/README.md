@@ -1,6 +1,26 @@
 # Documentación de CyberSim
 
-Esta documentación describe el código revisado el **13 de octubre de 2026**, sobre la revisión `cc0c9cb`. La versión declarada de los workspaces es `5.0.0`. Los archivos de código y configuración enlazados son la evidencia de cada descripción; las propuestas pendientes se identifican expresamente.
+## Empieza aquí
+
+Estas dos páginas reúnen la información necesaria para comprender CyberSim y comenzar a desarrollar:
+
+| **1. Entiende el sistema** | **2. Inícialo desde cero** |
+|---|---|
+| **[Resumen de CyberSim](architecture/resumen.md)** | **[Guía de primer arranque para desarrolladores](guides/desarrollo-local.md)** |
+| Qué hace la aplicación, cómo se conectan sus componentes, dónde están el código y los datos, y cómo trabajar sobre ella. Incluye el diagrama Mermaid. | Requisitos, obtención del proyecto, configuración inicial, arranque Docker, credenciales externas, comprobación del entorno y primer cambio. |
+
+Lee primero el resumen y sigue después la guía si aún no tienes el entorno preparado. Las referencias siguientes amplían temas concretos cuando los necesites.
+
+## Consulta opcional
+
+| Si necesitas… | Consulta |
+|---|---|
+| Modificar escenarios o reglas de simulación | [Escenarios](guides/escenarios.md) y [motor ECS](architecture/simulacion-ecs.md) |
+| Investigar un módulo, contrato o integración | [Índice técnico](architecture/README.md) y [arquitectura Docker](architecture/desarrollo-docker.md) |
+| Ejecutar checks o mantener el proyecto | [Pruebas y calidad](guides/pruebas-y-calidad.md) y [mantenimiento](guides/mantenimiento.md) |
+| Comprender requisitos y comportamiento de usuarios | [Proyecto](project/README.md), [HUs](project/historias-de-usuario.md) y [uso del sistema](guides/uso-del-sistema.md) |
+| Saber por qué se eligió una solución | [Decisiones D01–D26](project/decisiones-desarrollo-docker.md), [ADRs](project/adrs/README.md) y [auditoría](architecture/auditoria-desarrollo-docker.md) |
+| Consultar evidencia, límites y configuración pendiente | [Estado del entorno](project/estado-desarrollo-docker.md), [riesgos](project/riesgos-y-pendientes.md) y [revisión del sistema](architecture/revision-del-sistema.md) |
 
 ## Organización
 
@@ -11,15 +31,9 @@ Esta documentación describe el código revisado el **13 de octubre de 2026**, s
 | `project/` | Propósito, alcance, reglas funcionales, vocabulario y riesgos del proyecto | [Proyecto](project/README.md) |
 | `project/adrs/` | Registros de decisiones de arquitectura, con contexto y consecuencias | [ADRs](project/adrs/README.md) |
 
-## Por dónde empezar
+## Base de la documentación
 
-- Para una lectura rápida de la aplicación: [resumen de arquitectura con Mermaid](architecture/resumen.md).
-- Para entender el producto: [visión del proyecto](project/vision-y-alcance.md) y [reglas funcionales](project/reglas-funcionales.md).
-- Para definir y trazar trabajo: [requisitos](project/requisitos.md) e [historias HU001–HU025](project/historias-de-usuario.md).
-- Para ejecutarlo: [desarrollo local](guides/desarrollo-local.md) y [configuración](guides/configuracion.md).
-- Para usarlo: [guía de estudiantes y docentes](guides/uso-del-sistema.md).
-- Para modificarlo: [visión técnica](architecture/vision-general.md), [mantenimiento](guides/mantenimiento.md) y [creación de escenarios](guides/escenarios.md).
-- Para evaluar su estado: [informe de revisión](architecture/revision-del-sistema.md), [seguridad](architecture/seguridad.md) y [riesgos y pendientes](project/riesgos-y-pendientes.md).
+Las páginas Docker y el resumen se actualizaron el **18 de octubre de 2026** desde el código local. Versión declarada: `5.0.0`. Los informes fechados conservan el alcance de su revisión y sus justificaciones; no sustituyen la referencia vigente. El [contrato C01–C12](architecture/contrato-desarrollo-docker.md) mantiene el detalle de los requisitos técnicos.
 
 ## Convenciones
 

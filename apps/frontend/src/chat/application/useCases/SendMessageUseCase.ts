@@ -37,7 +37,7 @@ export class SendMessageUseCase {
       return botMessage;
     } catch (error) {
       const errorMessage = Message.createBotMessage(
-        "Lo siento, hubo un error al procesar tu mensaje. Por favor, intenta de nuevo."
+        error instanceof Error ? error.message : "Servicio no disponible. El mensaje no se reenvió."
       );
       session.addMessage(errorMessage);
       throw error;

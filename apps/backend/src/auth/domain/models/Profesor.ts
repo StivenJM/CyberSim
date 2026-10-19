@@ -8,4 +8,4 @@ export interface Profesor {
 }
 
 export type ProfesorInput = Omit<Profesor, 'id_profesor'>
-export type ProfesorPublic = Profesor
+export type ProfesorPublic = Profesor & {emailStatus?: "accepted" | "failed"}

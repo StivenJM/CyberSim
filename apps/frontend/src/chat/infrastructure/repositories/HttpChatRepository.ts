@@ -1,42 +1,28 @@
-import type {
-  IChatRepository,
-  ChatMessagePayload,
-  ChatResponse,
-} from "../../domain/repositories/IChatRepository.js";
-
+import type {IChatRepository,ChatMessagePayload,ChatResponse} from '../../domain/repositories/IChatRepository.js';
+import {authorizedFetch,errorMessage} from '../../../shared/http.js';
 export class HttpChatRepository implements IChatRepository {
-  constructor(private readonly baseUrl: string) {}
-
-  async sendMessage(payload: ChatMessagePayload): Promise<ChatResponse> {
-    try {
-      const response = await fetch(`${this.baseUrl}/api/chat`, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify(payload),
-      });
-
-      if (!response.ok) {
-        throw new Error(`HTTP Error: ${response.status}`);
-      }
-
-      const data: ChatResponse = await response.json();
-      return data;
-    } catch (error) {
-      console.error("Error communicating with chat API:", error);
-      throw new Error(
-        "Failed to send message. Please try again."
-      );
-    }
+ private session:{sessionId:string;memoryEpoch:string}|null=null;
+ private ownerToken:string|null=null;
+ constructor(private readonly baseUrl:string){}
+ private url(route:string){return this.baseUrl.replace(/\/api\/?$/,'')+'/api/chat'+route;}
+ async sendMessage(payload:ChatMessagePayload):Promise<ChatResponse>{
+  const token=localStorage.getItem('authToken');
+  if(token!==this.ownerToken){this.session=null;this.ownerToken=token;}
+  if(!this.session){
+   const created=await authorizedFetch(this.url('/session'),{method:'POST'});
+   const data=await created.json();if(!created.ok)throw new Error(errorMessage(data));this.session=data;
   }
-
-  async checkHealth(): Promise<boolean> {
-    try {
-      const response = await fetch(`${this.baseUrl}/api/chat/health`);
-      return response.ok;
-    } catch {
-      return false;
-    }
+  const response=await authorizedFetch(this.url(''),{method:'POST',body:JSON.stringify({...payload,...this.session,requestId:crypto.randomUUID()}),signal:AbortSignal.timeout(121000)});
+  const data=await response.json();
+  if(!response.ok){
+   if(data.error?.code==='CONTEXT_LOST')this.session=null;
+   throw new Error(errorMessage(data));
   }
+  if(data.warnings?.includes('AUDIO_UNAVAILABLE'))data.message+='\n\nAudio no disponible.';
+  return data;
+ }
+ async checkHealth():Promise<boolean>{
+  try{const r=await fetch(this.baseUrl.replace(/\/api\/?$/,'')+'/api/health/ready');return r.ok&&(await r.json()).state==='listo';}catch{return false;}
+ }
 }
+

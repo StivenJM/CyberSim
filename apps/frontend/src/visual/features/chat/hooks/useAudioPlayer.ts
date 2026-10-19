@@ -1,4 +1,4 @@
-import { useState, useRef, useCallback } from 'react';
+import { useState, useRef, useCallback, useEffect } from 'react';
 
 
 export interface AudioPlayerState {
@@ -12,6 +12,8 @@ export const useAudioPlayer = (): AudioPlayerState => {
     const [isPlaying, setIsPlaying] = useState(false);
     const [currentAudioId, setCurrentAudioId] = useState<string | null>(null);
     const audioRef = useRef<HTMLAudioElement | null>(null);
+    const urlRef = useRef<string | null>(null);
+    useEffect(() => () => { audioRef.current?.pause(); if (urlRef.current) URL.revokeObjectURL(urlRef.current); }, []);
 
     const base64ToBlob = useCallback((base64: string): Blob => {
         // Remover el prefijo data:audio si existe
@@ -24,7 +26,7 @@ export const useAudioPlayer = (): AudioPlayerState => {
         }
 
         const byteArray = new Uint8Array(byteNumbers);
-        return new Blob([byteArray], { type: 'audio/mpeg' });
+        return new Blob([byteArray], { type: 'audio/wav' });
     }, []);
 
     const play = useCallback((base64Audio: string, audioId: string) => {
@@ -58,10 +60,12 @@ export const useAudioPlayer = (): AudioPlayerState => {
         }
 
         try {
-            console.log('Iniciando nuevo audio:', base64Audio.substring(0, 30) + '...');
+
 
             const audioBlob = base64ToBlob(base64Audio);
+            if (urlRef.current) URL.revokeObjectURL(urlRef.current);
             const audioUrl = URL.createObjectURL(audioBlob);
+            urlRef.current = audioUrl;
 
             const audio = new Audio(audioUrl);
             audioRef.current = audio;

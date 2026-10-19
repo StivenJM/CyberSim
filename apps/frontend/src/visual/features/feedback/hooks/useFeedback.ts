@@ -1,3 +1,4 @@
+import { authorizedFetch } from '../../../../shared/http';
 import { useState, useEffect, useCallback } from "react";
 import { API_BASE_URL } from "../../../common/utils/apiConfig";
 import type { FeedbackData } from '../types/feedback.types';
@@ -28,7 +29,7 @@ export function useFeedback(
     setLoading(true);
 
     try {
-      const response = await fetch(
+      const response = await authorizedFetch(
         `${API_BASE_URL}/feedback/check-status?id_estudiante=${idEstudiante}&slug_escenario=${slugEscenario}`
       );
 

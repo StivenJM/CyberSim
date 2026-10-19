@@ -112,3 +112,67 @@ model retroalimentacion_curso {
 //   nombre       String     @db.VarChar
 //   progreso     progreso[]
 // }
+
+model coordinacion_integracion {
+  id Int @id
+  installation_id String @default(dbgenerated("gen_random_uuid()")) @db.Uuid
+  generacion Int @default(1)
+  pausada Boolean @default(false)
+  activa String? @db.Uuid
+  esperando String? @db.Uuid
+  revision_id String? @db.Uuid
+  exclusiones_version Int @default(0)
+  sincronizacion Json @default("{}")
+  actualizado_en DateTime @default(now()) @db.Timestamptz
+  revision revision_indice_conocimiento? @relation(fields: [revision_id], references: [id], onDelete: NoAction, onUpdate: NoAction)
+}
+
+model revision_indice_conocimiento {
+  id String @id @db.Uuid
+  installation_id String @db.Uuid
+  estado String @default("preparacion")
+  firma Json
+  colecciones Json
+  inventario Json @default("{}")
+  calibracion Json @default("{}")
+  creado_en DateTime @default(now()) @db.Timestamptz
+  publicado_en DateTime? @db.Timestamptz
+  coordinacion coordinacion_integracion[]
+}
+
+model operacion_integracion {
+  id String @id @db.Uuid
+  installation_id String @db.Uuid
+  generacion Int
+  actor String
+  request_id String
+  clase String
+  estado String
+  huella String
+  deadline DateTime @db.Timestamptz
+  revision_id String? @db.Uuid
+  ejecucion_n8n String?
+  hija Json?
+  uso Json @default("{}")
+  resultado_ref Json?
+  error String?
+  creado_en DateTime @default(now()) @db.Timestamptz
+  actualizado_en DateTime @default(now()) @db.Timestamptz
+  @@unique([installation_id, actor, request_id])
+  @@index([estado, deadline], map: "operacion_estado")
+}
+
+model documento_conocimiento {
+  id String @id
+  origen String
+  revision String
+  hash String
+  tipo String
+  estado String
+  metadata Json @default("{}")
+  confirmaciones Int @default(0)
+  observado_en DateTime @default(now()) @db.Timestamptz
+  retirado_en DateTime? @db.Timestamptz
+  ronda String? @db.Uuid
+}
+

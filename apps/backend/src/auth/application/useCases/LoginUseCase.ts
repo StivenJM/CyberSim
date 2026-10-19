@@ -14,7 +14,8 @@ export interface LoginResult {
 export class LoginUseCase {
   constructor(
     private repo: IAuthRepository,
-    private jwtSecret: string
+    private jwtSecret: string,
+    private installationId?: () => Promise<string>
   ) {}
 
   async execute(correo_electronico: string, contrasenia: string): Promise<LoginResult | null> {
@@ -39,6 +40,7 @@ export class LoginUseCase {
       const token = jwt.sign(
         { 
           id_usuario_auth: usuarioAuth.id_usuario_auth,
+          ...(this.installationId ? { installationId: await this.installationId() } : {}),
           id_profesor: profesor.id_profesor, 
           role: "profesor" 
         },
@@ -61,6 +63,7 @@ export class LoginUseCase {
       const token = jwt.sign(
         { 
           id_usuario_auth: usuarioAuth.id_usuario_auth,
+          ...(this.installationId ? { installationId: await this.installationId() } : {}),
           id_estudiante: estudiante.id_estudiante, 
           role: "estudiante" 
         },

@@ -61,8 +61,9 @@ export class RegisterEstudianteUseCase {
     const token_confirmacion = randomBytes(32).toString('hex')
     const token_expira = new Date(Date.now() + 24 * 60 * 60 * 1000).toISOString() // 24 horas
 
+    const persist = async (repo: IAuthRepository) => {
     // Crear usuario_auth
-    const usuarioAuth = await this.repo.createUsuarioAuth({
+    const usuarioAuth = await repo.createUsuarioAuth({
       correo_electronico: payload.correo_electronico,
       contrasenia_hash,
       token_confirmacion,
@@ -70,7 +71,7 @@ export class RegisterEstudianteUseCase {
     })
 
     // Crear estudiante vinculado al usuario_auth
-    const estudiante = await this.repo.createEstudiante({
+    const estudiante = await repo.createEstudiante({
       id_usuario_auth: usuarioAuth.id_usuario_auth,
       codigo_unico: payload.codigo_unico,
       primernombre: payload.primernombre,
@@ -79,20 +80,27 @@ export class RegisterEstudianteUseCase {
       segundo_apellido: payload.segundo_apellido
     })
 
+
+      return estudiante
+    }
+    const estudiante = this.repo.transaction ? await this.repo.transaction(persist) : await persist(this.repo)
+
     //Correo de confirmacion
     const nombreCompleto = `${payload.primernombre} ${payload.primer_apellido}`
+    let emailStatus: "accepted" | "failed" = "accepted"
     try {
       await this.emailService.sendConfirmationEmail(
         payload.correo_electronico,
         token_confirmacion,
         nombreCompleto
       )
-    } catch (error) {
-      console.error('Error al enviar email de confirmación:', error)
+    } catch {
+      emailStatus = 'failed'
+      console.error('SMTP_CONFIRMATION_FAILED')
       // No lanzamos error aquí para no bloquear el registro
       // El usuario puede solicitar reenvío del email más tarde
     }
 
-    return estudiante
+    return { ...estudiante, emailStatus }
   }
 }

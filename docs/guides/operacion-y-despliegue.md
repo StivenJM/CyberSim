@@ -1,5 +1,7 @@
 # Operación y despliegue
 
+> Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
+
 El repositorio contiene scripts de build/start y Compose para PostgreSQL local. No incluye una plataforma de despliegue completa, Dockerfiles para las apps, reverse proxy, workflows n8n o provisioning de Qdrant. Los pasos siguientes son un procedimiento para preparar una instancia con esos servicios ya administrados.
 
 ## Preparar el entorno

@@ -1,5 +1,7 @@
 # Fronteras de confianza y controles actuales
 
+> Actualización Docker del 18 de octubre de 2026: para composición, integraciones, permisos de IA y estado funcional actuales consultar [arquitectura Docker](desarrollo-docker.md), [contrato vigente](contrato-desarrollo-docker.md) y [evidencia](../project/estado-desarrollo-docker.md). El detalle siguiente conserva la revisión anterior donde no se ha sustituido expresamente; sus afirmaciones sobre puertos, rutas antiguas o servicios externos no prevalecen sobre esas referencias.
+
 La frontera de seguridad efectiva es Express y sus adaptadores de persistencia. El navegador, sus flags de sesión, sus resultados de simulación y los identificadores recibidos por HTTP son entradas manipulables. Esta documentación registra los controles existentes y las brechas encontradas; no certifica seguridad de un despliegue.
 
 ## Matriz de acceso
@@ -64,4 +66,4 @@ Estas acciones son propuestas pendientes. El [ADR 0005](../project/adrs/0005-aut
 - [Middleware JWT](../../apps/backend/src/auth/infrastructure/middlewares/authMiddleware.ts) y [montajes Express](../../apps/backend/src/server.ts).
 - [Grupos](../../apps/backend/src/groups/infrastructure/controller/GroupsController.ts), [progreso](../../apps/backend/src/auth/infrastructure/controllers/ProgresoController.ts) y [chat](../../apps/backend/src/chat/infrastructure/controllers/ChatController.ts).
 - [Sesión del navegador](../../apps/frontend/src/visual/features/admin-docente-y-estudiante/hooks/useAuth.ts), [login](../../apps/backend/src/auth/application/useCases/LoginUseCase.ts) y [registro profesor](../../apps/backend/src/auth/application/useCases/RegisterProfesorUseCase.ts).
-- [Plantilla de entorno](../../apps/backend/.env.example), [seed](../../apps/backend/prisma/seed.ts) y [Compose](../../docker-compose.yml).
+- [Plantilla de entorno](../../apps/backend/.env.example), [seed](../../apps/backend/prisma/seed.ts) y [Compose](../../compose.yaml).

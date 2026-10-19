@@ -1,5 +1,7 @@
 # Integraciones e inteligencia artificial
 
+> Actualización Docker del 18 de octubre de 2026: para composición, integraciones, permisos de IA y estado funcional actuales consultar [arquitectura Docker](desarrollo-docker.md), [contrato vigente](contrato-desarrollo-docker.md) y [evidencia](../project/estado-desarrollo-docker.md). El detalle siguiente conserva la revisión anterior donde no se ha sustituido expresamente; sus afirmaciones sobre puertos, rutas antiguas o servicios externos no prevalecen sobre esas referencias.
+
 El repositorio implementa adaptadores; la infraestructura, workflows, corpus, voces y credenciales externas no forman parte de este código. Esta página describe lo observado sin afirmar disponibilidad real de proveedores.
 
 ## Chat y recuperación

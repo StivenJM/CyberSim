@@ -4,7 +4,7 @@ Procedimientos para ejecutar, usar y mantener CyberSim. Cada guía enlaza a los 
 
 | Guía | Destinatario y resultado |
 |---|---|
-| [Desarrollo local](desarrollo-local.md) | Preparar workspaces, PostgreSQL y procesos de desarrollo |
+| [Desarrollo local](desarrollo-local.md) | Inicializar configuración privada, arrancar todo con Compose Watch y mantener el entorno |
 | [Configuración](configuracion.md) | Completar variables con sus requisitos reales de arranque |
 | [Uso del sistema](uso-del-sistema.md) | Registrar estudiantes, practicar y gestionar cursos como docente |
 | [Pruebas y calidad](pruebas-y-calidad.md) | Ejecutar checks y entender qué valida cada suite |

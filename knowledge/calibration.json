@@ -1,170 +1,170 @@
 {
-  "conocimiento": [
-    {
-      "query": "¿Qué distingue a un troyano del ransomware?",
-      "positive": true
-    },
-    {
-      "query": "¿Cómo compruebo una firma digital y su clave?",
-      "positive": true
-    },
-    {
-      "query": "¿Cómo selecciono una regla de firewall?",
-      "positive": true
-    },
-    {
-      "query": "¿Qué extremos configuro en una VPN?",
-      "positive": true
-    },
-    {
-      "query": "¿Una firma digital cifra un documento?",
-      "positive": true
-    },
-    {
-      "query": "¿Cómo preparo una tarta de manzana?",
-      "positive": false
-    },
-    {
-      "query": "¿Cuál es el pronóstico del clima mañana?",
-      "positive": false
-    },
-    {
-      "query": "¿Qué tratamiento médico necesito para mi dolor?",
-      "positive": false
-    },
-    {
-      "query": "Calcula la hipoteca de una casa",
-      "positive": false
-    },
-    {
-      "query": "¿Quién ganará el partido de fútbol?",
-      "positive": false
-    }
-  ],
-  "contexto": [
-    {
-      "query": "¿Qué es CyberSim y qué enseña?",
-      "positive": true
-    },
-    {
-      "query": "¿Qué son las zonas y oficinas de CyberSim?",
-      "positive": true
-    },
-    {
-      "query": "¿Qué representan fases y objetivos de la simulación?",
-      "positive": true
-    },
-    {
-      "query": "¿El tutor ejecuta comandos reales en mi PC?",
-      "positive": true
-    },
-    {
-      "query": "¿Qué significa seleccionar un dispositivo en el juego?",
-      "positive": true
-    },
-    {
-      "query": "¿Cómo preparo una tarta de manzana?",
-      "positive": false
-    },
-    {
-      "query": "¿Cuál es el pronóstico del clima mañana?",
-      "positive": false
-    },
-    {
-      "query": "¿Qué tratamiento médico necesito para mi dolor?",
-      "positive": false
-    },
-    {
-      "query": "Calcula la hipoteca de una casa",
-      "positive": false
-    },
-    {
-      "query": "¿Quién ganará el partido de fútbol?",
-      "positive": false
-    }
-  ],
-  "topologias": [
-    {
-      "query": "Necesito una topología de una oficina con computadoras y redes",
-      "positive": true
-    },
-    {
-      "query": "Busca las zonas y dispositivos del tutorial",
-      "positive": true
-    },
-    {
-      "query": "Qué oficinas, espacios y posiciones hay en criptografía",
-      "positive": true
-    },
-    {
-      "query": "Necesito hosts y conexiones para control de acceso",
-      "positive": true
-    },
-    {
-      "query": "Dónde están los dispositivos del escenario de amenazas",
-      "positive": true
-    },
-    {
-      "query": "¿Cómo preparo una tarta de manzana?",
-      "positive": false
-    },
-    {
-      "query": "¿Cuál es el pronóstico del clima mañana?",
-      "positive": false
-    },
-    {
-      "query": "¿Qué tratamiento médico necesito para mi dolor?",
-      "positive": false
-    },
-    {
-      "query": "Calcula la hipoteca de una casa",
-      "positive": false
-    },
-    {
-      "query": "¿Quién ganará el partido de fútbol?",
-      "positive": false
-    }
-  ],
-  "desafios": [
-    {
-      "query": "Busca objetivos y fases del tutorial",
-      "positive": true
-    },
-    {
-      "query": "Qué eventos de firewall y VPN existen",
-      "positive": true
-    },
-    {
-      "query": "Necesito un desafío de verificación de firma",
-      "positive": true
-    },
-    {
-      "query": "Busca eventos y ataques del escenario de amenazas",
-      "positive": true
-    },
-    {
-      "query": "Qué retos de reconocimiento tiene hacking ético",
-      "positive": true
-    },
-    {
-      "query": "¿Cómo preparo una tarta de manzana?",
-      "positive": false
-    },
-    {
-      "query": "¿Cuál es el pronóstico del clima mañana?",
-      "positive": false
-    },
-    {
-      "query": "¿Qué tratamiento médico necesito para mi dolor?",
-      "positive": false
-    },
-    {
-      "query": "Calcula la hipoteca de una casa",
-      "positive": false
-    },
-    {
-      "query": "¿Quién ganará el partido de fútbol?",
-      "positive": false
-    }
-  ]
+	"conocimiento": [
+		{
+			"query": "¿Qué distingue a un troyano del ransomware?",
+			"positive": true
+		},
+		{
+			"query": "¿Cómo compruebo una firma digital y su clave?",
+			"positive": true
+		},
+		{
+			"query": "¿Cómo selecciono una regla de firewall?",
+			"positive": true
+		},
+		{
+			"query": "¿Qué extremos configuro en una VPN?",
+			"positive": true
+		},
+		{
+			"query": "¿Una firma digital cifra un documento?",
+			"positive": true
+		},
+		{
+			"query": "¿Cómo preparo una tarta de manzana?",
+			"positive": false
+		},
+		{
+			"query": "¿Cuál es el pronóstico del clima mañana?",
+			"positive": false
+		},
+		{
+			"query": "¿Qué tratamiento médico necesito para mi dolor?",
+			"positive": false
+		},
+		{
+			"query": "Calcula la hipoteca de una casa",
+			"positive": false
+		},
+		{
+			"query": "¿Quién ganará el partido de fútbol?",
+			"positive": false
+		}
+	],
+	"contexto": [
+		{
+			"query": "¿Qué es CyberSim y qué enseña?",
+			"positive": true
+		},
+		{
+			"query": "¿Qué son las zonas y oficinas de CyberSim?",
+			"positive": true
+		},
+		{
+			"query": "¿Qué representan fases y objetivos de la simulación?",
+			"positive": true
+		},
+		{
+			"query": "¿El tutor ejecuta comandos reales en mi PC?",
+			"positive": true
+		},
+		{
+			"query": "¿Qué significa seleccionar un dispositivo en el juego?",
+			"positive": true
+		},
+		{
+			"query": "¿Cómo preparo una tarta de manzana?",
+			"positive": false
+		},
+		{
+			"query": "¿Cuál es el pronóstico del clima mañana?",
+			"positive": false
+		},
+		{
+			"query": "¿Qué tratamiento médico necesito para mi dolor?",
+			"positive": false
+		},
+		{
+			"query": "Calcula la hipoteca de una casa",
+			"positive": false
+		},
+		{
+			"query": "¿Quién ganará el partido de fútbol?",
+			"positive": false
+		}
+	],
+	"topologias": [
+		{
+			"query": "Necesito una topología de una oficina con computadoras y redes",
+			"positive": true
+		},
+		{
+			"query": "Busca las zonas y dispositivos del tutorial",
+			"positive": true
+		},
+		{
+			"query": "Qué oficinas, espacios y posiciones hay en criptografía",
+			"positive": true
+		},
+		{
+			"query": "Necesito hosts y conexiones para control de acceso",
+			"positive": true
+		},
+		{
+			"query": "Dónde están los dispositivos del escenario de amenazas",
+			"positive": true
+		},
+		{
+			"query": "¿Cómo preparo una tarta de manzana?",
+			"positive": false
+		},
+		{
+			"query": "¿Cuál es el pronóstico del clima mañana?",
+			"positive": false
+		},
+		{
+			"query": "¿Qué tratamiento médico necesito para mi dolor?",
+			"positive": false
+		},
+		{
+			"query": "Calcula la hipoteca de una casa",
+			"positive": false
+		},
+		{
+			"query": "¿Quién ganará el partido de fútbol?",
+			"positive": false
+		}
+	],
+	"desafios": [
+		{
+			"query": "Busca objetivos y fases del tutorial",
+			"positive": true
+		},
+		{
+			"query": "Qué eventos de firewall y VPN existen",
+			"positive": true
+		},
+		{
+			"query": "Necesito un desafío de verificación de firma",
+			"positive": true
+		},
+		{
+			"query": "Busca eventos y ataques del escenario de amenazas",
+			"positive": true
+		},
+		{
+			"query": "Qué retos de reconocimiento tiene hacking ético",
+			"positive": true
+		},
+		{
+			"query": "¿Cómo preparo una tarta de manzana?",
+			"positive": false
+		},
+		{
+			"query": "¿Cuál es el pronóstico del clima mañana?",
+			"positive": false
+		},
+		{
+			"query": "¿Qué tratamiento médico necesito para mi dolor?",
+			"positive": false
+		},
+		{
+			"query": "Calcula la hipoteca de una casa",
+			"positive": false
+		},
+		{
+			"query": "¿Quién ganará el partido de fútbol?",
+			"positive": false
+		}
+	]
 }

@@ -1,1 +1,1 @@
-export { feedbackRouter as default } from '../../../integrations/routes.js';
+export { feedbackRouter as default } from '../../../integrations/routes.js'

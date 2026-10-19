@@ -1,10 +1,10 @@
 export interface ScenarioGenerationRequestDTO {
-  prompt?: string;
+	prompt?: string
 }
 
 export interface ScenarioGenerationResponseDTO {
-  success: boolean;
-  // eslint-disable-next-line @typescript-eslint/no-explicit-any
-  data: any;
-  error?: string;
+	success: boolean
+	// biome-ignore lint/suspicious/noExplicitAny: This DTO carries an external scenario payload for normalization.
+	data: any
+	error?: string
 }

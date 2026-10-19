@@ -24,6 +24,7 @@ Los ADRs se conservan en `docs/project/adrs/` según la organización del proyec
 | [0009](0009-contrato-tecnico-desarrollo-docker.md) | Vigente; aceptación externa pendiente | Contrato v1 de revisión única, turno común, reset, permisos, bootstrap y voz supervisada |
 | [0010](0010-imagenes-desarrollo-por-destino.md) | Aceptada e incorporada | Destinos de construcción e imágenes independientes para apps, herramientas y preparación |
 | [0011](0011-pnpm-como-gestor-unico.md) | Incorporada por solicitud del usuario | pnpm fijado para desarrollo, Docker, mantenimiento y CI |
+| [0012](0012-biome-lint-y-formato.md) | Incorporada por solicitud del usuario | Biome compartido para lint, formato e imports, adaptado desde Cuero |
 
 El estado de implementación y aceptación se mantiene en [estado del entorno](../estado-desarrollo-docker.md). Las decisiones D01–D26 están cerradas; las credenciales y pruebas reales del equipo siguen pendientes. ADR 0005 conserva un alcance de autorización más amplio que los recorridos de IA incorporados.
 

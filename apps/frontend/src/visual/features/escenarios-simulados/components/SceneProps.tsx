@@ -1,10 +1,11 @@
-import React, { useMemo } from 'react';
-import { useBuildingLayout } from '../hooks/useBuildingLayout';
-import Model3D from './Model3D';
-import { PROCEDURAL_PREFIX } from './procedural/proceduralModels';
-import { mulberry32, seedFromId } from '../utils/seededRandom';
-import { type PlacedProp } from '../config/roomProps';
-import { getPrefab } from '../config/roomPrefabs';
+import type React from 'react'
+import { useMemo } from 'react'
+import { getPrefab } from '../config/roomPrefabs'
+import type { PlacedProp } from '../config/roomProps'
+import { useBuildingLayout } from '../hooks/useBuildingLayout'
+import { mulberry32, seedFromId } from '../utils/seededRandom'
+import Model3D from './Model3D'
+import { PROCEDURAL_PREFIX } from './procedural/proceduralModels'
 
 /**
  * Props decorativos: amuebla SOLO las salas sintéticas según su PREFAB. Las salas
@@ -16,37 +17,37 @@ import { getPrefab } from '../config/roomPrefabs';
  */
 
 const PropInstance: React.FC<{ prop: PlacedProp }> = ({ prop }) => (
-  <Model3D
-    modelPath={`${PROCEDURAL_PREFIX}${prop.kind}`}
-    position={prop.position}
-    rotation={[0, prop.rotationY, 0]}
-    scale={prop.scale}
-    enableHover={false}
-  />
-);
+	<Model3D
+		modelPath={`${PROCEDURAL_PREFIX}${prop.kind}`}
+		position={prop.position}
+		rotation={[0, prop.rotationY, 0]}
+		scale={prop.scale}
+		enableHover={false}
+	/>
+)
 
 const SceneProps: React.FC = () => {
-  const { rooms } = useBuildingLayout();
+	const { rooms } = useBuildingLayout()
 
-  const items = useMemo(
-    () =>
-      rooms.flatMap((room) => {
-        if (!room.sintetico || !room.prefabId) return [];
-        const rng = mulberry32(seedFromId(room.oficinaId));
-        return getPrefab(room.prefabId).furnish(room, rng);
-      }),
-    [rooms],
-  );
+	const items = useMemo(
+		() =>
+			rooms.flatMap((room) => {
+				if (!room.sintetico || !room.prefabId) return []
+				const rng = mulberry32(seedFromId(room.oficinaId))
+				return getPrefab(room.prefabId).furnish(room, rng)
+			}),
+		[rooms],
+	)
 
-  if (items.length === 0) return null;
+	if (items.length === 0) return null
 
-  return (
-    <group name="scene-props">
-      {items.map((prop) => (
-        <PropInstance key={prop.id} prop={prop} />
-      ))}
-    </group>
-  );
-};
+	return (
+		<group name="scene-props">
+			{items.map((prop) => (
+				<PropInstance key={prop.id} prop={prop} />
+			))}
+		</group>
+	)
+}
 
-export default SceneProps;
+export default SceneProps

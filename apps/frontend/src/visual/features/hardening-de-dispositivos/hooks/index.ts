@@ -1,2 +1,2 @@
-export { useDispositivos } from "./useDispositivos";
-export { useAppsDispositivo } from "./useAppsDispositivo";
+export { useAppsDispositivo } from './useAppsDispositivo'
+export { useDispositivos } from './useDispositivos'

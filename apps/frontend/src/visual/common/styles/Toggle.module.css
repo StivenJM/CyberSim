@@ -1,32 +1,32 @@
 .toggle {
-  display: inline-flex;
-  border-radius: var(--border-radius);
-  border: 1px solid var(--border-primary);
-  padding: 3px;
-  font-size: 12px;
-  height: 36px !important;
-  gap: 4px;
+	display: inline-flex;
+	border-radius: var(--border-radius);
+	border: 1px solid var(--border-primary);
+	padding: 3px;
+	font-size: 12px;
+	height: 36px !important;
+	gap: 4px;
 }
 
 .option {
-  padding: 8px 16px;
-  border-radius: calc(var(--border-radius) - 2px);
-  color: var(--text-secondary);
-  background-color: var(--surface-primary);
-  transition: all 0.2s ease;
-  border: 1px solid transparent;
+	padding: 8px 16px;
+	border-radius: calc(var(--border-radius) - 2px);
+	color: var(--text-secondary);
+	background-color: var(--surface-primary);
+	transition: all 0.2s ease;
+	border: 1px solid transparent;
 }
 
 .option:hover {
-  color: var(--text-primary);
-  background-color: var(--surface-primary) !important;
+	color: var(--text-primary);
+	background-color: var(--surface-primary) !important;
 }
 
 .option.active {
-  background-color: var(--surface-secondary);
-  color: var(--text-primary);
-  border: 1px solid var(--border-primary);
+	background-color: var(--surface-secondary);
+	color: var(--text-primary);
+	border: 1px solid var(--border-primary);
 }
 .option.active:hover {
-  background-color: var(--surface-secondary) !important;
+	background-color: var(--surface-secondary) !important;
 }

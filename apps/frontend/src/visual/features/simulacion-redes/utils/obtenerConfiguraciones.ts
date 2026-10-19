@@ -1,9 +1,12 @@
-import { obtenerColoresRed, obtenerConfiguracionesProtocolos } from "../../../../shared/utils/ObtenerConfiguraciones";
+import {
+	obtenerColoresRed,
+	obtenerConfiguracionesProtocolos,
+} from '../../../../shared/utils/ObtenerConfiguraciones'
 
 export function getConfiguracionesProtocolos() {
-  return obtenerConfiguracionesProtocolos();
+	return obtenerConfiguracionesProtocolos()
 }
 
 export function getColoresRed() {
-  return obtenerColoresRed();
+	return obtenerColoresRed()
 }

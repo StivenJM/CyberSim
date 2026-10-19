@@ -51,6 +51,7 @@ Los siguientes scripts se ejecutan en un entorno Node preparado. Para correrlos 
 pnpm install --frozen-lockfile
 pnpm db:generate
 pnpm lint
+pnpm format:check
 pnpm typecheck
 pnpm test
 pnpm build

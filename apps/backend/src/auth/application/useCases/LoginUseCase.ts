@@ -1,85 +1,100 @@
-import type { IAuthRepository } from "../../domain/repositories/IAuthRepository.js"
-import type { EstudiantePublic } from "../../domain/models/Estudiante.js"
-import type { ProfesorPublic } from "../../domain/models/Profesor.js"
-import bcrypt from "bcrypt"
-import jwt from "jsonwebtoken"
+import bcrypt from 'bcrypt'
+import jwt from 'jsonwebtoken'
+import type { EstudiantePublic } from '../../domain/models/Estudiante.js'
+import type { ProfesorPublic } from '../../domain/models/Profesor.js'
+import type { IAuthRepository } from '../../domain/repositories/IAuthRepository.js'
 
 export interface LoginResult {
-  role: 'estudiante' | 'profesor'
-  user: EstudiantePublic | ProfesorPublic
-  token: string
-  confirmado: boolean
+	role: 'estudiante' | 'profesor'
+	user: EstudiantePublic | ProfesorPublic
+	token: string
+	confirmado: boolean
 }
 
 export class LoginUseCase {
-  constructor(
-    private repo: IAuthRepository,
-    private jwtSecret: string,
-    private installationId?: () => Promise<string>
-  ) {}
+	constructor(
+		private repo: IAuthRepository,
+		private jwtSecret: string,
+		private installationId?: () => Promise<string>,
+	) {}
 
-  async execute(correo_electronico: string, contrasenia: string): Promise<LoginResult | null> {
-    // 1. Buscar el usuario_auth por email
-    const usuarioAuth = await this.repo.findUsuarioAuthByEmail(correo_electronico)
-    
-    if (!usuarioAuth) {
-      return null
-    }
+	async execute(
+		correo_electronico: string,
+		contrasenia: string,
+	): Promise<LoginResult | null> {
+		// 1. Buscar el usuario_auth por email
+		const usuarioAuth =
+			await this.repo.findUsuarioAuthByEmail(correo_electronico)
 
-    // 2. Verificar la contraseña
-    const match = await bcrypt.compare(contrasenia, usuarioAuth.contrasenia_hash)
-    
-    if (!match) {
-      return null
-    }
+		if (!usuarioAuth) {
+			return null
+		}
 
-    // 3. Buscar si es profesor
-    const profesor = await this.repo.findProfesorByUsuarioAuth(usuarioAuth.id_usuario_auth)
-    
-    if (profesor) {
-      const token = jwt.sign(
-        { 
-          id_usuario_auth: usuarioAuth.id_usuario_auth,
-          ...(this.installationId ? { installationId: await this.installationId() } : {}),
-          id_profesor: profesor.id_profesor, 
-          role: "profesor" 
-        },
-        this.jwtSecret,
-        { expiresIn: "1h" }
-      )
+		// 2. Verificar la contraseña
+		const match = await bcrypt.compare(
+			contrasenia,
+			usuarioAuth.contrasenia_hash,
+		)
 
-      return {
-        role: "profesor",
-        user: profesor,
-        token,
-        confirmado: usuarioAuth.confirmado
-      }
-    }
+		if (!match) {
+			return null
+		}
 
-    // 5. Buscar si es estudiante
-    const estudiante = await this.repo.findEstudianteByUsuarioAuth(usuarioAuth.id_usuario_auth)
-    
-    if (estudiante) {
-      const token = jwt.sign(
-        { 
-          id_usuario_auth: usuarioAuth.id_usuario_auth,
-          ...(this.installationId ? { installationId: await this.installationId() } : {}),
-          id_estudiante: estudiante.id_estudiante, 
-          role: "estudiante" 
-        },
-        this.jwtSecret,
-        { expiresIn: "1h" }
-      )
+		// 3. Buscar si es profesor
+		const profesor = await this.repo.findProfesorByUsuarioAuth(
+			usuarioAuth.id_usuario_auth,
+		)
 
-      return {
-        role: "estudiante",
-        user: estudiante,
-        token,
-        confirmado: usuarioAuth.confirmado
-      }
-    }
+		if (profesor) {
+			const token = jwt.sign(
+				{
+					id_usuario_auth: usuarioAuth.id_usuario_auth,
+					...(this.installationId
+						? { installationId: await this.installationId() }
+						: {}),
+					id_profesor: profesor.id_profesor,
+					role: 'profesor',
+				},
+				this.jwtSecret,
+				{ expiresIn: '1h' },
+			)
 
-    // 6. Si existe usuario_auth pero no es ni profesor ni estudiante
-    throw new Error('Usuario encontrado pero sin rol asignado')
-  }
+			return {
+				role: 'profesor',
+				user: profesor,
+				token,
+				confirmado: usuarioAuth.confirmado,
+			}
+		}
+
+		// 5. Buscar si es estudiante
+		const estudiante = await this.repo.findEstudianteByUsuarioAuth(
+			usuarioAuth.id_usuario_auth,
+		)
+
+		if (estudiante) {
+			const token = jwt.sign(
+				{
+					id_usuario_auth: usuarioAuth.id_usuario_auth,
+					...(this.installationId
+						? { installationId: await this.installationId() }
+						: {}),
+					id_estudiante: estudiante.id_estudiante,
+					role: 'estudiante',
+				},
+				this.jwtSecret,
+				{ expiresIn: '1h' },
+			)
+
+			return {
+				role: 'estudiante',
+				user: estudiante,
+				token,
+				confirmado: usuarioAuth.confirmado,
+			}
+		}
+
+		// 6. Si existe usuario_auth pero no es ni profesor ni estudiante
+		throw new Error('Usuario encontrado pero sin rol asignado')
+	}
 }

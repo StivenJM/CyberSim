@@ -1,36 +1,35 @@
 {
-  "version": 1,
-  "workflows": [
-    {
-      "key": "feedback",
-      "file": "feedback.json",
-      "webhook": "cybersim-feedback"
-    },
-    {
-      "key": "analysis",
-      "file": "analysis.json",
-      "webhook": "cybersim-analysis"
-    },
-    {
-      "key": "scenario",
-      "file": "scenario.json",
-      "webhook": "cybersim-scenario"
-    },
-    {
-      "key": "ingest",
-      "file": "ingest.json",
-      "webhook": "cybersim-ingest"
-    },
-    {
-      "key": "index",
-      "file": "index.json",
-      "webhook": null
-    },
-    {
-      "key": "drive",
-      "file": "drive.json",
-      "webhook": null
-    }
-  ]
+	"version": 1,
+	"workflows": [
+		{
+			"key": "feedback",
+			"file": "feedback.json",
+			"webhook": "cybersim-feedback"
+		},
+		{
+			"key": "analysis",
+			"file": "analysis.json",
+			"webhook": "cybersim-analysis"
+		},
+		{
+			"key": "scenario",
+			"file": "scenario.json",
+			"webhook": "cybersim-scenario"
+		},
+		{
+			"key": "ingest",
+			"file": "ingest.json",
+			"webhook": "cybersim-ingest"
+		},
+		{
+			"key": "index",
+			"file": "index.json",
+			"webhook": null
+		},
+		{
+			"key": "drive",
+			"file": "drive.json",
+			"webhook": null
+		}
+	]
 }
-

@@ -1,60 +1,93 @@
-import nodemailer from 'nodemailer'
 import type { TransportOptions } from 'nodemailer'
+import nodemailer from 'nodemailer'
 
 export interface EmailService {
-  sendConfirmationEmail(email: string, token: string, nombre: string): Promise<void>
-  sendPasswordResetEmail(email: string, token: string, nombre: string): Promise<void>
+	sendConfirmationEmail(
+		email: string,
+		token: string,
+		nombre: string,
+	): Promise<void>
+	sendPasswordResetEmail(
+		email: string,
+		token: string,
+		nombre: string,
+	): Promise<void>
 }
 
 export class NodemailerEmailService implements EmailService {
-  private transporter: nodemailer.Transporter
-  private fromEmail: string
-  private frontendUrl: string
-  private configured: boolean
+	private transporter: nodemailer.Transporter
+	private fromEmail: string
+	private frontendUrl: string
+	private configured: boolean
 
-  constructor(smtpConfig: TransportOptions, fromEmail: string, frontendUrl: string) {
-    this.configured = !!process.env.SMTP_HOST && !!process.env.SMTP_USER && !!process.env.SMTP_PASS && !!fromEmail
-    this.transporter = nodemailer.createTransport(smtpConfig)
-    this.fromEmail = fromEmail
-    this.frontendUrl = frontendUrl
-  }
+	constructor(
+		smtpConfig: TransportOptions,
+		fromEmail: string,
+		frontendUrl: string,
+	) {
+		this.configured =
+			!!process.env.SMTP_HOST &&
+			!!process.env.SMTP_USER &&
+			!!process.env.SMTP_PASS &&
+			!!fromEmail
+		this.transporter = nodemailer.createTransport(smtpConfig)
+		this.fromEmail = fromEmail
+		this.frontendUrl = frontendUrl
+	}
 
-  async sendConfirmationEmail(email: string, token: string, nombre: string): Promise<void> {
-    if (!this.configured) throw new Error('SMTP externo pendiente de configuración')
-    const confirmationUrl = `${this.frontendUrl}/auth/confirm?token=${token}`
+	async sendConfirmationEmail(
+		email: string,
+		token: string,
+		nombre: string,
+	): Promise<void> {
+		if (!this.configured)
+			throw new Error('SMTP externo pendiente de configuración')
+		const confirmationUrl = `${this.frontendUrl}/auth/confirm?token=${token}`
 
-    try {
-      await this.transporter.sendMail({
-        from: this.fromEmail,
-        to: email,
-        subject: 'Confirma tu cuenta - CyberSim',
-        html: this.getConfirmationEmailTemplate(nombre, confirmationUrl),
-      })
-    } catch {
-      console.error('SMTP_CONFIRMATION_FAILED')
-      throw new Error('No se pudo enviar el email de confirmación. Inténtalo más tarde.')
-    }
-  }
+		try {
+			await this.transporter.sendMail({
+				from: this.fromEmail,
+				to: email,
+				subject: 'Confirma tu cuenta - CyberSim',
+				html: this.getConfirmationEmailTemplate(nombre, confirmationUrl),
+			})
+		} catch {
+			console.error('SMTP_CONFIRMATION_FAILED')
+			throw new Error(
+				'No se pudo enviar el email de confirmación. Inténtalo más tarde.',
+			)
+		}
+	}
 
-  async sendPasswordResetEmail(email: string, token: string, nombre: string): Promise<void> {
-    if (!this.configured) throw new Error('SMTP externo pendiente de configuración')
-    const resetUrl = `${this.frontendUrl}/auth/reset-password?token=${token}`
+	async sendPasswordResetEmail(
+		email: string,
+		token: string,
+		nombre: string,
+	): Promise<void> {
+		if (!this.configured)
+			throw new Error('SMTP externo pendiente de configuración')
+		const resetUrl = `${this.frontendUrl}/auth/reset-password?token=${token}`
 
-    try {
-      await this.transporter.sendMail({
-        from: this.fromEmail,
-        to: email,
-        subject: 'Recuperación de contraseña - CyberSim',
-        html: this.getPasswordResetEmailTemplate(nombre, resetUrl),
-      })
-    } catch {
-      console.error('SMTP_RECOVERY_FAILED')
-      throw new Error('No se pudo enviar el email de recuperación. Inténtalo más tarde.')
-    }
-  }
+		try {
+			await this.transporter.sendMail({
+				from: this.fromEmail,
+				to: email,
+				subject: 'Recuperación de contraseña - CyberSim',
+				html: this.getPasswordResetEmailTemplate(nombre, resetUrl),
+			})
+		} catch {
+			console.error('SMTP_RECOVERY_FAILED')
+			throw new Error(
+				'No se pudo enviar el email de recuperación. Inténtalo más tarde.',
+			)
+		}
+	}
 
-  private getConfirmationEmailTemplate(nombre: string, confirmationUrl: string): string {
-    return `
+	private getConfirmationEmailTemplate(
+		nombre: string,
+		confirmationUrl: string,
+	): string {
+		return `
       <!DOCTYPE html>
       <html lang="es">
         <head>
@@ -143,10 +176,13 @@ export class NodemailerEmailService implements EmailService {
         </body>
       </html>
     `
-  }
+	}
 
-  private getPasswordResetEmailTemplate(nombre: string, resetUrl: string): string {
-    return `
+	private getPasswordResetEmailTemplate(
+		nombre: string,
+		resetUrl: string,
+	): string {
+		return `
       <!DOCTYPE html>
       <html lang="es">
         <head>
@@ -235,5 +271,5 @@ export class NodemailerEmailService implements EmailService {
         </body>
       </html>
     `
-  }
+	}
 }

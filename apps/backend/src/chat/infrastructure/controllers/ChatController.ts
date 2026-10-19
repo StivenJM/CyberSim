@@ -1,1 +1,1 @@
-export { chatRouter as default } from '../../../integrations/routes.js';
+export { chatRouter as default } from '../../../integrations/routes.js'

@@ -1,11 +1,11 @@
-import { useCallback, useEffect, useState, type DependencyList } from "react";
-import { useAsyncState } from "./useAsyncState";
+import { type DependencyList, useCallback, useEffect, useState } from 'react'
+import { useAsyncState } from './useAsyncState'
 
 export interface UseAsyncDataReturn<T> {
-  data: T | null;
-  loading: boolean;
-  error: string | null;
-  refetch: () => Promise<void>;
+	data: T | null
+	loading: boolean
+	error: string | null
+	refetch: () => Promise<void>
 }
 
 /**
@@ -16,21 +16,20 @@ export interface UseAsyncDataReturn<T> {
  * Para operaciones imperativas usar `useAsyncState`.
  */
 export function useAsyncData<T>(
-  fetcher: () => Promise<T | null>,
-  deps: DependencyList = []
+	fetcher: () => Promise<T | null>,
+	deps: DependencyList = [],
 ): UseAsyncDataReturn<T> {
-  const { loading, error, runAsync } = useAsyncState();
-  const [data, setData] = useState<T | null>(null);
+	const { loading, error, runAsync } = useAsyncState()
+	const [data, setData] = useState<T | null>(null)
 
-   
-  const refetch = useCallback(async () => {
-    const result = await runAsync(fetcher);
-    if (result !== null) setData(result);
-  }, [runAsync, ...deps]);
+	const refetch = useCallback(async () => {
+		const result = await runAsync(fetcher)
+		if (result !== null) setData(result)
+	}, [runAsync, ...deps])
 
-  useEffect(() => {
-    refetch();
-  }, [refetch]);
+	useEffect(() => {
+		refetch()
+	}, [refetch])
 
-  return { data, loading, error, refetch };
+	return { data, loading, error, refetch }
 }

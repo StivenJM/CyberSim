@@ -1,50 +1,56 @@
 /**
  * Orquestar el envío de un mensaje de texto normal
  */
-import type { IChatRepository } from "../../domain/repositories/IChatRepository.js";
-import { Message } from "../../domain/models/Message.js";
-import { ChatSession } from "../../domain/models/ChatSession.js";
+
+import type { ChatSession } from '../../domain/models/ChatSession.js'
+import { Message } from '../../domain/models/Message.js'
+import type { IChatRepository } from '../../domain/repositories/IChatRepository.js'
 
 export class SendMessageUseCase {
-  constructor(private readonly chatRepository: IChatRepository) { }
+	constructor(private readonly chatRepository: IChatRepository) {}
 
-  async execute(
-    messageText: string,
-    session: ChatSession,
-    onStateChange?: () => void
-  ): Promise<Message> {
-    if (!messageText.trim()) {
-      throw new Error("El mensaje no puede estar vacío");
-    }
+	async execute(
+		messageText: string,
+		session: ChatSession,
+		onStateChange?: () => void,
+	): Promise<Message> {
+		if (!messageText.trim()) {
+			throw new Error('El mensaje no puede estar vacío')
+		}
 
-    const userMessage = Message.createUserMessage(messageText);
-    session.addMessage(userMessage);
+		const userMessage = Message.createUserMessage(messageText)
+		session.addMessage(userMessage)
 
-    onStateChange?.(); // Notificar cambio inmediatamente (mensaje del usuario agregado)
-    session.setTyping(true); // Enviar a la API
-    onStateChange?.(); // notificar cambio (para el estado de typing)
+		onStateChange?.() // Notificar cambio inmediatamente (mensaje del usuario agregado)
+		session.setTyping(true) // Enviar a la API
+		onStateChange?.() // notificar cambio (para el estado de typing)
 
-    try {
-      const response = await this.chatRepository.sendMessage({
-        message: messageText,
-        sessionId: session.sessionId,
-        timestamp: new Date().toISOString(),
-      });
+		try {
+			const response = await this.chatRepository.sendMessage({
+				message: messageText,
+				sessionId: session.sessionId,
+				timestamp: new Date().toISOString(),
+			})
 
-      const botMessage = Message.createBotMessage(response.message, response.audio);
-      session.addMessage(botMessage);
+			const botMessage = Message.createBotMessage(
+				response.message,
+				response.audio,
+			)
+			session.addMessage(botMessage)
 
-      return botMessage;
-    } catch (error) {
-      const errorMessage = Message.createBotMessage(
-        error instanceof Error ? error.message : "Servicio no disponible. El mensaje no se reenvió."
-      );
-      session.addMessage(errorMessage);
-      throw error;
-    } finally {
-      session.setTyping(false);
+			return botMessage
+		} catch (error) {
+			const errorMessage = Message.createBotMessage(
+				error instanceof Error
+					? error.message
+					: 'Servicio no disponible. El mensaje no se reenvió.',
+			)
+			session.addMessage(errorMessage)
+			throw error
+		} finally {
+			session.setTyping(false)
 
-      onStateChange?.(); // notificar cambio final (quitar typing y agregar mensaje del bot)
-    }
-  }
+			onStateChange?.() // notificar cambio final (quitar typing y agregar mensaje del bot)
+		}
+	}
 }

@@ -1,150 +1,134 @@
 {
-  "name": "CyberSim ingest",
-  "nodes": [
-    {
-      "id": "Webhook",
-      "name": "Webhook",
-      "type": "n8n-nodes-base.webhook",
-      "typeVersion": 2,
-      "position": [
-        0,
-        0
-      ],
-      "webhookId": "cybersim-ingest",
-      "parameters": {
-        "httpMethod": "POST",
-        "path": "cybersim-ingest",
-        "authentication": "headerAuth",
-        "responseMode": "responseNode"
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "cybersim-webhook",
-          "name": "cybersim-webhook"
-        }
-      }
-    },
-    {
-      "id": "Documents",
-      "name": "Documents",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        300,
-        0
-      ],
-      "parameters": {
-        "jsCode": "return ($json.body.documents||[]).map(d=>({json:d}));"
-      }
-    },
-    {
-      "id": "Store",
-      "name": "Store",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        600,
-        0
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "POST",
-        "url": "http://backend:3001/internal/v1/knowledge/document",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $json }}",
-        "options": {
-          "timeout": 300000
-        }
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "cybersim-service",
-          "name": "cybersim-service"
-        }
-      }
-    },
-    {
-      "id": "Done",
-      "name": "Done",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        900,
-        0
-      ],
-      "parameters": {
-        "jsCode": "return [{json:{data:{accepted:true}}}];"
-      }
-    },
-    {
-      "id": "Respond",
-      "name": "Respond",
-      "type": "n8n-nodes-base.respondToWebhook",
-      "typeVersion": 1.4,
-      "position": [
-        1200,
-        0
-      ],
-      "parameters": {
-        "respondWith": "json",
-        "responseBody": "={{ {data: $json.data} }}"
-      }
-    }
-  ],
-  "connections": {
-    "Webhook": {
-      "main": [
-        [
-          {
-            "node": "Documents",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Documents": {
-      "main": [
-        [
-          {
-            "node": "Store",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Store": {
-      "main": [
-        [
-          {
-            "node": "Done",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Done": {
-      "main": [
-        [
-          {
-            "node": "Respond",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
-  "settings": {
-    "executionOrder": "v1",
-    "saveDataSuccessExecution": "none",
-    "saveExecutionProgress": false,
-    "executionTimeout": 310
-  }
+	"name": "CyberSim ingest",
+	"nodes": [
+		{
+			"id": "Webhook",
+			"name": "Webhook",
+			"type": "n8n-nodes-base.webhook",
+			"typeVersion": 2,
+			"position": [0, 0],
+			"webhookId": "cybersim-ingest",
+			"parameters": {
+				"httpMethod": "POST",
+				"path": "cybersim-ingest",
+				"authentication": "headerAuth",
+				"responseMode": "responseNode"
+			},
+			"credentials": {
+				"httpHeaderAuth": {
+					"id": "cybersim-webhook",
+					"name": "cybersim-webhook"
+				}
+			}
+		},
+		{
+			"id": "Documents",
+			"name": "Documents",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [300, 0],
+			"parameters": {
+				"jsCode": "return ($json.body.documents||[]).map(d=>({json:d}));"
+			}
+		},
+		{
+			"id": "Store",
+			"name": "Store",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [600, 0],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "POST",
+				"url": "http://backend:3001/internal/v1/knowledge/document",
+				"authentication": "genericCredentialType",
+				"genericAuthType": "httpHeaderAuth",
+				"sendBody": true,
+				"specifyBody": "json",
+				"jsonBody": "={{ $json }}",
+				"options": {
+					"timeout": 300000
+				}
+			},
+			"credentials": {
+				"httpHeaderAuth": {
+					"id": "cybersim-service",
+					"name": "cybersim-service"
+				}
+			}
+		},
+		{
+			"id": "Done",
+			"name": "Done",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [900, 0],
+			"parameters": {
+				"jsCode": "return [{json:{data:{accepted:true}}}];"
+			}
+		},
+		{
+			"id": "Respond",
+			"name": "Respond",
+			"type": "n8n-nodes-base.respondToWebhook",
+			"typeVersion": 1.4,
+			"position": [1200, 0],
+			"parameters": {
+				"respondWith": "json",
+				"responseBody": "={{ {data: $json.data} }}"
+			}
+		}
+	],
+	"connections": {
+		"Webhook": {
+			"main": [
+				[
+					{
+						"node": "Documents",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Documents": {
+			"main": [
+				[
+					{
+						"node": "Store",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Store": {
+			"main": [
+				[
+					{
+						"node": "Done",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Done": {
+			"main": [
+				[
+					{
+						"node": "Respond",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1",
+		"saveDataSuccessExecution": "none",
+		"saveExecutionProgress": false,
+		"executionTimeout": 310
+	}
 }
-

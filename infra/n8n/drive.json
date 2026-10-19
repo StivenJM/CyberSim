@@ -1,757 +1,700 @@
 {
-  "name": "CyberSim drive",
-  "nodes": [
-    {
-      "id": "Tick",
-      "name": "Tick",
-      "type": "n8n-nodes-base.scheduleTrigger",
-      "typeVersion": 1.2,
-      "position": [
-        0,
-        0
-      ],
-      "parameters": {
-        "rule": {
-          "interval": [
-            {
-              "field": "minutes",
-              "minutesInterval": 1
-            }
-          ]
-        }
-      }
-    },
-    {
-      "id": "Known",
-      "name": "Known",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        300,
-        0
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "GET",
-        "url": "http://backend:3001/internal/v1/knowledge/known",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "options": {
-          "timeout": 30000
-        }
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "cybersim-service",
-          "name": "cybersim-service"
-        }
-      }
-    },
-    {
-      "id": "Folder",
-      "name": "Folder",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        600,
-        0
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "GET",
-        "url": "https://www.googleapis.com/drive/v3/files/__FOLDER_ID__",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "fields",
-              "value": "id,mimeType,trashed"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 30000
-        }
-      },
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "cybersim-google",
-          "name": "cybersim-google"
-        }
-      }
-    },
-    {
-      "id": "List",
-      "name": "List",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        900,
-        0
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "GET",
-        "url": "https://www.googleapis.com/drive/v3/files",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "q",
-              "value": "'__FOLDER_ID__' in parents"
-            },
-            {
-              "name": "fields",
-              "value": "nextPageToken,incompleteSearch,files(id,name,version,modifiedTime,trashed,parents,size)"
-            },
-            {
-              "name": "pageSize",
-              "value": "1000"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 30000,
-          "pagination": {
-            "pagination": {
-              "paginationMode": "updateAParameterInEachRequest",
-              "parameters": {
-                "parameters": [
-                  {
-                    "type": "qs",
-                    "name": "pageToken",
-                    "value": "={{ $response.body.nextPageToken }}"
-                  }
-                ]
-              },
-              "paginationCompleteWhen": "other",
-              "completeExpression": "={{ !$response.body.nextPageToken }}"
-            }
-          }
-        }
-      },
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "cybersim-google",
-          "name": "cybersim-google"
-        }
-      }
-    },
-    {
-      "id": "Inventory state",
-      "name": "Inventory state",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        1200,
-        0
-      ],
-      "parameters": {
-        "jsCode": "const folder=$('Folder').first().json;if(folder.trashed||folder.mimeType!=='application/vnd.google-apps.folder')throw new Error('Folder unavailable');const pages=$input.all().map(x=>x.json);if(pages.some(p=>p.incompleteSearch||!Array.isArray(p.files)))throw new Error('Incomplete inventory');const files=pages.flatMap(p=>p.files);const known=$('Known').first().json.data;const missing=known.filter(k=>!files.some(f=>'drive:'+f.id===k.id));return [{json:{complete:true,folderAccessible:true,files,missing,probes:files.filter(f=>f.trashed).map(f=>({id:f.id,confirmed:'trashed'}))}}];"
-      }
-    },
-    {
-      "id": "Has missing",
-      "name": "Has missing",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        0,
-        220
-      ],
-      "parameters": {
-        "conditions": {
-          "options": {
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ $json.missing.length }}",
-              "rightValue": 0,
-              "operator": {
-                "type": "number",
-                "operation": "gt"
-              }
-            }
-          ],
-          "combinator": "and"
-        }
-      }
-    },
-    {
-      "id": "Probe items",
-      "name": "Probe items",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        300,
-        220
-      ],
-      "parameters": {
-        "jsCode": "return $json.missing.map(f=>({json:{id:f.id.slice(6)}}));"
-      }
-    },
-    {
-      "id": "Probe",
-      "name": "Probe",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        600,
-        220
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "GET",
-        "url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.id }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "fields",
-              "value": "id,parents,trashed"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 30000,
-          "response": {
-            "response": {
-              "fullResponse": true,
-              "neverError": true,
-              "responseFormat": "json"
-            }
-          }
-        }
-      },
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "cybersim-google",
-          "name": "cybersim-google"
-        }
-      }
-    },
-    {
-      "id": "Collect probes",
-      "name": "Collect probes",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        900,
-        220
-      ],
-      "parameters": {
-        "jsCode": "const state=$('Inventory state').first().json;const items=$input.all();for(let i=0;i<items.length;i++){const r=items[i].json;const b=r.body||{};const id=state.missing[i].id.slice(6);if(r.statusCode===404)state.probes.push({id,confirmed:'inaccessible'});else if(r.statusCode===200){if(b.trashed)state.probes.push({id,confirmed:'trashed'});else if(!(b.parents||[]).includes('__FOLDER_ID__'))state.probes.push({id,confirmed:'moved'});}else if(r.statusCode!==403)throw new Error('Probe failed');}return [{json:state}];"
-      }
-    },
-    {
-      "id": "Submit inventory",
-      "name": "Submit inventory",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1200,
-        220
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "POST",
-        "url": "http://backend:3001/internal/v1/knowledge/inventory",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ {...$json,syncPermit:$('Reserve').first().json.syncPermit} }}",
-        "options": {
-          "timeout": 30000
-        }
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "cybersim-service",
-          "name": "cybersim-service"
-        }
-      }
-    },
-    {
-      "id": "Downloads",
-      "name": "Downloads",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        0,
-        440
-      ],
-      "parameters": {
-        "jsCode": "const docs=$json.download.filter(f=>!f.trashed);return docs.length?docs.map(f=>({json:f})):[{json:{empty:true}}];"
-      }
-    },
-    {
-      "id": "Download",
-      "name": "Download",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        300,
-        440
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "GET",
-        "url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.id }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "alt",
-              "value": "media"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 30000,
-          "response": {
-            "response": {
-              "responseFormat": "text",
-              "outputPropertyName": "content"
-            }
-          },
-          "batching": {
-            "batch": {
-              "batchSize": 1
-            }
-          }
-        }
-      },
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "cybersim-google",
-          "name": "cybersim-google"
-        }
-      }
-    },
-    {
-      "id": "Recheck",
-      "name": "Recheck",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        600,
-        440
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "GET",
-        "url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $('Downloads').item.json.id }}",
-        "authentication": "predefinedCredentialType",
-        "nodeCredentialType": "googleDriveOAuth2Api",
-        "sendQuery": true,
-        "queryParameters": {
-          "parameters": [
-            {
-              "name": "fields",
-              "value": "id,version,modifiedTime,parents,trashed"
-            }
-          ]
-        },
-        "options": {
-          "timeout": 30000
-        }
-      },
-      "credentials": {
-        "googleDriveOAuth2Api": {
-          "id": "cybersim-google",
-          "name": "cybersim-google"
-        }
-      }
-    },
-    {
-      "id": "Document",
-      "name": "Document",
-      "type": "n8n-nodes-base.code",
-      "typeVersion": 2,
-      "position": [
-        900,
-        440
-      ],
-      "parameters": {
-        "jsCode": "const before=$('Downloads').item.json;const after=$json;if(after.trashed||!(after.parents||[]).includes('__FOLDER_ID__')||String(before.version||before.modifiedTime)!==String(after.version||after.modifiedTime))throw new Error('Document changed during download');const text=$('Download').item.json.content;if(typeof text!=='string'||text.includes('\\uFFFD'))throw new Error('Invalid UTF-8');return {json:{syncPermit:$('Reserve').first().json.syncPermit,id:'drive:'+before.id,source:'drive',revision:String(after.version||after.modifiedTime),type:'conocimiento',content:text}};",
-        "mode": "runOnceForEachItem"
-      }
-    },
-    {
-      "id": "Store document",
-      "name": "Store document",
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        1200,
-        440
-      ],
-      "retryOnFail": false,
-      "parameters": {
-        "method": "POST",
-        "url": "http://backend:3001/internal/v1/knowledge/document",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ $json }}",
-        "options": {
-          "timeout": 30000
-        }
-      },
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "cybersim-service",
-          "name": "cybersim-service"
-        }
-      }
-    },
-    {
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        0,
-        0
-      ],
-      "retryOnFail": false,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "cybersim-service",
-          "name": "cybersim-service"
-        }
-      },
-      "id": "Reserve",
-      "name": "Reserve",
-      "parameters": {
-        "method": "POST",
-        "url": "http://backend:3001/internal/v1/knowledge/sync-start",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ {executionId:$execution.id} }}",
-        "options": {
-          "timeout": 10000
-        }
-      }
-    },
-    {
-      "type": "n8n-nodes-base.httpRequest",
-      "typeVersion": 4.2,
-      "position": [
-        0,
-        0
-      ],
-      "retryOnFail": false,
-      "credentials": {
-        "httpHeaderAuth": {
-          "id": "cybersim-service",
-          "name": "cybersim-service"
-        }
-      },
-      "id": "Finish round",
-      "name": "Finish round",
-      "executeOnce": true,
-      "parameters": {
-        "method": "POST",
-        "url": "http://backend:3001/internal/v1/knowledge/sync-end",
-        "authentication": "genericCredentialType",
-        "genericAuthType": "httpHeaderAuth",
-        "sendBody": true,
-        "specifyBody": "json",
-        "jsonBody": "={{ {syncPermit:$('Reserve').first().json.syncPermit} }}",
-        "options": {
-          "timeout": 10000
-        }
-      }
-    },
-    {
-      "id": "Allowed",
-      "name": "Allowed",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        0,
-        0
-      ],
-      "parameters": {
-        "conditions": {
-          "options": {
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ $json.run }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        }
-      }
-    },
-    {
-      "id": "Has downloads",
-      "name": "Has downloads",
-      "type": "n8n-nodes-base.if",
-      "typeVersion": 2.2,
-      "position": [
-        0,
-        0
-      ],
-      "parameters": {
-        "conditions": {
-          "options": {
-            "typeValidation": "strict"
-          },
-          "conditions": [
-            {
-              "leftValue": "={{ !$json.empty }}",
-              "rightValue": true,
-              "operator": {
-                "type": "boolean",
-                "operation": "true",
-                "singleValue": true
-              }
-            }
-          ],
-          "combinator": "and"
-        }
-      }
-    }
-  ],
-  "connections": {
-    "Tick": {
-      "main": [
-        [
-          {
-            "node": "Reserve",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Known": {
-      "main": [
-        [
-          {
-            "node": "Folder",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Folder": {
-      "main": [
-        [
-          {
-            "node": "List",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "List": {
-      "main": [
-        [
-          {
-            "node": "Inventory state",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Inventory state": {
-      "main": [
-        [
-          {
-            "node": "Has missing",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Probe items": {
-      "main": [
-        [
-          {
-            "node": "Probe",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Probe": {
-      "main": [
-        [
-          {
-            "node": "Collect probes",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Collect probes": {
-      "main": [
-        [
-          {
-            "node": "Submit inventory",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Submit inventory": {
-      "main": [
-        [
-          {
-            "node": "Downloads",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Downloads": {
-      "main": [
-        [
-          {
-            "node": "Has downloads",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Download": {
-      "main": [
-        [
-          {
-            "node": "Recheck",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Recheck": {
-      "main": [
-        [
-          {
-            "node": "Document",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Document": {
-      "main": [
-        [
-          {
-            "node": "Store document",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Has missing": {
-      "main": [
-        [
-          {
-            "node": "Probe items",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Submit inventory",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Reserve": {
-      "main": [
-        [
-          {
-            "node": "Allowed",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Allowed": {
-      "main": [
-        [
-          {
-            "node": "Known",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Has downloads": {
-      "main": [
-        [
-          {
-            "node": "Download",
-            "type": "main",
-            "index": 0
-          }
-        ],
-        [
-          {
-            "node": "Finish round",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    },
-    "Store document": {
-      "main": [
-        [
-          {
-            "node": "Finish round",
-            "type": "main",
-            "index": 0
-          }
-        ]
-      ]
-    }
-  },
-  "settings": {
-    "executionOrder": "v1",
-    "saveDataSuccessExecution": "none",
-    "saveExecutionProgress": false,
-    "executionTimeout": 60
-  }
+	"name": "CyberSim drive",
+	"nodes": [
+		{
+			"id": "Tick",
+			"name": "Tick",
+			"type": "n8n-nodes-base.scheduleTrigger",
+			"typeVersion": 1.2,
+			"position": [0, 0],
+			"parameters": {
+				"rule": {
+					"interval": [
+						{
+							"field": "minutes",
+							"minutesInterval": 1
+						}
+					]
+				}
+			}
+		},
+		{
+			"id": "Known",
+			"name": "Known",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [300, 0],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "GET",
+				"url": "http://backend:3001/internal/v1/knowledge/known",
+				"authentication": "genericCredentialType",
+				"genericAuthType": "httpHeaderAuth",
+				"options": {
+					"timeout": 30000
+				}
+			},
+			"credentials": {
+				"httpHeaderAuth": {
+					"id": "cybersim-service",
+					"name": "cybersim-service"
+				}
+			}
+		},
+		{
+			"id": "Folder",
+			"name": "Folder",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [600, 0],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "GET",
+				"url": "https://www.googleapis.com/drive/v3/files/__FOLDER_ID__",
+				"authentication": "predefinedCredentialType",
+				"nodeCredentialType": "googleDriveOAuth2Api",
+				"sendQuery": true,
+				"queryParameters": {
+					"parameters": [
+						{
+							"name": "fields",
+							"value": "id,mimeType,trashed"
+						}
+					]
+				},
+				"options": {
+					"timeout": 30000
+				}
+			},
+			"credentials": {
+				"googleDriveOAuth2Api": {
+					"id": "cybersim-google",
+					"name": "cybersim-google"
+				}
+			}
+		},
+		{
+			"id": "List",
+			"name": "List",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [900, 0],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "GET",
+				"url": "https://www.googleapis.com/drive/v3/files",
+				"authentication": "predefinedCredentialType",
+				"nodeCredentialType": "googleDriveOAuth2Api",
+				"sendQuery": true,
+				"queryParameters": {
+					"parameters": [
+						{
+							"name": "q",
+							"value": "'__FOLDER_ID__' in parents"
+						},
+						{
+							"name": "fields",
+							"value": "nextPageToken,incompleteSearch,files(id,name,version,modifiedTime,trashed,parents,size)"
+						},
+						{
+							"name": "pageSize",
+							"value": "1000"
+						}
+					]
+				},
+				"options": {
+					"timeout": 30000,
+					"pagination": {
+						"pagination": {
+							"paginationMode": "updateAParameterInEachRequest",
+							"parameters": {
+								"parameters": [
+									{
+										"type": "qs",
+										"name": "pageToken",
+										"value": "={{ $response.body.nextPageToken }}"
+									}
+								]
+							},
+							"paginationCompleteWhen": "other",
+							"completeExpression": "={{ !$response.body.nextPageToken }}"
+						}
+					}
+				}
+			},
+			"credentials": {
+				"googleDriveOAuth2Api": {
+					"id": "cybersim-google",
+					"name": "cybersim-google"
+				}
+			}
+		},
+		{
+			"id": "Inventory state",
+			"name": "Inventory state",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [1200, 0],
+			"parameters": {
+				"jsCode": "const folder=$('Folder').first().json;if(folder.trashed||folder.mimeType!=='application/vnd.google-apps.folder')throw new Error('Folder unavailable');const pages=$input.all().map(x=>x.json);if(pages.some(p=>p.incompleteSearch||!Array.isArray(p.files)))throw new Error('Incomplete inventory');const files=pages.flatMap(p=>p.files);const known=$('Known').first().json.data;const missing=known.filter(k=>!files.some(f=>'drive:'+f.id===k.id));return [{json:{complete:true,folderAccessible:true,files,missing,probes:files.filter(f=>f.trashed).map(f=>({id:f.id,confirmed:'trashed'}))}}];"
+			}
+		},
+		{
+			"id": "Has missing",
+			"name": "Has missing",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2.2,
+			"position": [0, 220],
+			"parameters": {
+				"conditions": {
+					"options": {
+						"typeValidation": "strict"
+					},
+					"conditions": [
+						{
+							"leftValue": "={{ $json.missing.length }}",
+							"rightValue": 0,
+							"operator": {
+								"type": "number",
+								"operation": "gt"
+							}
+						}
+					],
+					"combinator": "and"
+				}
+			}
+		},
+		{
+			"id": "Probe items",
+			"name": "Probe items",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [300, 220],
+			"parameters": {
+				"jsCode": "return $json.missing.map(f=>({json:{id:f.id.slice(6)}}));"
+			}
+		},
+		{
+			"id": "Probe",
+			"name": "Probe",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [600, 220],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "GET",
+				"url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.id }}",
+				"authentication": "predefinedCredentialType",
+				"nodeCredentialType": "googleDriveOAuth2Api",
+				"sendQuery": true,
+				"queryParameters": {
+					"parameters": [
+						{
+							"name": "fields",
+							"value": "id,parents,trashed"
+						}
+					]
+				},
+				"options": {
+					"timeout": 30000,
+					"response": {
+						"response": {
+							"fullResponse": true,
+							"neverError": true,
+							"responseFormat": "json"
+						}
+					}
+				}
+			},
+			"credentials": {
+				"googleDriveOAuth2Api": {
+					"id": "cybersim-google",
+					"name": "cybersim-google"
+				}
+			}
+		},
+		{
+			"id": "Collect probes",
+			"name": "Collect probes",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [900, 220],
+			"parameters": {
+				"jsCode": "const state=$('Inventory state').first().json;const items=$input.all();for(let i=0;i<items.length;i++){const r=items[i].json;const b=r.body||{};const id=state.missing[i].id.slice(6);if(r.statusCode===404)state.probes.push({id,confirmed:'inaccessible'});else if(r.statusCode===200){if(b.trashed)state.probes.push({id,confirmed:'trashed'});else if(!(b.parents||[]).includes('__FOLDER_ID__'))state.probes.push({id,confirmed:'moved'});}else if(r.statusCode!==403)throw new Error('Probe failed');}return [{json:state}];"
+			}
+		},
+		{
+			"id": "Submit inventory",
+			"name": "Submit inventory",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [1200, 220],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "POST",
+				"url": "http://backend:3001/internal/v1/knowledge/inventory",
+				"authentication": "genericCredentialType",
+				"genericAuthType": "httpHeaderAuth",
+				"sendBody": true,
+				"specifyBody": "json",
+				"jsonBody": "={{ {...$json,syncPermit:$('Reserve').first().json.syncPermit} }}",
+				"options": {
+					"timeout": 30000
+				}
+			},
+			"credentials": {
+				"httpHeaderAuth": {
+					"id": "cybersim-service",
+					"name": "cybersim-service"
+				}
+			}
+		},
+		{
+			"id": "Downloads",
+			"name": "Downloads",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [0, 440],
+			"parameters": {
+				"jsCode": "const docs=$json.download.filter(f=>!f.trashed);return docs.length?docs.map(f=>({json:f})):[{json:{empty:true}}];"
+			}
+		},
+		{
+			"id": "Download",
+			"name": "Download",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [300, 440],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "GET",
+				"url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $json.id }}",
+				"authentication": "predefinedCredentialType",
+				"nodeCredentialType": "googleDriveOAuth2Api",
+				"sendQuery": true,
+				"queryParameters": {
+					"parameters": [
+						{
+							"name": "alt",
+							"value": "media"
+						}
+					]
+				},
+				"options": {
+					"timeout": 30000,
+					"response": {
+						"response": {
+							"responseFormat": "text",
+							"outputPropertyName": "content"
+						}
+					},
+					"batching": {
+						"batch": {
+							"batchSize": 1
+						}
+					}
+				}
+			},
+			"credentials": {
+				"googleDriveOAuth2Api": {
+					"id": "cybersim-google",
+					"name": "cybersim-google"
+				}
+			}
+		},
+		{
+			"id": "Recheck",
+			"name": "Recheck",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [600, 440],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "GET",
+				"url": "={{ 'https://www.googleapis.com/drive/v3/files/' + $('Downloads').item.json.id }}",
+				"authentication": "predefinedCredentialType",
+				"nodeCredentialType": "googleDriveOAuth2Api",
+				"sendQuery": true,
+				"queryParameters": {
+					"parameters": [
+						{
+							"name": "fields",
+							"value": "id,version,modifiedTime,parents,trashed"
+						}
+					]
+				},
+				"options": {
+					"timeout": 30000
+				}
+			},
+			"credentials": {
+				"googleDriveOAuth2Api": {
+					"id": "cybersim-google",
+					"name": "cybersim-google"
+				}
+			}
+		},
+		{
+			"id": "Document",
+			"name": "Document",
+			"type": "n8n-nodes-base.code",
+			"typeVersion": 2,
+			"position": [900, 440],
+			"parameters": {
+				"jsCode": "const before=$('Downloads').item.json;const after=$json;if(after.trashed||!(after.parents||[]).includes('__FOLDER_ID__')||String(before.version||before.modifiedTime)!==String(after.version||after.modifiedTime))throw new Error('Document changed during download');const text=$('Download').item.json.content;if(typeof text!=='string'||text.includes('\\uFFFD'))throw new Error('Invalid UTF-8');return {json:{syncPermit:$('Reserve').first().json.syncPermit,id:'drive:'+before.id,source:'drive',revision:String(after.version||after.modifiedTime),type:'conocimiento',content:text}};",
+				"mode": "runOnceForEachItem"
+			}
+		},
+		{
+			"id": "Store document",
+			"name": "Store document",
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [1200, 440],
+			"retryOnFail": false,
+			"parameters": {
+				"method": "POST",
+				"url": "http://backend:3001/internal/v1/knowledge/document",
+				"authentication": "genericCredentialType",
+				"genericAuthType": "httpHeaderAuth",
+				"sendBody": true,
+				"specifyBody": "json",
+				"jsonBody": "={{ $json }}",
+				"options": {
+					"timeout": 30000
+				}
+			},
+			"credentials": {
+				"httpHeaderAuth": {
+					"id": "cybersim-service",
+					"name": "cybersim-service"
+				}
+			}
+		},
+		{
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [0, 0],
+			"retryOnFail": false,
+			"credentials": {
+				"httpHeaderAuth": {
+					"id": "cybersim-service",
+					"name": "cybersim-service"
+				}
+			},
+			"id": "Reserve",
+			"name": "Reserve",
+			"parameters": {
+				"method": "POST",
+				"url": "http://backend:3001/internal/v1/knowledge/sync-start",
+				"authentication": "genericCredentialType",
+				"genericAuthType": "httpHeaderAuth",
+				"sendBody": true,
+				"specifyBody": "json",
+				"jsonBody": "={{ {executionId:$execution.id} }}",
+				"options": {
+					"timeout": 10000
+				}
+			}
+		},
+		{
+			"type": "n8n-nodes-base.httpRequest",
+			"typeVersion": 4.2,
+			"position": [0, 0],
+			"retryOnFail": false,
+			"credentials": {
+				"httpHeaderAuth": {
+					"id": "cybersim-service",
+					"name": "cybersim-service"
+				}
+			},
+			"id": "Finish round",
+			"name": "Finish round",
+			"executeOnce": true,
+			"parameters": {
+				"method": "POST",
+				"url": "http://backend:3001/internal/v1/knowledge/sync-end",
+				"authentication": "genericCredentialType",
+				"genericAuthType": "httpHeaderAuth",
+				"sendBody": true,
+				"specifyBody": "json",
+				"jsonBody": "={{ {syncPermit:$('Reserve').first().json.syncPermit} }}",
+				"options": {
+					"timeout": 10000
+				}
+			}
+		},
+		{
+			"id": "Allowed",
+			"name": "Allowed",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2.2,
+			"position": [0, 0],
+			"parameters": {
+				"conditions": {
+					"options": {
+						"typeValidation": "strict"
+					},
+					"conditions": [
+						{
+							"leftValue": "={{ $json.run }}",
+							"rightValue": true,
+							"operator": {
+								"type": "boolean",
+								"operation": "true",
+								"singleValue": true
+							}
+						}
+					],
+					"combinator": "and"
+				}
+			}
+		},
+		{
+			"id": "Has downloads",
+			"name": "Has downloads",
+			"type": "n8n-nodes-base.if",
+			"typeVersion": 2.2,
+			"position": [0, 0],
+			"parameters": {
+				"conditions": {
+					"options": {
+						"typeValidation": "strict"
+					},
+					"conditions": [
+						{
+							"leftValue": "={{ !$json.empty }}",
+							"rightValue": true,
+							"operator": {
+								"type": "boolean",
+								"operation": "true",
+								"singleValue": true
+							}
+						}
+					],
+					"combinator": "and"
+				}
+			}
+		}
+	],
+	"connections": {
+		"Tick": {
+			"main": [
+				[
+					{
+						"node": "Reserve",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Known": {
+			"main": [
+				[
+					{
+						"node": "Folder",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Folder": {
+			"main": [
+				[
+					{
+						"node": "List",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"List": {
+			"main": [
+				[
+					{
+						"node": "Inventory state",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Inventory state": {
+			"main": [
+				[
+					{
+						"node": "Has missing",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Probe items": {
+			"main": [
+				[
+					{
+						"node": "Probe",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Probe": {
+			"main": [
+				[
+					{
+						"node": "Collect probes",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Collect probes": {
+			"main": [
+				[
+					{
+						"node": "Submit inventory",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Submit inventory": {
+			"main": [
+				[
+					{
+						"node": "Downloads",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Downloads": {
+			"main": [
+				[
+					{
+						"node": "Has downloads",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Download": {
+			"main": [
+				[
+					{
+						"node": "Recheck",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Recheck": {
+			"main": [
+				[
+					{
+						"node": "Document",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Document": {
+			"main": [
+				[
+					{
+						"node": "Store document",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Has missing": {
+			"main": [
+				[
+					{
+						"node": "Probe items",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Submit inventory",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Reserve": {
+			"main": [
+				[
+					{
+						"node": "Allowed",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Allowed": {
+			"main": [
+				[
+					{
+						"node": "Known",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Has downloads": {
+			"main": [
+				[
+					{
+						"node": "Download",
+						"type": "main",
+						"index": 0
+					}
+				],
+				[
+					{
+						"node": "Finish round",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		},
+		"Store document": {
+			"main": [
+				[
+					{
+						"node": "Finish round",
+						"type": "main",
+						"index": 0
+					}
+				]
+			]
+		}
+	},
+	"settings": {
+		"executionOrder": "v1",
+		"saveDataSuccessExecution": "none",
+		"saveExecutionProgress": false,
+		"executionTimeout": 60
+	}
 }

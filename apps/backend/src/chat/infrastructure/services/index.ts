@@ -1,4 +1,19 @@
-export { GPTService, type ChatMessage, type ToolResult, type ILLMService, type ITopicAnalyzer } from "./GPTService.js";
-export { QdrantService, type SearchResult, type IVectorSearchService } from "./QdrantService.js";
-export { PiperTTSService, type ITTSService } from "./PiperTTSService.js";
-export { ConversationMemoryManager, getMemoryManager, type IConversationMemory, type MemoryStats } from "./ConversationMemoryManager.js";
+export {
+	ConversationMemoryManager,
+	getMemoryManager,
+	type IConversationMemory,
+	type MemoryStats,
+} from './ConversationMemoryManager.js'
+export {
+	type ChatMessage,
+	GPTService,
+	type ILLMService,
+	type ITopicAnalyzer,
+	type ToolResult,
+} from './GPTService.js'
+export { type ITTSService, PiperTTSService } from './PiperTTSService.js'
+export {
+	type IVectorSearchService,
+	QdrantService,
+	type SearchResult,
+} from './QdrantService.js'

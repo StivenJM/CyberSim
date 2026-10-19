@@ -240,7 +240,7 @@ export async function health():Promise<Record<string,unknown>>{
  let frontendHash='unavailable';
  try{frontendHash=String(object(await httpJson('http://frontend:5173/__dev/fingerprint',{},2000)).hash);}catch{/* preparation may precede Vite */}
  const contractHash=(await codeHash())+':'+frontendHash;
- let evidence:Record<string,unknown>={};try{evidence=object(JSON.parse(await readFile((process.env.PREPARATION_DIR||'.dev')+'/acceptance.json','utf8')));}catch{}
+ let evidence:Record<string,unknown>={};try{evidence=object(JSON.parse(await readFile((process.env.PREPARATION_DIR||'.dev')+'/acceptance.json','utf8')));}catch{/* Verification stays pending until valid evidence is available. */}
  components.verification=evidence.passed===true&&evidence.contractHash===contractHash&&evidence.installationId===c?.installation_id&&evidence.revisionId===c?.revision_id?'passed':'pending';
  try{
   const driveFile=JSON.parse(await readFile((process.env.KNOWLEDGE_CACHE_DIR||'.dev/knowledge')+'/'+(await import('node:crypto')).createHash('sha256').update(JSON.stringify('drive-status')).digest('hex')+'.json','utf8'));

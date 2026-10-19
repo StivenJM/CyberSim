@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/test';
 import type { Page } from '@playwright/test';
 import { sembrarSesion } from './helpers/auth';
 

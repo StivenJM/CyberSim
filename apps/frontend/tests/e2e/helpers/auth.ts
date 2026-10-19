@@ -55,6 +55,9 @@ export async function mockLoginInvalido(page: Page) {
 // Silencia las GET de datos de las vistas post-login para que no dependan del backend.
 export async function mockDatosVacios(page: Page) {
   await page.route('**/api/**', (route) => {
+    if (new URL(route.request().url()).pathname === '/api/health/ready') {
+      return route.fallback();
+    }
     if (route.request().method() === 'GET') {
       return route.fulfill({ json: { success: true, data: [] } });
     }

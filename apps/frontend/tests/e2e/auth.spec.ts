@@ -1,4 +1,4 @@
-import { test, expect } from '@playwright/test';
+import { test, expect } from './fixtures/test';
 import { mockLogin, mockLoginInvalido, mockDatosVacios } from './helpers/auth';
 
 test.describe('Autenticación', () => {

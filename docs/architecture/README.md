@@ -23,4 +23,4 @@ Documentación técnica del sistema implementado. Para procedimientos de ejecuci
 | [Auditoría de decisiones Docker](auditoria-desarrollo-docker.md) | ¿Qué fundamento, debilidad y corrección tiene cada decisión D01–D26 y cada uno de los 171 elementos concretos? |
 | [Contrato técnico Docker v1](contrato-desarrollo-docker.md) | ¿Qué contratos, límites y garantías rigen el entorno y cuál es su evidencia ejecutable? |
 
-Las decisiones observadas se registran en [ADRs](../project/adrs/README.md). Este índice y las rutas de código usan la estructura actual de npm workspaces `apps/frontend` y `apps/backend`.
+Las decisiones observadas se registran en [ADRs](../project/adrs/README.md). Este índice y las rutas de código usan la estructura actual de workspaces de pnpm `apps/frontend` y `apps/backend`.

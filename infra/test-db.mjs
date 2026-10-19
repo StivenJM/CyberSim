@@ -10,12 +10,12 @@ try{
  const url=new URL('postgresql://localhost');url.hostname=process.env.PGHOST||'postgres';url.username=process.env.PGUSER||'postgres';url.password=process.env.PGPASSWORD||'postgres';url.pathname='/'+name;
  const env={...process.env,NODE_ENV:'test',DATABASE_URL:url.toString(),DIRECT_URL:url.toString(),CYBERSIM_TEST_DATABASE:'1',OPENAI_API_KEY:'',INTERNAL_SIGNING_KEY:'local-test-signing-key-123456789012345678901234567890'};
  for(const args of [
-  ['run','migrate:deploy','--workspace','@cybersim/backend'],
-  ['run','db:seed','--workspace','@cybersim/backend'],
-  ['exec','--workspace','@cybersim/backend','--','tsx','-e',"import{pool}from'./src/integrations/config.ts';void(async()=>{await pool.query('INSERT INTO coordinacion_integracion(id) VALUES(1)');await pool.end()})()"],
-  ['run','test','--workspace','@cybersim/backend']
+  ['--filter','@cybersim/backend','run','migrate:deploy'],
+  ['--filter','@cybersim/backend','run','db:seed'],
+  ['--filter','@cybersim/backend','exec','tsx','-e',"import{pool}from'./src/integrations/config.ts';void(async()=>{await pool.query('INSERT INTO coordinacion_integracion(id) VALUES(1)');await pool.end()})()"],
+  ['--filter','@cybersim/backend','run','test']
  ]){
-  const r=spawnSync('npm',args,{env,stdio:'inherit',timeout:180000});
+  const r=spawnSync('pnpm',args,{env,stdio:'inherit',timeout:180000});
   if(r.status!==0)throw new Error('Isolated integration check failed');
  }
 }finally{

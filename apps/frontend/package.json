@@ -5,7 +5,7 @@
   "type": "module",
   "scripts": {
     "dev": "vite",
-    "build": "npm run typecheck && vite build",
+    "build": "pnpm run typecheck && vite build",
     "preview": "vite preview --host",
     "typecheck": "tsc --project tsconfig.json --noEmit",
     "lint": "eslint .",
@@ -27,7 +27,8 @@
     "react": "^19.1.1",
     "react-dom": "^19.1.1",
     "react-router": "^7.9.4",
-    "three": "^0.180.0"
+    "three": "^0.180.0",
+    "three-stdlib": "2.36.1"
   },
   "devDependencies": {
     "@eslint/js": "^9.36.0",

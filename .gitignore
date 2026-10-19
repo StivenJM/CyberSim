@@ -54,3 +54,6 @@ blob-report/
 .dev/
 **/__pycache__/
 apps/frontend/scripts/rag-output/
+
+# pnpm local store
+.pnpm-store/

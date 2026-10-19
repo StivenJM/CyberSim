@@ -10,7 +10,7 @@ Diagnosticar primero el proceso que falla: Vite, Express, PostgreSQL o integraci
 | Error importando Prisma generado | Cliente no generado o no copiado a `dist` | Ejecutar `db:generate`; para compilado repetir build backend y revisar `dist/generated/prisma` |
 | Error de conexión PostgreSQL | Base detenida, URL incorrecta o puerto ocupado | Revisar `docker compose ps` y conexiones; CLI puede usar otra URL que runtime |
 | Cambio de esquema no aparece | Migración pendiente o cliente viejo | Aplicar migraciones previstas y generar cliente; no resetear datos como primer diagnóstico |
-| `npm run dev` en raíz falla | Raíz no tiene ese script | Usar `--workspace @cybersim/frontend` o `@cybersim/backend` |
+| `pnpm dev` en raíz falla | Raíz no tiene ese script | Usar `pnpm --filter @cybersim/frontend dev` o `pnpm --filter @cybersim/backend dev` |
 | Login funciona, generador devuelve 404 | Base `/api` y eliminación adicional del prefijo en generador | Configurar `VITE_BACKEND_URL` absoluto sin prefijo y reiniciar Vite; revisar ruta final |
 | Solo análisis apunta a localhost en sitio remoto | Hook usa `VITE_API_URL` independiente | Configurar también esa variable y reconstruir frontend |
 | API responde HTML en vez de JSON | Proxy/ruta/hosting intercepta endpoint | Revisar URL solicitada en Network y [tabla de paths](../architecture/frontend.md) |
@@ -40,10 +40,10 @@ Diagnosticar primero el proceso que falla: Vite, Express, PostgreSQL o integraci
 
 ```powershell
 node --version
-npm --version
+pnpm --version
 docker compose ps
 Invoke-RestMethod http://localhost:3000/health
-npm run typecheck --workspaces
+pnpm typecheck
 ```
 
 En el navegador comprobar la solicitud final y el body de respuesta. Con base absoluta auth llama `/auth/*`, chat `/api/chat` y generador `/api/agent-malvado/generate`. Con proxy las transformaciones varían por adaptador.

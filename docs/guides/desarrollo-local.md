@@ -23,7 +23,7 @@ docker compose version
 
 `docker version` debe mostrar tanto el cliente como el servidor. Si el servidor no responde, termina de iniciar Docker Desktop y revisa su configuración de WSL.
 
-Docker ejecuta Node, npm, Prisma y PostgreSQL. Puedes trabajar con el editor en Windows sin instalar esas herramientas por separado.
+Docker ejecuta Node, pnpm, Prisma y PostgreSQL. Puedes trabajar con el editor en Windows sin instalar esas herramientas por separado.
 
 ## 2. Crea la configuración local
 
@@ -179,7 +179,7 @@ Detén Watch antes de ejecutar mantenimiento. Para crear una migración tras edi
 
 El script pausa las operaciones de integración, detiene las aplicaciones, ejecuta la tarea y reconstruye los servicios. Revisa el SQL generado antes de incluirlo en Git. Si falla, las integraciones permanecen pausadas: revisa el error antes de continuar.
 
-La acción `./scripts/dev.ps1 deps` actualiza el lockfile mediante npm; revisa también ese cambio. Consulta [mantenimiento](mantenimiento.md) y [estado del entorno](../project/estado-desarrollo-docker.md) para los detalles y límites de estas herramientas.
+La acción `./scripts/dev.ps1 deps` actualiza `pnpm-lock.yaml` mediante pnpm dentro de Docker. Para añadir o retirar dependencias, usa `./scripts/dev.ps1 deps add --filter @cybersim/frontend paquete` o `./scripts/dev.ps1 deps remove --filter @cybersim/frontend paquete`. Para la raíz, utiliza `-w`. Revisa los manifiestos y el lockfile antes de incluirlos en Git. Las migraciones montan solamente el directorio Prisma sobre la imagen de herramientas, conservando sus dependencias Linux aunque tengas dependencias Windows en el host. Consulta [mantenimiento](mantenimiento.md) y [estado del entorno](../project/estado-desarrollo-docker.md) para los detalles y límites de estas herramientas.
 
 ### Flujos de n8n
 
@@ -198,10 +198,10 @@ Los flujos compartidos se versionan en [infra/n8n](../../infra/n8n). Para export
 Con el entorno iniciado, ejecuta los checks en contenedores:
 
 ```powershell
-docker compose --profile tools run --rm tools npm run typecheck --workspace @cybersim/backend
-docker compose --profile tools run --rm tools npm run typecheck --workspace @cybersim/frontend
-docker compose --profile tools run --rm tools npm run lint --workspace @cybersim/backend
-docker compose --profile tools run --rm tools npm run test --workspace @cybersim/frontend
+docker compose --profile tools run --rm tools pnpm --filter @cybersim/backend run typecheck
+docker compose --profile tools run --rm tools pnpm --filter @cybersim/frontend run typecheck
+docker compose --profile tools run --rm tools pnpm --filter @cybersim/backend run lint
+docker compose --profile tools run --rm tools pnpm --filter @cybersim/frontend run test
 docker compose --profile tools run --rm tools node infra/test-db.mjs
 ```
 

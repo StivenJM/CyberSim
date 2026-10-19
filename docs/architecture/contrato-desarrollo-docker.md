@@ -299,7 +299,7 @@ Runner externo JS de la misma versión exacta que n8n, sin SQLite, claves admini
 
 ### Fuentes y mantenimiento
 
-Watch sincroniza código host→contenedor; dependencias Linux quedan en imagen. Excluir `node_modules`, `.git`, .env, dist, generados y datos de infraestructura. Manifiestos raíz/ambos workspaces y lockfile provocan rebuild con `npm ci` desde raíz, npm fijado y cache de descarga BuildKit. No compartir un node_modules mutable entre instaladores ni ejecutar instalación en cada arranque.
+Watch sincroniza código host→contenedor; dependencias Linux quedan en imagen. Excluir `node_modules`, `.git`, .env, dist, generados y datos de infraestructura. Manifiestos raíz/ambos workspaces y lockfile provocan rebuild con `pnpm install --frozen-lockfile` desde raíz, pnpm fijado y cache de descarga BuildKit. No compartir un node_modules mutable entre instaladores ni ejecutar instalación en cada arranque.
 
 Cambios normales de fuente usan HMR/nodemon. Schema/migraciones y dependencias usan mantenimiento explícito: pausar admisión, detener Watch, ejecutar herramientas con rutas de salida montadas al host, aplicar SQL revisado/generar cliente y reanudar con comprobación. No asumir que reconstruir vuelve a ejecutar un one-shot ya completado. Un preparador persistente detecta la nueva huella y bloquea readiness incompatible hasta ese mantenimiento.
 
@@ -350,7 +350,7 @@ Las respuestas de análisis usan el [DTO existente](../../apps/backend/src/cours
 
 | Componente | Base fijada en el repositorio |
 |---|---|
-| Node/backend/frontend/tools | Node 24 LTS, candidato 24.22.0, Debian slim; npm exacto tomado de imagen validada y fijado con lockfile |
+| Node/backend/frontend/tools | Node 24 LTS, candidato 24.22.0, Debian slim; pnpm 12.14.0 fijado en packageManager y lockfile |
 | PostgreSQL | Major existente 15, candidato parche 15.19; nunca major upgrade implícito |
 | n8n/runner | 2.43.7 ambos, sin mezclar tags |
 | Qdrant/cliente JS | Servidor 1.18.3 candidato y cliente existente 1.18.0; compatibilidad por comprobar |

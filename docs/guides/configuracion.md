@@ -74,7 +74,7 @@ En el procedimiento anterior se debían definir `VITE_BACKEND_URL` y `VITE_API_U
 
 Sin `VITE_BACKEND_URL`, auth y progreso usan `/api` y Vite elimina ese prefijo; chat termina llamando `/api/api/chat`, que sí llega a `/api/chat`. El generador usa `replace('/api', '')` y termina en un path incorrecto tras el proxy. La configuración local propuesta evita esa combinación, pero el adaptador sigue requiriendo corrección para soportar todas las bases.
 
-Un servidor estático de producción no hereda proxies de Vite. Configurar las dos URLs públicas antes de `npm run build`, o definir un reverse proxy que respete los paths reales y verificar cada módulo. Usar bases sin slash final para evitar dobles separadores en los adaptadores.
+Un servidor estático de producción no hereda proxies de Vite. Configurar las dos URLs públicas antes de `pnpm build`, o definir un reverse proxy que respete los paths reales y verificar cada módulo. Usar bases sin slash final para evitar dobles separadores en los adaptadores.
 
 ## Variables por workspace (referencia histórica)
 

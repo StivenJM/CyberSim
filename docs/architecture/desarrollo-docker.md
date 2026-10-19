@@ -84,9 +84,9 @@ Fuentes: [Compose](../../compose.yaml), [imágenes fijadas](../../infra/images.l
 | Etapa | Consumidor | Contenido y trabajo |
 |---|---|---|
 | `base` / `workspace-manifests` | Etapas de construcción | Node fijado, paquetes del sistema, manifiestos y lockfile raíz |
-| `frontend-dependencies` / `frontend-source` | Frontend y exportador | `npm ci` filtrado al workspace frontend y sus fuentes |
+| `frontend-dependencies` / `frontend-source` | Frontend y exportador | `pnpm --filter … install --frozen-lockfile` filtrado al workspace frontend y sus fuentes |
 | `frontend-dev` | Servicio frontend | Vite; no ejecuta generación Prisma ni exportación RAG |
-| `backend-dependencies` / `backend-source` | Backend | `npm ci` filtrado al backend, sus fuentes y generación Prisma; incluye corpus/metadatos de workflows para validación y huellas |
+| `backend-dependencies` / `backend-source` | Backend | `pnpm --filter … install --frozen-lockfile` filtrado al backend, sus fuentes y generación Prisma; incluye corpus/metadatos de workflows para validación y huellas |
 | `backend-dev` | Servicio backend | Express; no incorpora fuentes frontend ni ejecuta su exportador |
 | `knowledge-build` | Construcción del preparador | Ejecuta el exportador del catálogo frontend y produce los JSON de topologías/desafíos |
 | `dependencies` / `tools-dev` | Migraciones y herramientas explícitas | Toolchain de ambos workspaces para checks y mantenimiento, cliente Prisma generado; no ejecuta el exportador |
@@ -110,11 +110,13 @@ flowchart TD
     K -->|Solo JSON exportados| P
 ```
 
-La raíz sigue siendo el contexto de construcción porque npm resuelve los workspaces desde un lockfile común. Un cambio de ese lockfile puede invalidar instalaciones de varios destinos; esto es distinto de ejecutar tareas de otra aplicación. Las fuentes backend no pertenecen al grafo de construcción frontend y viceversa. El preparador sí depende expresamente del catálogo porque lo distribuye como conocimiento.
+La raíz sigue siendo el contexto de construcción porque pnpm resuelve los workspaces desde un lockfile común. Un cambio de ese lockfile puede invalidar instalaciones de varios destinos; esto es distinto de ejecutar tareas de otra aplicación. Las fuentes backend no pertenecen al grafo de construcción frontend y viceversa. El preparador sí depende expresamente del catálogo porque lo distribuye como conocimiento.
+
+El [ADR 0011](../project/adrs/0011-pnpm-como-gestor-unico.md) sustituye las referencias anteriores a npm: pnpm 12.14.0 se activa con Corepack, usa `pnpm-lock.yaml` y copia `pnpm-workspace.yaml` antes de instalar. BuildKit cachea `/pnpm/store`; las dependencias enlazadas se conservan en las imágenes. Watch reconstruye al cambiar cualquiera de esos dos archivos. El servicio tools monta Prisma sobre `/workspace/apps/backend/prisma`, conservando las dependencias Linux; los cambios de manifiestos y lockfile se escriben por separado en `/host`.
 
 Compose Watch reconstruye el preparador cuando cambian catálogo, exportador, corpus o workflows; esa reconstrucción no aplica automáticamente cambios a workflows n8n ya instalados. Se mantiene la política de actualización explícita. Las fuentes de aplicación conservan HMR/reinicio de desarrollo.
 
-La estructura aplica las [etapas independientes de BuildKit](https://docs.docker.com/build/building/multi-stage/), [caché y etapas reutilizables de Docker](https://docs.docker.com/build/building/best-practices/) y [selección de workspace de npm ci](https://docs.npmjs.com/cli/v11/commands/npm-ci/). La selección concreta de destinos es propia de CyberSim; las fuentes no imponen estos nombres ni un único diseño universal.
+La estructura aplica las [etapas independientes de BuildKit](https://docs.docker.com/build/building/multi-stage/), [caché y etapas reutilizables de Docker](https://docs.docker.com/build/building/best-practices/) y [filtros de pnpm](https://pnpm.io/filtering). La selección concreta de destinos es propia de CyberSim; las fuentes no imponen estos nombres ni un único diseño universal.
 
 ## Referencias
 

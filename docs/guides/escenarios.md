@@ -44,7 +44,7 @@ Los resultados usan el slug `ai-generated-scenario`, aunque la definición exter
 ## Exportar para RAG
 
 ```powershell
-npm run export:rag --workspace @cybersim/frontend
+pnpm --filter @cybersim/frontend run export:rag
 ```
 
 El script escribe en **`apps/frontend/scripts/rag-output/`** porque resuelve la ruta desde su propio archivo. Actualmente hay JSON previos en **`scripts/rag-output/`** de la raíz. No asumir que se actualizaron: revisar la salida y decidir cuál es el destino que realmente utiliza la ingestión externa.
@@ -56,10 +56,10 @@ Para consumir esos JSON en Qdrant, el operador del workflow debe definir colecci
 ## Validar el cambio
 
 ```powershell
-npm run typecheck --workspace @cybersim/frontend
-npm run lint --workspace @cybersim/frontend
-npm run test --workspace @cybersim/frontend
-npm run build --workspace @cybersim/frontend
+pnpm --filter @cybersim/frontend run typecheck
+pnpm --filter @cybersim/frontend run lint
+pnpm --filter @cybersim/frontend run test
+pnpm --filter @cybersim/frontend run build
 ```
 
 Comprobar además en el navegador: aparición del nivel, desbloqueo esperado, escena/topología sin referencias rotas, objetivos alcanzables, pausa/reanudación, cierre y guardado de un intento. El E2E actual usa un fixture y no prueba un nivel nuevo automáticamente.

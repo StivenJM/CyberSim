@@ -15,7 +15,9 @@ export async function codeHash():Promise<string>{
   }
  }
  await scan(path.join(repositoryRoot,'apps/backend/src'));await scan(path.join(repositoryRoot,'infra/n8n'));await scan(path.join(repositoryRoot,'knowledge'));
- digest.update(await readFile(path.join(repositoryRoot,'package-lock.json')));
+ for(const file of ['pnpm-lock.yaml','pnpm-workspace.yaml','package.json']){
+  digest.update(await readFile(path.join(repositoryRoot,file)));
+ }
  digest.update(JSON.stringify({tutor:process.env.OPENAI_TUTOR_MODEL,complex:process.env.OPENAI_COMPLEX_MODEL,embedding:process.env.OPENAI_EMBEDDING_MODEL}));
  return digest.digest('hex');
 }

@@ -1,5 +1,5 @@
-import type { FeedbackPayload, FeedbackResponse } from "../models/Feedback.js";
+import type { FeedbackPayload, FeedbackResponse } from '../models/Feedback.js'
 
 export interface IFeedbackRepository {
-  generateFeedback(payload: FeedbackPayload): Promise<FeedbackResponse>;
+	generateFeedback(payload: FeedbackPayload): Promise<FeedbackResponse>
 }

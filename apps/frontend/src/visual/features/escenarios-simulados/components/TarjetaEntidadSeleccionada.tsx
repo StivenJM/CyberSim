@@ -1,17 +1,18 @@
-import styles from "../styles/TarjetaEntidadSeleccionada.module.css";
-import { useEscenario } from "../../../common/contexts";
+import { useEscenario } from '../../../common/contexts'
+import styles from '../styles/TarjetaEntidadSeleccionada.module.css'
 
-export default function TarjetaEntidadSeleccionada({ visible }: { visible: boolean }) {
-    const { dispositivoSeleccionado } = useEscenario();
+export default function TarjetaEntidadSeleccionada({
+	visible,
+}: {
+	visible: boolean
+}) {
+	const { dispositivoSeleccionado } = useEscenario()
 
-    if (!visible || !dispositivoSeleccionado) return null;
+	if (!visible || !dispositivoSeleccionado) return null
 
-    return (
-        <div className={styles.contenedor}>
-          
-                <h3 className={styles.titulo}>{dispositivoSeleccionado.nombre}</h3>
-            
-
-        </div>
-    );
+	return (
+		<div className={styles.contenedor}>
+			<h3 className={styles.titulo}>{dispositivoSeleccionado.nombre}</h3>
+		</div>
+	)
 }

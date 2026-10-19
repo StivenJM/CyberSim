@@ -43,7 +43,7 @@ jobs:
       - name: Instalar dependencias
         run: pnpm install --frozen-lockfile
 
-      - name: Ejecutar ESLint
+      - name: Comprobar lint y formato con Biome
         run: pnpm lint
 
       - name: Generar cliente Prisma

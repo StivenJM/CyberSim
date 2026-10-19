@@ -1,41 +1,41 @@
 .logItem {
-  position: fixed;
-  right: 40px;
-  bottom: 40px;
-  width: 317px;
-  padding: 12px;
-  background-color: var(--surface-secondary);
-  border-radius: 4px;
-  animation: slideIn 0.3s ease-out;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 1000;
-  will-change: transform, opacity;
+	position: fixed;
+	right: 40px;
+	bottom: 40px;
+	width: 317px;
+	padding: 12px;
+	background-color: var(--surface-secondary);
+	border-radius: 4px;
+	animation: slideIn 0.3s ease-out;
+	box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+	z-index: 1000;
+	will-change: transform, opacity;
 }
 
 @keyframes slideIn {
-  from {
-    transform: translateX(calc(100% + 40px));
-    opacity: 0;
-  }
-  to {
-    transform: translateX(0);
-    opacity: 1;
-  }
+	from {
+		transform: translateX(calc(100% + 40px));
+		opacity: 0;
+	}
+	to {
+		transform: translateX(0);
+		opacity: 1;
+	}
 }
 
 .logItem time {
-  font-size: 12px;
+	font-size: 12px;
 }
 
 .logItemTime {
-  display: flex;
-  align-items: center;
-  gap: 4px;
-  margin-bottom: 6px;
+	display: flex;
+	align-items: center;
+	gap: 4px;
+	margin-bottom: 6px;
 }
 
 .logItem p {
-  margin: 0;
-  font-size: 14px;
-  line-height: 1.4;
+	margin: 0;
+	font-size: 14px;
+	line-height: 1.4;
 }

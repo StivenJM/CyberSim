@@ -1,7 +1,7 @@
-export { ConectividadService } from "./ConectividadService";
-export { EventoRedService } from "./EventoRedService";
-export { FirewallService } from "./FirewallService";
-export { FirewallConfigService } from "./FirewallConfigService";
-export { RedDisponibilidadService } from "./RedDisponibilidadService";
-export { TransferenciaService } from "./TransferenciaService";
-export { VPNService } from "./VPNService";
+export { ConectividadService } from './ConectividadService'
+export { EventoRedService } from './EventoRedService'
+export { FirewallConfigService } from './FirewallConfigService'
+export { FirewallService } from './FirewallService'
+export { RedDisponibilidadService } from './RedDisponibilidadService'
+export { TransferenciaService } from './TransferenciaService'
+export { VPNService } from './VPNService'

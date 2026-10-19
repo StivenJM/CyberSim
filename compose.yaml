@@ -228,6 +228,14 @@
           {
             "action": "rebuild",
             "path": "./infra/n8n"
+          },
+          {
+            "action": "rebuild",
+            "path": "./biome.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./apps/backend/biome.json"
           }
         ]
       }
@@ -303,6 +311,14 @@
           {
             "action": "rebuild",
             "path": "./infra/node.Dockerfile"
+          },
+          {
+            "action": "rebuild",
+            "path": "./biome.json"
+          },
+          {
+            "action": "rebuild",
+            "path": "./apps/frontend/biome.json"
           }
         ]
       }
@@ -495,6 +511,10 @@
           {
             "action": "rebuild",
             "path": "./pnpm-workspace.yaml"
+          },
+          {
+            "action": "rebuild",
+            "path": "./biome.json"
           }
         ]
       }

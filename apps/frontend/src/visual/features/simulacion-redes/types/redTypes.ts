@@ -1,22 +1,22 @@
-import type { Entidad } from "../../../../ecs/core/Componente";
-import type { Node } from "@xyflow/react";
-import type { TipoDispositivo } from "../../../../shared/types/DeviceEnums";
+import type { Node } from '@xyflow/react'
+import type { Entidad } from '../../../../ecs/core/Componente'
+import type { TipoDispositivo } from '../../../../shared/types/DeviceEnums'
 
 interface DeviceNodeData extends Record<string, unknown> {
-  label: string;
-  tipo: TipoDispositivo | "Internet";
-  redes?: { nombre: string; color: string }[];
-  entidadId?: Entidad;
-  conectado?: boolean;
+	label: string
+	tipo: TipoDispositivo | 'Internet'
+	redes?: { nombre: string; color: string }[]
+	entidadId?: Entidad
+	conectado?: boolean
 }
 
 interface GroupNodeData extends Record<string, unknown> {
-  label: string;
+	label: string
 }
 
-export type DeviceFlowNode = Node<DeviceNodeData, "device">;
-export type GroupFlowNode = Node<GroupNodeData, "group">;
-export type TopologiaNode = DeviceFlowNode | GroupFlowNode;
+export type DeviceFlowNode = Node<DeviceNodeData, 'device'>
+export type GroupFlowNode = Node<GroupNodeData, 'group'>
+export type TopologiaNode = DeviceFlowNode | GroupFlowNode
 
 /**
  * Representación UI de una red del ECS.
@@ -25,8 +25,8 @@ export type TopologiaNode = DeviceFlowNode | GroupFlowNode;
  * de redes de un router) el campo se omite.
  */
 export interface RedInfo {
-  entidadId: Entidad;
-  nombre: string;
-  color: string;
-  estaActiva?: boolean;
+	entidadId: Entidad
+	nombre: string
+	color: string
+	estaActiva?: boolean
 }

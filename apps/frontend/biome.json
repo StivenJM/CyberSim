@@ -1,0 +1,75 @@
+{
+	"$schema": "https://biomejs.dev/schemas/2.5.15/schema.json",
+	"root": false,
+	"extends": ["../../biome.json"],
+	"linter": {
+		"rules": {
+			"a11y": {
+				"useButtonType": "off"
+			},
+			"correctness": {
+				"useExhaustiveDependencies": "off"
+			},
+			"style": {
+				"noNonNullAssertion": "off"
+			}
+		}
+	},
+	"overrides": [
+		{
+			"includes": ["**/*.css"],
+			"linter": {
+				"rules": {
+					"complexity": {
+						"noImportantStyles": "off"
+					},
+					"style": {
+						"noDescendingSpecificity": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/InvitationCode.tsx",
+				"**/ModalGrupo.tsx",
+				"**/ModalConsola.tsx"
+			],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"noAutofocus": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": ["**/Model3D.tsx", "**/ECSSceneRenderer.tsx"],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"noStaticElementInteractions": "off"
+					}
+				}
+			}
+		},
+		{
+			"includes": [
+				"**/InvitationCode.tsx",
+				"**/EscenarioHistorial.tsx",
+				"**/DetalleGrupo.tsx",
+				"**/VistaDocente.tsx",
+				"**/ModalExploradorArchivos.tsx",
+				"**/ModalVerificacionFirma.tsx",
+				"**/VistaTopologica.tsx"
+			],
+			"linter": {
+				"rules": {
+					"a11y": {
+						"useSemanticElements": "off"
+					}
+				}
+			}
+		}
+	]
+}

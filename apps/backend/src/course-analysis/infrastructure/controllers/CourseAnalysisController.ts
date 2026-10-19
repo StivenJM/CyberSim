@@ -1,1 +1,1 @@
-export { analysisRouter as default } from '../../../integrations/routes.js';
+export { analysisRouter as default } from '../../../integrations/routes.js'

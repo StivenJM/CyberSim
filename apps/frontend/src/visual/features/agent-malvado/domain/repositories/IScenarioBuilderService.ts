@@ -1,5 +1,10 @@
-import type { ScenarioGenerationRequestDTO, ScenarioGenerationResponseDTO } from '../models/ScenarioBuilderDTOs';
+import type {
+	ScenarioGenerationRequestDTO,
+	ScenarioGenerationResponseDTO,
+} from '../models/ScenarioBuilderDTOs'
 
 export interface IScenarioBuilderService {
-  generateScenario(request: ScenarioGenerationRequestDTO): Promise<ScenarioGenerationResponseDTO>;
+	generateScenario(
+		request: ScenarioGenerationRequestDTO,
+	): Promise<ScenarioGenerationResponseDTO>
 }

@@ -1,2 +1,13 @@
 # Shell scripts run in Linux containers, including bind mounts from Windows.
 *.sh text eol=lf
+
+# Biome-managed sources use consistent line endings on Windows and Linux.
+*.ts text eol=lf
+*.tsx text eol=lf
+*.js text eol=lf
+*.jsx text eol=lf
+*.mjs text eol=lf
+*.cjs text eol=lf
+*.json text eol=lf
+*.jsonc text eol=lf
+*.css text eol=lf

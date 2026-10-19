@@ -1,67 +1,71 @@
-import { describe, expect, test } from "vitest";
-import { ECSManager } from "../src/ecs/core";
-import { SistemaActivo } from "../src/ecs/systems";
-import { TipoActivo } from "../src/shared/types/DeviceEnums";
-import { Activo } from "../src/shared/types/EscenarioTypes";
+import { describe, expect, test } from 'vitest'
+import { ECSManager } from '../src/ecs/core'
+import { SistemaActivo } from '../src/ecs/systems'
+import { TipoActivo } from '../src/shared/types/DeviceEnums'
+import type { Activo } from '../src/shared/types/EscenarioTypes'
 
-describe("SistemaActivo", () => {
-    test("verifica la firma de un documento junto con la clave pública", async () => {
-        const em = new ECSManager();
+describe('SistemaActivo', () => {
+	test('verifica la firma de un documento junto con la clave pública', async () => {
+		const em = new ECSManager()
 
-        const sistemaActivo = new SistemaActivo();
-        em.agregarSistema(sistemaActivo);
+		const sistemaActivo = new SistemaActivo()
+		em.agregarSistema(sistemaActivo)
 
-        const documentoFirmado: Activo = {
-            nombre: "Activo1",
-            contenido: "La contraseña secreta es 123",
-            tipo: TipoActivo.DOCUMENTO,
-            firma: "Firma Activo1"
-        };
-        const firma: Activo = {
-            nombre: "Firma Activo1",
-            contenido: "La contraseña secreta es 123",
-            tipo: TipoActivo.FIRMA_DIGITAL,
-            propietario: "Jacob"
-        };
-        const clavePublica: Activo = {
-            nombre: "Clave_Publica_Jacob",
-            tipo: TipoActivo.CLAVE_PUBLICA,
-            propietario: "Jacob"
-        };
+		const documentoFirmado: Activo = {
+			nombre: 'Activo1',
+			contenido: 'La contraseña secreta es 123',
+			tipo: TipoActivo.DOCUMENTO,
+			firma: 'Firma Activo1',
+		}
+		const firma: Activo = {
+			nombre: 'Firma Activo1',
+			contenido: 'La contraseña secreta es 123',
+			tipo: TipoActivo.FIRMA_DIGITAL,
+			propietario: 'Jacob',
+		}
+		const clavePublica: Activo = {
+			nombre: 'Clave_Publica_Jacob',
+			tipo: TipoActivo.CLAVE_PUBLICA,
+			propietario: 'Jacob',
+		}
 
-        const hashDocumento = await sistemaActivo.calcularHashDocumento(documentoFirmado.contenido!);
-        const hashFirma = await sistemaActivo.calcularHashFirma(firma, clavePublica);
+		const hashDocumento = await sistemaActivo.calcularHashDocumento(
+			documentoFirmado.contenido!,
+		)
+		const hashFirma = await sistemaActivo.calcularHashFirma(firma, clavePublica)
 
-        expect(hashDocumento).toEqual(hashFirma);
-    });
+		expect(hashDocumento).toEqual(hashFirma)
+	})
 
-    test("resultado incorrecto entre la firma de un documento y una clave pública diferente", async () => {
-        const em = new ECSManager();
-        
-        const sistemaActivo = new SistemaActivo();
-        em.agregarSistema(sistemaActivo);
+	test('resultado incorrecto entre la firma de un documento y una clave pública diferente', async () => {
+		const em = new ECSManager()
 
-        const documentoFirmado: Activo = {
-            nombre: "Activo1",
-            contenido: "La contraseña secreta es 123",
-            tipo: TipoActivo.DOCUMENTO,
-            firma: "Firma Activo1"
-        };
-        const firma: Activo = {
-            nombre: "Firma Activo1",
-            contenido: "La contraseña secreta es 123",
-            tipo: TipoActivo.FIRMA_DIGITAL,
-            propietario: "Jacob"
-        };
-        const clavePublica: Activo = {
-            nombre: "Clave_Publica_Lisa",
-            tipo: TipoActivo.CLAVE_PUBLICA,
-            propietario: "Lisa"
-        };
-        
-        const hashDocumento = await sistemaActivo.calcularHashDocumento(documentoFirmado.contenido!);
-        const hashFirma = await sistemaActivo.calcularHashFirma(firma, clavePublica);
+		const sistemaActivo = new SistemaActivo()
+		em.agregarSistema(sistemaActivo)
 
-        expect(hashDocumento).not.toEqual(hashFirma);
-    });
-});
+		const documentoFirmado: Activo = {
+			nombre: 'Activo1',
+			contenido: 'La contraseña secreta es 123',
+			tipo: TipoActivo.DOCUMENTO,
+			firma: 'Firma Activo1',
+		}
+		const firma: Activo = {
+			nombre: 'Firma Activo1',
+			contenido: 'La contraseña secreta es 123',
+			tipo: TipoActivo.FIRMA_DIGITAL,
+			propietario: 'Jacob',
+		}
+		const clavePublica: Activo = {
+			nombre: 'Clave_Publica_Lisa',
+			tipo: TipoActivo.CLAVE_PUBLICA,
+			propietario: 'Lisa',
+		}
+
+		const hashDocumento = await sistemaActivo.calcularHashDocumento(
+			documentoFirmado.contenido!,
+		)
+		const hashFirma = await sistemaActivo.calcularHashFirma(firma, clavePublica)
+
+		expect(hashDocumento).not.toEqual(hashFirma)
+	})
+})

@@ -30,7 +30,7 @@ flowchart LR
 | API | Express 5, TypeScript, tsx/nodemon | Adaptadores HTTP y composición |
 | Datos | PostgreSQL 15 en Compose, Prisma 7, `@prisma/adapter-pg` | Persistencia relacional |
 | IA | `fetch` a OpenAI, cliente REST Qdrant, webhooks n8n | Tutor, recuperación y contenido generado |
-| Calidad | ESLint, TypeScript, Vitest, Playwright | Análisis estático y pruebas |
+| Calidad | Biome, TypeScript, Vitest, Playwright | Lint, formato, análisis estático y pruebas |
 
 Los manifiestos declaran rangos; `pnpm-lock.yaml` determina las versiones instaladas. La composición actual de frontend, backend e infraestructura se describe en [desarrollo Docker](desarrollo-docker.md).
 

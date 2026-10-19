@@ -1,12 +1,12 @@
-export * from './escenarioTutorial.js';
-export * from './escenarioAmenazas.js';
-export * from './escenarioCriptografia.js';
+export * from './escenarioAmenazas.js'
 // export * from './escenarioCertificados.js';
 // export * from './escenarioAutenticacion.js';
-export * from './escenarioControlAcceso.js';
+export * from './escenarioControlAcceso.js'
+export * from './escenarioCriptografia.js'
 // export * from './escenarioRedes.js';
 // export * from './escenarioSegmentacionPCI.js';
-export * from './escenarioHackingEtico.js';
+export * from './escenarioHackingEtico.js'
+export * from './escenarioTutorial.js'
 // export * from './escenarioRansomware.js';
 // export * from './escenarioAuditoria.js';
 // export * from './escenarioIoT.js';

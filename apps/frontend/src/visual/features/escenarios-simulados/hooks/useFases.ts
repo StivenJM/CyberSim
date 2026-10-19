@@ -1,17 +1,17 @@
-import { useFasesContext } from '../contexts/FasesContext';
+import { useFasesContext } from '../contexts/FasesContext'
 
 export const useFases = () => {
-    const { fases, faseActualIndex, actualizarFases } = useFasesContext();
+	const { fases, faseActualIndex, actualizarFases } = useFasesContext()
 
-    const faseActual = fases[faseActualIndex];
+	const faseActual = fases[faseActualIndex]
 
-    const puedaAvanzar = faseActual?.completada ?? false;
+	const puedaAvanzar = faseActual?.completada ?? false
 
-    return {
-        fases,
-        faseActual,
-        faseActualIndex,
-        actualizarFases,
-        puedaAvanzar,
-    };
-};
+	return {
+		fases,
+		faseActual,
+		faseActualIndex,
+		actualizarFases,
+		puedaAvanzar,
+	}
+}

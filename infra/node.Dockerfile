@@ -9,7 +9,7 @@ RUN corepack enable && corepack prepare pnpm@12.14.0 --activate && pnpm --versio
 
 # Workspace resolution still uses the single repository lockfile.
 FROM base AS workspace-manifests
-COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml biome.json .gitignore ./
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/frontend/package.json apps/frontend/package.json
 

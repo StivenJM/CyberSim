@@ -1,173 +1,168 @@
-import { describe, it, expect, vi, beforeEach } from "vitest"
+import { beforeEach, describe, expect, it, vi } from 'vitest'
 
-import { RegisterEstudianteUseCase } from "../src/auth/application/useCases/RegisterEstudianteUseCase"
-import { RegisterProfesorUseCase } from "../src/auth/application/useCases/RegisterProfesorUseCase"
+import { RegisterEstudianteUseCase } from '../src/auth/application/useCases/RegisterEstudianteUseCase'
+import { RegisterProfesorUseCase } from '../src/auth/application/useCases/RegisterProfesorUseCase'
 
-vi.mock("bcrypt", async (importOriginal) => {
-    const actual = await importOriginal<any>()
-    return {
-        ...actual,
-        default: {
-            ...actual.default,
-            hash: vi.fn()
-        }
-    }
+vi.mock('bcrypt', async (importOriginal) => {
+	const actual = await importOriginal<any>()
+	return {
+		...actual,
+		default: {
+			...actual.default,
+			hash: vi.fn(),
+		},
+	}
 })
 
-import bcrypt from "bcrypt"
+import bcrypt from 'bcrypt'
 
-describe("Register UseCases", () => {
+describe('Register UseCases', () => {
+	let repo: any
+	let emailService: any
 
-    let repo: any
-    let emailService: any
+	const mockedHash = bcrypt.hash as unknown as ReturnType<typeof vi.fn>
 
-    const mockedHash = bcrypt.hash as unknown as ReturnType<typeof vi.fn>
+	beforeEach(() => {
+		vi.spyOn(console, 'error').mockImplementation(() => {})
 
-    beforeEach(() => {
+		repo = {
+			findUsuarioAuthByEmail: vi.fn(),
+			createUsuarioAuth: vi.fn(),
+			createEstudiante: vi.fn(),
+			createProfesor: vi.fn(),
+			findEstudianteByCodigoUnico: vi.fn(),
+		}
 
-        vi.spyOn(console, 'error').mockImplementation(() => {})
-        
-        repo = {
-            findUsuarioAuthByEmail: vi.fn(),
-            createUsuarioAuth: vi.fn(),
-            createEstudiante: vi.fn(),
-            createProfesor: vi.fn(),
-            findEstudianteByCodigoUnico: vi.fn(),
-        }
+		emailService = {
+			sendConfirmationEmail: vi.fn(),
+		}
 
-        emailService = {
-            sendConfirmationEmail: vi.fn()
-        }
+		vi.clearAllMocks()
+	})
 
-        vi.clearAllMocks()
-    })
+	// ==========================
+	// REGISTRAR ESTUDIANTE
+	// ==========================
+	describe('RegisterEstudianteUseCase', () => {
+		let useCase: RegisterEstudianteUseCase
 
-    // ==========================
-    // REGISTRAR ESTUDIANTE
-    // ==========================
-    describe("RegisterEstudianteUseCase", () => {
+		beforeEach(() => {
+			useCase = new RegisterEstudianteUseCase(repo, emailService)
+		})
 
-        let useCase: RegisterEstudianteUseCase
+		it('debe lanzar error si el email ya existe', async () => {
+			repo.findUsuarioAuthByEmail.mockResolvedValue({})
 
-        beforeEach(() => {
-            useCase = new RegisterEstudianteUseCase(repo, emailService)
-        })
+			await expect(
+				useCase.execute({ correo_electronico: 'test@epn.edu.ec' } as any),
+			).rejects.toThrow('El correo electrónico ya está registrado')
+		})
 
-        it("debe lanzar error si el email ya existe", async () => {
-            repo.findUsuarioAuthByEmail.mockResolvedValue({})
+		it('debe registrar estudiante correctamente', async () => {
+			repo.findUsuarioAuthByEmail.mockResolvedValue(null)
 
-            await expect(
-                useCase.execute({ correo_electronico: "test@epn.edu.ec" } as any)
-            ).rejects.toThrow("El correo electrónico ya está registrado")
-        })
+			mockedHash.mockResolvedValue('hashed')
 
-        it("debe registrar estudiante correctamente", async () => {
-            repo.findUsuarioAuthByEmail.mockResolvedValue(null)
+			repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
+			repo.createEstudiante.mockResolvedValue({ id_estudiante: 10 })
 
-            mockedHash.mockResolvedValue("hashed")
+			const result = await useCase.execute({
+				correo_electronico: 'test@epn.edu.ec',
+				contrasenia: '12345678',
+				codigo_unico: 1,
+				primernombre: 'Atik',
+				segundo_nombre: 'A',
+				primer_apellido: 'Tuquerrez',
+				segundo_apellido: 'F',
+			})
 
-            repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
-            repo.createEstudiante.mockResolvedValue({ id_estudiante: 10 })
+			expect(result.id_estudiante).toBe(10)
+			expect(emailService.sendConfirmationEmail).toHaveBeenCalled()
+		})
 
-            const result = await useCase.execute({
-                correo_electronico: "test@epn.edu.ec",
-                contrasenia: "12345678",
-                codigo_unico: 1,
-                primernombre: "Atik",
-                segundo_nombre: "A",
-                primer_apellido: "Tuquerrez",
-                segundo_apellido: "F"
-            })
+		it('no debe fallar si el email no se envía', async () => {
+			repo.findUsuarioAuthByEmail.mockResolvedValue(null)
 
-            expect(result.id_estudiante).toBe(10)
-            expect(emailService.sendConfirmationEmail).toHaveBeenCalled()
-        })
+			mockedHash.mockResolvedValue('hashed')
 
-        it("no debe fallar si el email no se envía", async () => {
-            repo.findUsuarioAuthByEmail.mockResolvedValue(null)
+			repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
+			repo.createEstudiante.mockResolvedValue({ id_estudiante: 10 })
 
-            mockedHash.mockResolvedValue("hashed")
+			emailService.sendConfirmationEmail.mockRejectedValue(new Error('fail'))
 
-            repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
-            repo.createEstudiante.mockResolvedValue({ id_estudiante: 10 })
+			const result = await useCase.execute({
+				correo_electronico: 'test@epn.edu.ec',
+				contrasenia: '12345678',
+				codigo_unico: 1,
+				primernombre: 'Atik',
+				segundo_nombre: 'A',
+				primer_apellido: 'Tuquerrez',
+				segundo_apellido: 'F',
+			})
 
-            emailService.sendConfirmationEmail.mockRejectedValue(new Error("fail"))
+			expect(result.id_estudiante).toBe(10)
+		})
+	})
 
-            const result = await useCase.execute({
-                correo_electronico: "test@epn.edu.ec",
-                contrasenia: "12345678",
-                codigo_unico: 1,
-                primernombre: "Atik",
-                segundo_nombre: "A",
-                primer_apellido: "Tuquerrez",
-                segundo_apellido: "F"
-            })
+	// ==========================
+	// REGISTRAR PROFESOR
+	// ==========================
+	describe('RegisterProfesorUseCase', () => {
+		let useCase: RegisterProfesorUseCase
 
-            expect(result.id_estudiante).toBe(10)
-        })
-    })
+		beforeEach(() => {
+			useCase = new RegisterProfesorUseCase(repo, emailService)
+		})
 
-    // ==========================
-    // REGISTRAR PROFESOR
-    // ==========================
-    describe("RegisterProfesorUseCase", () => {
+		it('debe lanzar error si el email ya existe', async () => {
+			repo.findUsuarioAuthByEmail.mockResolvedValue({})
 
-        let useCase: RegisterProfesorUseCase
+			await expect(
+				useCase.execute({ correo_electronico: 'test@epn.edu.ec' } as any),
+			).rejects.toThrow('El correo electrónico ya está registrado')
+		})
 
-        beforeEach(() => {
-            useCase = new RegisterProfesorUseCase(repo, emailService)
-        })
+		it('debe registrar profesor correctamente', async () => {
+			repo.findUsuarioAuthByEmail.mockResolvedValue(null)
 
-        it("debe lanzar error si el email ya existe", async () => {
-            repo.findUsuarioAuthByEmail.mockResolvedValue({})
+			mockedHash.mockResolvedValue('hashed')
 
-            await expect(
-                useCase.execute({ correo_electronico: "test@epn.edu.ec" } as any)
-            ).rejects.toThrow("El correo electrónico ya está registrado")
-        })
+			repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
+			repo.createProfesor.mockResolvedValue({ id_profesor: 5 })
 
-        it("debe registrar profesor correctamente", async () => {
-            repo.findUsuarioAuthByEmail.mockResolvedValue(null)
+			const result = await useCase.execute({
+				correo_electronico: 'test@epn.edu.ec',
+				contrasenia: '12345678',
+				primernombre: 'Atik',
+				segundo_nombre: 'A',
+				primer_apellido: 'Tuquerrez',
+				segundo_apellido: 'F',
+			})
 
-            mockedHash.mockResolvedValue("hashed")
+			expect(result.id_profesor).toBe(5)
+			expect(emailService.sendConfirmationEmail).toHaveBeenCalled()
+		})
 
-            repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
-            repo.createProfesor.mockResolvedValue({ id_profesor: 5 })
+		it('no debe fallar si el email no se envía', async () => {
+			repo.findUsuarioAuthByEmail.mockResolvedValue(null)
 
-            const result = await useCase.execute({
-                correo_electronico: "test@epn.edu.ec",
-                contrasenia: "12345678",
-                primernombre: "Atik",
-                segundo_nombre: "A",
-                primer_apellido: "Tuquerrez",
-                segundo_apellido: "F"
-            })
+			mockedHash.mockResolvedValue('hashed')
 
-            expect(result.id_profesor).toBe(5)
-            expect(emailService.sendConfirmationEmail).toHaveBeenCalled()
-        })
+			repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
+			repo.createProfesor.mockResolvedValue({ id_profesor: 5 })
 
-        it("no debe fallar si el email no se envía", async () => {
-            repo.findUsuarioAuthByEmail.mockResolvedValue(null)
+			emailService.sendConfirmationEmail.mockRejectedValue(new Error('fail'))
 
-            mockedHash.mockResolvedValue("hashed")
+			const result = await useCase.execute({
+				correo_electronico: 'test@epn.edu.ec',
+				contrasenia: '12345678',
+				primernombre: 'Atik',
+				segundo_nombre: 'A',
+				primer_apellido: 'Tuquerrez',
+				segundo_apellido: 'F',
+			})
 
-            repo.createUsuarioAuth.mockResolvedValue({ id_usuario_auth: 1 })
-            repo.createProfesor.mockResolvedValue({ id_profesor: 5 })
-
-            emailService.sendConfirmationEmail.mockRejectedValue(new Error("fail"))
-
-            const result = await useCase.execute({
-                correo_electronico: "test@epn.edu.ec",
-                contrasenia: "12345678",
-                primernombre: "Atik",
-                segundo_nombre: "A",
-                primer_apellido: "Tuquerrez",
-                segundo_apellido: "F"
-            })
-
-            expect(result.id_profesor).toBe(5)
-        })
-    })
-
+			expect(result.id_profesor).toBe(5)
+		})
+	})
 })

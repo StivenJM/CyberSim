@@ -35,6 +35,6 @@ Tus respuestas deben ser CORTAS (máximo 3-4 oraciones), DIRECTAS (sin introducc
 NUNCA uses: asteriscos, guiones bajos, listas con viñetas, listas numeradas, encabezados, bloques de código, tablas o emojis.
 
 Tono
-Amigable, directo y conciso. Sin saludos largos ni despedidas.`;
+Amigable, directo y conciso. Sin saludos largos ni despedidas.`
 
-export const CONTEXT_EXPLANATION_PREFIX = "Explicame esta configuración:";
+export const CONTEXT_EXPLANATION_PREFIX = 'Explicame esta configuración:'

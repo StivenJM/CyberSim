@@ -6,7 +6,7 @@
  *   - desafios.json    → fases, objetivos, eventos, ataques
  *
  * Ejecutar con:
- *   npx tsx scripts/export-rag-knowledge.ts
+ *   pnpm exec tsx scripts/export-rag-knowledge.ts
  *
  * Los archivos se guardan en: scripts/rag-output/
  */

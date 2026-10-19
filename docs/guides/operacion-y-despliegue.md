@@ -2,7 +2,7 @@
 
 > Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
 
-El repositorio contiene scripts de build/start y Compose para PostgreSQL local. No incluye una plataforma de despliegue completa, Dockerfiles para las apps, reverse proxy, workflows n8n o provisioning de Qdrant. Los pasos siguientes son un procedimiento para preparar una instancia con esos servicios ya administrados.
+El repositorio contiene scripts de build/start y un entorno Docker de desarrollo con las apps y servicios locales. Ese entorno no define una plataforma de despliegue de producción ni un reverse proxy. Los pasos siguientes preparan una instancia con PostgreSQL y las integraciones ya administrados.
 
 ## Preparar el entorno
 
@@ -15,8 +15,8 @@ El repositorio contiene scripts de build/start y Compose para PostgreSQL local. 
 ## Compilar
 
 ```powershell
-npm ci
-npm run build --workspaces
+pnpm install --frozen-lockfile
+pnpm build
 ```
 
 Artefactos:
@@ -33,8 +33,8 @@ El frontend produce un bundle grande en la revisión actual; revisar tamaño y c
 Con una copia de seguridad y una conexión verificada de la base destino:
 
 ```powershell
-npm run migrate:deploy --workspace @cybersim/backend
-npm run start --workspace @cybersim/backend
+pnpm --filter @cybersim/backend run migrate:deploy
+pnpm --filter @cybersim/backend run start
 ```
 
 La migración aplica el historial ya versionado. No usar `db:push`, `migrate reset` ni el seed como preparación de una base con datos reales. Migraciones con datos sensibles, nuevas restricciones o pérdida de columnas necesitan un procedimiento propio y ensayo sobre una copia.

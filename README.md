@@ -19,13 +19,13 @@ docker compose up --build --watch
 
 Aplicación: **http://localhost:5173** · n8n: **http://localhost:5678**.
 
-La guía explica los accesos OpenAI, Google Drive y SMTP que debe facilitar el equipo. El arranque muestra lo que falta configurar; no declara esas integraciones listas solo por encender los contenedores. Node, npm y Prisma se ejecutan dentro de Docker.
+La guía explica los accesos OpenAI, Google Drive y SMTP que debe facilitar el equipo. El arranque muestra lo que falta configurar; no declara esas integraciones listas solo por encender los contenedores. Node, pnpm y Prisma se ejecutan dentro de Docker.
 
 ## Sobre la aplicación
 
 CyberSim es una plataforma educativa de ciberseguridad con oficinas y dispositivos simulados en 3D, objetivos por fases, estudiantes y docentes, cursos, historial de intentos, tutor con IA y generación de retroalimentación y desafíos.
 
-El proyecto declara versión `5.0.0` y contiene dos npm workspaces: una aplicación React/Vite y una API Express/Prisma. PostgreSQL almacena identidad y actividad educativa; la simulación se ejecuta en el navegador. El catálogo activo tiene cinco escenarios.
+El proyecto declara versión `5.0.0` y contiene dos workspaces de pnpm: una aplicación React/Vite y una API Express/Prisma. PostgreSQL almacena identidad y actividad educativa; la simulación se ejecuta en el navegador. El catálogo activo tiene cinco escenarios.
 
 ## Documentación de consulta
 
@@ -41,18 +41,20 @@ El [índice documental](docs/README.md) organiza las referencias opcionales por 
 [Estado del entorno y evidencia](docs/project/estado-desarrollo-docker.md) · [Entrada de desarrollo](DEVELOPMENT.md) · [Esquema Prisma](apps/backend/prisma/schema.prisma) · [Workflow CI](.github/workflows/ci.yml).
 
 <details>
-<summary>Checks npm y alcance de las pruebas</summary>
+<summary>Checks pnpm y alcance de las pruebas</summary>
 
 Los siguientes scripts se ejecutan en un entorno Node preparado. Para correrlos en Docker, seguir la sección de pruebas de la guía de primer arranque.
 
 ## Validación
 
 ```powershell
-npm run lint --workspaces
-npm run typecheck --workspaces
-npm run test --workspaces
-npm run build --workspaces
-npm run test:e2e --workspace @cybersim/frontend
+pnpm install --frozen-lockfile
+pnpm db:generate
+pnpm lint
+pnpm typecheck
+pnpm test
+pnpm build
+pnpm --filter @cybersim/frontend run test:e2e
 ```
 
 Playwright requiere Chromium. Las suites E2E actuales usan sesión y respuestas simuladas; no prueban integraciones reales. Procedimiento y CI en [pruebas y calidad](docs/guides/pruebas-y-calidad.md). Resultados y límites en [el informe del sistema](docs/architecture/revision-del-sistema.md).

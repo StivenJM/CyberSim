@@ -30,23 +30,33 @@ jobs:
           git fetch origin "$BASE_REF"
           git merge "origin/$BASE_REF" --no-commit || echo "Conflictos detectados"
      
+      - name: Setup pnpm
+        uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: '24.22.0'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Instalar dependencias
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Ejecutar ESLint
-        run: npm run lint --workspaces
+        run: pnpm lint
+
+      - name: Generar cliente Prisma
+        run: pnpm db:generate
+
+      - name: Comprobar tipos
+        run: pnpm typecheck
 
       - name: Ejecutar Pruebas Automatizadas
-        run: npm run test --workspaces
+        run: pnpm test
 
       - name: Ejecutar Build
-        run: npm run build --workspaces
+        run: pnpm build
 
   e2e:
     name: Pruebas E2E (Playwright)
@@ -59,25 +69,29 @@ jobs:
           ref: ${{ github.head_ref }}
           fetch-depth: 0
 
+      - name: Setup pnpm
+        uses: pnpm/action-setup@f520eceda224fe1a4aed5a2a27a194379a409996 # v6
+
       - name: Setup Node.js
         uses: actions/setup-node@49933ea5288caeca8642d1e84afbd3f7d6820020 # v4.4.0
         with:
-          node-version: '20.x'
-          cache: 'npm'
+          node-version: '24.22.0'
+          cache: 'pnpm'
+          cache-dependency-path: pnpm-lock.yaml
 
       - name: Instalar dependencias
-        run: npm ci
+        run: pnpm install --frozen-lockfile
 
       - name: Instalar navegador de Playwright
-        run: npx playwright install --with-deps chromium
+        run: pnpm --filter @cybersim/frontend exec playwright install --with-deps chromium
 
       # Tests DOM (auth + rutas): deterministas, bloquean el PR si fallan.
       - name: Ejecutar E2E (auth y rutas)
-        run: npm run test:e2e --workspace @cybersim/frontend -- --grep-invert @slow
+        run: pnpm test:e2e --grep-invert @slow
 
       # Smoke de la escena 3D: usa WebGL por software, no bloquea el pipeline.
       - name: Ejecutar E2E (escena 3D)
-        run: npm run test:e2e --workspace @cybersim/frontend -- --grep @slow
+        run: pnpm test:e2e --grep @slow
         continue-on-error: true
 
       - name: Subir reporte de Playwright

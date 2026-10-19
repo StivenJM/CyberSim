@@ -68,7 +68,7 @@ El corpus inicial y los catálogos se distribuyen con el proyecto. n8n incorpora
 
 ## Dónde trabajar en el repositorio
 
-El proyecto contiene dos npm workspaces, `@cybersim/frontend` y `@cybersim/backend`. Comparten el lockfile raíz; las dependencias Linux de ejecución se instalan en la imagen Docker.
+El proyecto contiene dos workspaces de pnpm, `@cybersim/frontend` y `@cybersim/backend`. Comparten el lockfile raíz; las dependencias Linux de ejecución se instalan en la imagen Docker.
 
 | Si cambias… | Empieza en… | Qué debes considerar |
 |---|---|---|

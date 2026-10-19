@@ -48,15 +48,18 @@ try {
  if ($Action -eq "up") { & docker compose up --build --watch; exit $LASTEXITCODE }
  if ($Action -eq "down") { & docker compose down; exit $LASTEXITCODE }
  if ($Action -eq "migrate" -or $Action -eq "deps") {
+  if ($Action -eq "migrate" -and $Subcommand -notin @("create","apply")) { throw "Usa migrate create|apply; reset no esta automatizado." }
+  if ($Action -eq "deps" -and $Subcommand -notin @("","refresh","add","remove")) { throw "Usa deps [refresh|add|remove] seguido de opciones pnpm." }
   & docker compose --profile tools run --rm tools node infra/tools.mjs maintenance pause
   if ($LASTEXITCODE -ne 0) { throw "No se pudo pausar." }
   & docker compose stop backend frontend preparation
+  if ($LASTEXITCODE -ne 0) { throw "No se pudieron detener las aplicaciones; sigue pausado." }
   if ($Action -eq "migrate") {
-   if ($Subcommand -notin @("create","apply")) { throw "Usa migrate create|apply; reset no esta automatizado." }
-   $npmTask = if ($Subcommand -eq "create") { "db:migrate" } else { "migrate:deploy" }
-   & docker compose --profile tools run --rm -w /host tools npm run $npmTask --workspace @cybersim/backend -- @ToolArguments
+   $packageTask = if ($Subcommand -eq "create") { "db:migrate" } else { "migrate:deploy" }
+   & docker compose --profile tools run --rm tools pnpm --filter @cybersim/backend run $packageTask @ToolArguments
   } else {
-   & docker compose --profile tools run --rm -w /host tools npm install --package-lock-only --ignore-scripts @ToolArguments
+   $dependencyCommand = if ($Subcommand -in @("add","remove")) { $Subcommand } else { "install" }
+   & docker compose --profile tools run --rm -w /host tools pnpm --config.ignore-scripts=true $dependencyCommand --lockfile-only @ToolArguments
   }
   if ($LASTEXITCODE -ne 0) { throw "Mantenimiento fallido; sigue pausado." }
   & docker compose up -d --build --force-recreate migrate backend frontend preparation

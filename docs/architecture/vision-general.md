@@ -32,7 +32,7 @@ flowchart LR
 | IA | `fetch` a OpenAI, cliente REST Qdrant, webhooks n8n | Tutor, recuperación y contenido generado |
 | Calidad | ESLint, TypeScript, Vitest, Playwright | Análisis estático y pruebas |
 
-Los manifiestos declaran rangos; `package-lock.json` determina las versiones instaladas. No hay contenedores de frontend, backend, Qdrant, SMTP, n8n ni Piper definidos en Compose.
+Los manifiestos declaran rangos; `pnpm-lock.yaml` determina las versiones instaladas. La composición actual de frontend, backend e infraestructura se describe en [desarrollo Docker](desarrollo-docker.md).
 
 ## Mapa del repositorio
 

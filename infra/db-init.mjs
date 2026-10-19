@@ -10,7 +10,7 @@ const db=new Pool({connectionString:url.toString()});
 try{
  await db.query('SELECT current_database(),version()');
  for(const script of ['migrate:deploy','db:seed']){
-  const r=spawnSync('npm',['run',script,'--workspace','@cybersim/backend'],{stdio:'inherit',env:process.env,timeout:180000});
+  const r=spawnSync('pnpm',['--filter','@cybersim/backend','run',script],{stdio:'inherit',env:process.env,timeout:180000});
   if(r.status!==0)throw new Error(script+' falló. No se resetea la base.');
  }
  const state=process.env.PREPARATION_DIR||'/state';await mkdir(state,{recursive:true});

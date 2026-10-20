@@ -5,6 +5,8 @@ import Button from './Button'
 import Tooltip from './Tooltip'
 
 const CODE_LENGTH = 8
+// El seed histórico usa CYBER2024 (9). Conservarlo al copiar/pegar sin truncarlo.
+const MAX_CODE_LENGTH = 9
 const PLACEHOLDER = 'ABCD1234'
 
 interface InvitationCodeDisplayProps {
@@ -57,12 +59,14 @@ function DisplayMode({
 			{label && <span className={styles.label}>{label}</span>}
 			<div className={styles.row}>
 				<div className={styles.cells}>
-					{Array.from({ length: CODE_LENGTH }).map((_, i) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: These fixed display slots retain their positional identity.
-						<div key={i} className={styles.cell}>
-							{chars[i] || ''}
-						</div>
-					))}
+					{Array.from({ length: Math.max(CODE_LENGTH, chars.length) }).map(
+						(_, i) => (
+							// biome-ignore lint/suspicious/noArrayIndexKey: These fixed display slots retain their positional identity.
+							<div key={i} className={styles.cell}>
+								{chars[i] || ''}
+							</div>
+						),
+					)}
 				</div>
 				{code && (
 					<div className={styles.actions}>
@@ -72,6 +76,7 @@ function DisplayMode({
 								square
 								icon={copied ? <Check size={14} /> : <Copy size={14} />}
 								onClick={handleCopy}
+								aria-label="Copiar código de invitación"
 							/>
 						</Tooltip>
 						{onRegenerate && (
@@ -86,6 +91,7 @@ function DisplayMode({
 										/>
 									}
 									onClick={handleRegenerate}
+									aria-label="Regenerar código de invitación"
 									disabled={regenerating}
 								/>
 							</Tooltip>
@@ -120,11 +126,11 @@ function InputMode({
 		setValues(next)
 		onChange?.()
 
-		if (char && index < CODE_LENGTH - 1) {
+		if (char && index < values.length - 1) {
 			focusInput(index + 1)
 		}
 
-		if (next.every((v) => v !== '') && next.join('').length === CODE_LENGTH) {
+		if (next.every((v) => v !== '') && next.length >= CODE_LENGTH) {
 			onSubmit(next.join(''))
 		}
 	}
@@ -141,19 +147,19 @@ function InputMode({
 			.getData('text')
 			.replace(/\s/g, '')
 			.toUpperCase()
-			.slice(0, CODE_LENGTH)
+			.slice(0, MAX_CODE_LENGTH)
 		if (!/^[A-Z0-9]*$/.test(pasted)) return
 
-		const next = [...values]
+		const next = Array<string>(Math.max(CODE_LENGTH, pasted.length)).fill('')
 		for (let i = 0; i < pasted.length; i++) {
 			next[i] = pasted[i]
 		}
 		setValues(next)
 
-		const focusIdx = Math.min(pasted.length, CODE_LENGTH - 1)
+		const focusIdx = Math.min(pasted.length, next.length - 1)
 		focusInput(focusIdx)
 
-		if (next.every((v) => v !== '') && next.join('').length === CODE_LENGTH) {
+		if (next.every((v) => v !== '') && next.length >= CODE_LENGTH) {
 			onSubmit(next.join(''))
 		}
 	}
@@ -166,7 +172,7 @@ function InputMode({
 				role="group"
 				aria-label="Código de invitación"
 			>
-				{Array.from({ length: CODE_LENGTH }).map((_, i) => (
+				{Array.from({ length: values.length }).map((_, i) => (
 					// biome-ignore-start lint/suspicious/noArrayIndexKey: These fixed display slots retain their positional identity.
 					<input
 						key={i}

@@ -1,5 +1,7 @@
 # Desarrollo de CyberSim
 
+Para probar los recorridos de docente y estudiante con datos nuevos y servicios reales, consulta la [guía de tests de integración](docs/guides/tests-de-integracion.md). Esta suite tiene reset protegido y se ejecuta fuera de GitHub Actions.
+
 **[1. Comprende el sistema](docs/architecture/resumen.md)** · **[2. Sigue la guía de primer arranque](docs/guides/desarrollo-local.md)**
 
 La guía contiene el procedimiento completo desde un clon nuevo: requisitos Docker, `.env`, configuración de proveedores, arranque, login, edición con Watch y comprobaciones. Es la referencia canónica de ejecución; esta página conserva un acceso breve.

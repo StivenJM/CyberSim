@@ -182,6 +182,7 @@ const ECSSceneRenderer: React.FC = () => {
 						<Model3D
 							key={`entity-${entidadId}`}
 							modelPath={modelPath}
+							name={String(objetoConTipo.nombre ?? '')}
 							position={position}
 							rotation={[0, rotacionY, 0]}
 							scale={1}

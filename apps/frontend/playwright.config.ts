@@ -5,10 +5,11 @@ import { defineConfig, devices } from '@playwright/test'
 // servidor Express ni la base de datos para el MVP.
 export default defineConfig({
 	testDir: './tests/e2e',
+	outputDir: './test-results/e2e',
 	fullyParallel: true,
 	forbidOnly: !!process.env.CI,
 	retries: process.env.CI ? 2 : 0,
-	reporter: 'html',
+	reporter: [['html', { outputFolder: 'playwright-report/e2e' }]],
 	// Vite dev compila el grafo (three.js, r3f, drei...) on-demand en la primera
 	// carga; ese arranque en frío puede tardar bastante. Timeouts holgados lo absorben.
 	timeout: 90_000,

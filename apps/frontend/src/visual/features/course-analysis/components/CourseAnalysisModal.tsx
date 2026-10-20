@@ -97,26 +97,28 @@ export function CourseAnalysisModal({
 						</button>
 					</div>
 
-					<div className={styles.statsRow}>
-						<div className={styles.stat}>
-							<span className={styles.statValue}>
-								{resumen.total_estudiantes}
-							</span>
-							<span className={styles.statLabel}>Estudiantes</span>
+					{resumen && (
+						<div className={styles.statsRow}>
+							<div className={styles.stat}>
+								<span className={styles.statValue}>
+									{resumen.total_estudiantes}
+								</span>
+								<span className={styles.statLabel}>Estudiantes</span>
+							</div>
+							<div className={styles.stat}>
+								<span className={styles.statValue}>
+									{resumen.promedio_intentos.toFixed(1)}
+								</span>
+								<span className={styles.statLabel}>Prom. Intentos</span>
+							</div>
+							<div className={styles.stat}>
+								<span className={styles.statValue}>
+									{resumen.estudiantes_necesitan_apoyo}
+								</span>
+								<span className={styles.statLabel}>Necesitan Apoyo</span>
+							</div>
 						</div>
-						<div className={styles.stat}>
-							<span className={styles.statValue}>
-								{resumen.promedio_intentos.toFixed(1)}
-							</span>
-							<span className={styles.statLabel}>Prom. Intentos</span>
-						</div>
-						<div className={styles.stat}>
-							<span className={styles.statValue}>
-								{resumen.estudiantes_necesitan_apoyo}
-							</span>
-							<span className={styles.statLabel}>Necesitan Apoyo</span>
-						</div>
-					</div>
+					)}
 
 					<div className={styles.content}>
 						<div className={styles.section}>

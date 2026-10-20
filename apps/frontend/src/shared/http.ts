@@ -9,13 +9,16 @@ export function authorizedFetch(
 	input: RequestInfo | URL,
 	init: RequestInit = {},
 ): Promise<Response> {
+	// Headers combina nombres sin distinguir mayúsculas. Un objeto con
+	// Content-Type y content-type produce un valor duplicado que Express no analiza.
+	const headers = new Headers(authHeaders())
+	headers.set('X-Request-Id', crypto.randomUUID())
+	new Headers(init.headers).forEach((value, key) => {
+		headers.set(key, value)
+	})
 	return fetch(input, {
 		...init,
-		headers: {
-			...authHeaders(),
-			'X-Request-Id': crypto.randomUUID(),
-			...Object.fromEntries(new Headers(init.headers).entries()),
-		},
+		headers,
 		signal: init.signal || AbortSignal.timeout(305000),
 	})
 }

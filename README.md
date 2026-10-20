@@ -58,7 +58,7 @@ pnpm build
 pnpm --filter @cybersim/frontend run test:e2e
 ```
 
-Playwright requiere Chromium. Las suites E2E actuales usan sesión y respuestas simuladas; no prueban integraciones reales. Procedimiento y CI en [pruebas y calidad](docs/guides/pruebas-y-calidad.md). Resultados y límites en [el informe del sistema](docs/architecture/revision-del-sistema.md).
+Playwright requiere Chromium. `test:e2e` usa sesión y respuestas simuladas. La [suite de integración](docs/guides/tests-de-integracion.md) prueba ambos perfiles con API, PostgreSQL y servicios externos reales, tiene reset protegido y se ejecuta por separado fuera de CI. Procedimiento general y CI en [pruebas y calidad](docs/guides/pruebas-y-calidad.md).
 
 
 </details>

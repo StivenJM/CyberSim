@@ -13,6 +13,7 @@ export type ComboBoxProps<T> = {
 	icon?: React.ReactNode
 	className?: string
 	dropdownClassName?: string
+	ariaLabel?: string
 }
 
 function ComboBox<T>({
@@ -26,6 +27,7 @@ function ComboBox<T>({
 	icon,
 	className,
 	dropdownClassName,
+	ariaLabel,
 }: ComboBoxProps<T>) {
 	const [open, setOpen] = useState(false)
 	const wrapperRef = useRef<HTMLDivElement | null>(null)
@@ -62,6 +64,7 @@ function ComboBox<T>({
 				onClick={() => !disabled && setOpen((o) => !o)}
 				disabled={disabled}
 				aria-haspopup="listbox"
+				aria-label={ariaLabel}
 				aria-expanded={open}
 			>
 				{icon ? <span className={styles.icon}>{icon}</span> : null}

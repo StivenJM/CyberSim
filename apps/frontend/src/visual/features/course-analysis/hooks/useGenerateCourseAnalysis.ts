@@ -1,3 +1,4 @@
+import { useCallback } from 'react'
 import { authorizedFetch } from '../../../../shared/http'
 import { useAsyncState } from '../../../common/hooks/useAsyncState'
 import type { CourseAnalysisResponse } from '../types/courseAnalysis.types'
@@ -64,24 +65,27 @@ export function useGenerateCourseAnalysis(): UseGenerateCourseAnalysisResult {
 		)
 	}
 
-	const checkLatestAnalysis = async (idCurso: number) => {
-		const result = await runAsync(async () => {
-			const response = await authorizedFetch(
-				`${API_BASE_URL}/course-analysis/latest/${idCurso}`,
-			)
-			const data = await response.json()
+	const checkLatestAnalysis = useCallback(
+		async (idCurso: number) => {
+			const result = await runAsync(async () => {
+				const response = await authorizedFetch(
+					`${API_BASE_URL}/course-analysis/latest/${idCurso}`,
+				)
+				const data = await response.json()
 
-			if (response.ok && data.success && data.data) {
-				return {
-					success: true as const,
-					analysis: data.data as CourseAnalysisResponse,
+				if (response.ok && data.success && data.data) {
+					return {
+						success: true as const,
+						analysis: data.data as CourseAnalysisResponse,
+					}
 				}
-			}
-			return { success: false as const }
-		})
+				return { success: false as const }
+			})
 
-		return result ?? { success: false as const }
-	}
+			return result ?? { success: false as const }
+		},
+		[runAsync],
+	)
 
 	return { generateAnalysis, checkLatestAnalysis, loading, error }
 }

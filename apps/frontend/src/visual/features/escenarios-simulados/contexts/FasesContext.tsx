@@ -124,7 +124,8 @@ export const FasesProvider = ({ children }: FasesProviderProps) => {
 		const unsubscribeEscenarioCompletado = controller.on(
 			EventosPublicos.ESCENARIO_COMPLETADO,
 			(data: unknown) => {
-				setTimeout(() => {
+				setTimeout(async () => {
+					await controller.esperarGuardadoProgreso()
 					actualizarFases()
 					const mensaje =
 						(data as string) ||

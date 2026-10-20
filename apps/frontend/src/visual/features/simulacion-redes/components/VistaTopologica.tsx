@@ -279,6 +279,7 @@ function PanelLateralTopologia({
 									isOpen && esZonaInteractiva && toggleRed(red.entidadId)
 								}
 								role="button"
+								aria-pressed={red.estaActiva}
 								tabIndex={0}
 								onKeyDown={(event) => {
 									if (

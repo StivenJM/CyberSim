@@ -77,7 +77,7 @@ function normalizarActivos(
 
 	const esEventoVerificacion = (e: RawData) => {
 		const ia = e.infoAdicional as Record<string, unknown> | undefined
-		return ia !== undefined && 'nombreDocumento' in ia && 'veredicto' in ia
+		return ia != null && 'nombreDocumento' in ia && 'veredicto' in ia
 	}
 
 	let propietarioIndex = 0

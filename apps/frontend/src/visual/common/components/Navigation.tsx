@@ -21,6 +21,7 @@ const NavigationLink: React.FC<{
 	return (
 		<Tooltip text={label} position={tooltipPosition}>
 			<NavLink
+				aria-label={label}
 				to={to}
 				className={({ isActive }) =>
 					`${styles.dockItem} ${isActive && !forceInactive ? styles.active : ''}`

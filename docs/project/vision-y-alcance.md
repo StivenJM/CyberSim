@@ -57,4 +57,4 @@ Antes de fijar metas de lanzamiento hay que acordar audiencia, dispositivos comp
 
 ## Trazabilidad
 
-Fuentes del alcance: [README](../../README.md), [pantallas/rutas](../../apps/frontend/src/visual/main.tsx) y [catálogo activo](../../apps/frontend/src/data/escenarios/index.ts). Las reglas específicas están en [reglas funcionales](reglas-funcionales.md) y las decisiones técnicas en [ADRs](adrs/README.md).
+Fuentes del alcance: [README](../../README.md), [pantallas/rutas](../../apps/frontend/src/visual/main.tsx) y [catálogo publicado](../../apps/frontend/src/scenarios/catalog.ts). Las reglas específicas están en [reglas funcionales](reglas-funcionales.md) y las decisiones técnicas en [ADRs](adrs/README.md).

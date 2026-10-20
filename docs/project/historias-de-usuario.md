@@ -154,7 +154,7 @@ Criterios de aceptación:
 - El primer nivel está disponible; los siguientes se desbloquean al completar todos los anteriores del orden establecido.
 - Seleccionar un nivel habilitado carga su definición y abre el laboratorio.
 
-Soporte: recorrido UI existente, sin regla de desbloqueo equivalente en API. RF-16–RF-18. Evidencia: [selección](../../apps/frontend/src/visual/features/escenarios-simulados/components/LevelSelectionMenuList.tsx) y [catálogo](../../apps/frontend/src/data/escenarios/index.ts).
+Soporte: recorrido UI existente, sin regla de desbloqueo equivalente en API. RF-16–RF-18. Evidencia: [selección](../../apps/frontend/src/visual/features/escenarios-simulados/components/LevelSelectionMenuList.tsx) y [catálogo](../../apps/frontend/src/scenarios/catalog.ts).
 
 ## HU011
 

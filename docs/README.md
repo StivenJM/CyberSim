@@ -15,7 +15,7 @@ Lee primero el resumen y sigue después la guía si aún no tienes el entorno pr
 
 | Si necesitas… | Consulta |
 |---|---|
-| Modificar escenarios o reglas de simulación | [Escenarios](guides/escenarios.md) y [motor ECS](architecture/simulacion-ecs.md) |
+| Comprender o crear escenarios | [Arquitectura modular](architecture/escenarios-modulares.md), [guía de creación](guides/escenarios.md) y [motor ECS](architecture/simulacion-ecs.md) |
 | Investigar un módulo, contrato o integración | [Índice técnico](architecture/README.md) y [arquitectura Docker](architecture/desarrollo-docker.md) |
 | Ejecutar checks o mantener el proyecto | [Pruebas y calidad](guides/pruebas-y-calidad.md) y [mantenimiento](guides/mantenimiento.md) |
 | Comprender requisitos y comportamiento de usuarios | [Proyecto](project/README.md), [HUs](project/historias-de-usuario.md) y [uso del sistema](guides/uso-del-sistema.md) |

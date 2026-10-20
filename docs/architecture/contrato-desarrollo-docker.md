@@ -113,7 +113,7 @@ Cada request ID se conserva siete días tras cierre, sin cuerpos de chat, audio 
 
 ### Orígenes y carga reproducible
 
-Se incorporarán `knowledge/base/` y `knowledge/app-context/` como corpus pequeño revisado/versionado, TXT/Markdown UTF-8. Serán rutas nuevas, no archivos ya presentes. Topologías/desafíos se generan desde [el catálogo de escenarios](../../apps/frontend/src/data/escenarios/registry.ts) mediante [el exportador existente](../../apps/frontend/scripts/export-rag-knowledge.ts), adaptado para no mantener una segunda lista manual de escenarios.
+Se incorporarán `knowledge/base/` y `knowledge/app-context/` como corpus pequeño revisado/versionado, TXT/Markdown UTF-8. Serán rutas nuevas, no archivos ya presentes. Topologías/desafíos se generan desde [el catálogo canónico de escenarios](../../apps/frontend/src/scenarios/catalog.ts) mediante [el exportador existente](../../apps/frontend/scripts/export-rag-knowledge.ts), sin mantener una segunda lista manual de escenarios.
 
 El baseline cubrirá cuatro temas usados por las prácticas: malware, firewall, VPN y firmas/criptografía, con objetivo educativo, explicación y ejemplo coherentes con los escenarios. El contexto de aplicación describe objetos consultables y límites del tutor desde sus definiciones versionadas. Cada documento incluye ID estable, procedencia de código/documentación del proyecto y revisión; su autoría no depende de descargar PDF privados ni copiar Drive a Git.
 

@@ -1,73 +1,177 @@
 # Crear y mantener escenarios
 
-> Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
+Esta guía permite añadir un ejercicio de ciberseguridad usando capacidades existentes. La ruta normal consiste en **crear un archivo, validarlo, publicarlo y sincronizar su revisión**; no hay que editar listas paralelas.
 
-Un escenario es una definición educativa declarativa. El cliente la transforma en entidades ECS; el backend conoce principalmente su slug y título. Consultar primero [simulación ECS](../architecture/simulacion-ecs.md) y los ejemplos activos.
+Antes de cambiar el contrato o el motor, lee [Arquitectura modular de escenarios](../architecture/escenarios-modulares.md). Para conocer cada campo consulta [Contrato de escenarios](../architecture/contrato-de-escenarios.md).
 
-## Crear un nivel estático
+## Ruta rápida
 
-1. Elegir como base un escenario activo con el mismo tipo de interacción; no partir de un archivo deshabilitado sin revisar compatibilidad.
-2. Crear `apps/frontend/src/data/escenarios/escenarioNombre.ts` con un export identificable, ID numérico único y slug estable. Guiarse por `DefinicionEscenario` y los enums del cliente.
-3. Definir categoría, descripción, zonas, redes, oficinas, espacios y dispositivos. Referenciar redes y dispositivos por los nombres exactos que esperan los eventos.
-4. Definir fases consecutivas desde uno, inicialmente solo la primera activa y ninguna completada. Los objetivos deben coincidir exactamente con `nombreEvento` o `nombreAtaque`.
-5. Definir notificación, ejecución, verificación/mitigación y evento de cierre de cada fase. El cierre final corresponde a completación de escenario.
-6. Definir `accionesEsperadas` con acción, objeto, ventana temporal y valor, coherentes con lo que registran los sistemas.
-7. Exportarlo en `data/escenarios/index.ts`. El `NivelController` obtiene el catálogo de esos exports; exportar allí solo definiciones de escenario.
-8. Añadir slug/título en `data/escenarios/registry.ts` y `apps/backend/src/auth/domain/scenarioMetadata.ts`.
-9. Si el nivel debe entrar en RAG, añadirlo también a los imports y a `ESCENARIOS_ACTIVOS` del exportador.
-10. Actualizar catálogo/reglas del proyecto y ejecutar las validaciones indicadas abajo.
+1. Copia el escenario publicado más parecido dentro de `apps/frontend/src/data/escenarios/`.
+2. Cambia nombre de archivo, export, `id`, `slug`, metadatos y contenido.
+3. Déjalo como `draft` mientras lo construyes.
+4. Ejecuta la prueba del catálogo y corrige todas las referencias.
+5. Prueba el recorrido completo en el navegador.
+6. Incrementa `revision` y cambia el estado a `published`.
+7. Sincroniza la revisión con PostgreSQL y exporta el conocimiento RAG.
+8. Ejecuta lint, typecheck, tests y build.
 
-Los puntos 7, 8 y 9 son registros independientes en la implementación actual; modificar uno no actualiza los otros. Cambiar un slug puede desvincular visualmente el historial persistido. Preservarlo o planificar una migración de registros y metadatos.
+## 1. Crear el archivo
 
-## Contrato temporal y de objetivos
+Usa el patrón `escenarioNombre.ts`; el descubrimiento depende de `escenario*.ts`. El mínimo es:
 
-`SistemaTiempo` compara segundos por igualdad. Utilizar tiempos enteros alcanzables y definir `tiempoEnOcurrir` para verificaciones que dependan del reloj. La propiedad es opcional en TypeScript, pero omitirla puede hacer que nunca se ejecute un evento.
+```ts
+import { defineScenario } from '../../scenarios/defineScenario'
+import type { DefinicionEscenario } from '../../shared/types/EscenarioTypes'
 
-`SistemaFase` avanza en el orden de la lista ordenada por notificación. Los IDs deben corresponder a índices de fase consecutivos. Una diferencia de mayúsculas, acentos o texto entre nombre y objetivo puede detener el avance. Diseñar el orden y los nombres junto con las verificaciones.
+const scenarioDefinition: DefinicionEscenario = {
+  id: 14,
+  slug: 'respuesta-phishing',
+  titulo: 'Respuesta ante phishing',
+  categoria: 'Ingeniería social',
+  descripcion: 'Identifica el mensaje y contiene el incidente.',
+  presupuestoInicial: 1000,
+  ataques: [],
+  eventos: [],
+  accionesEsperadas: [],
+  fases: [],
+  zonas: [],
+}
 
-| Tipo de reto | Revisar |
+export const escenarioRespuestaPhishing = defineScenario(scenarioDefinition, {
+  revision: 1,
+  status: 'draft',
+})
+```
+
+Completa las estructuras desde un ejemplo real; el fragmento solo muestra el contenedor. No exportes el objeto crudo: `defineScenario` añade versión de esquema, capacidades inferidas, perfil `office-3d`, versiones del runtime/catálogo, semilla y SHA-256.
+
+No edites `NivelController`, un índice de escenarios, el exportador RAG ni un mapa del backend. Todos descubren o consultan el catálogo canónico.
+
+## 2. Diseñar contenido coherente
+
+### Identidad
+
+- `id`: entero positivo que no exista en ningún archivo.
+- `slug`: kebab-case estable; no lo cambies después de publicar.
+- `revision`: comienza en 1 y aumenta por cada cambio de contenido publicado.
+- `status`: usa `draft` hasta que todas las comprobaciones sean satisfactorias.
+
+### Topología
+
+Define zonas, redes, oficinas, espacios y dispositivos. Los nombres son referencias de dominio: un evento que usa `Servidor Web` debe encontrar exactamente ese dispositivo. Las redes de un dispositivo deben existir en su zona; `Internet` es la única referencia global especial.
+
+El perfil visual predeterminado reutiliza la oficina 3D. Los tipos de dispositivo seleccionan modelos del catálogo confiable; el archivo no proporciona rutas de modelos ni lógica de renderizado.
+
+### Fases y evaluación
+
+- Usa IDs de fase únicos y referencia esos mismos IDs desde eventos y ataques.
+- Marca únicamente la primera fase como actual.
+- Incluye un cierre por fase y un cierre de escenario al final.
+- Alinea objetivos, acciones esperadas y condiciones con los eventos que realmente registra el ECS.
+- Usa tiempos enteros y alcanzables; define `tiempoEnOcurrir` cuando la verificación dependa del reloj.
+
+| Reto | Referencias que debes revisar |
 |---|---|
-| Hardening/malware | Nombre de configuración, dispositivo y condición de mitigación |
-| Firewall/tráfico | Origen, destino, red, dirección, protocolo y resultado esperado |
-| VPN | Dispositivos VPN, gateway/cliente, dominios, hosts y protección |
-| Firma digital | Nombres de documento, firma y clave; veredicto correcto |
-| App o consola | Acción y objeto de enums, nombres de apps y valores registrados |
+| Hardening | Dispositivo, configuración y estado esperado |
+| Firewall/tráfico | Origen, destino, red, dirección, protocolo y bloqueo esperado |
+| VPN | Gateway, cliente, hosts, dominios y tipo de protección |
+| Firma | Documento, firma, clave y veredicto |
+| Correo/ingeniería social | Emisor, destinatario, plantilla y acción registrada |
+| Terminal | Dispositivo, credenciales, comando y respuesta esperada |
 
-No describir el presupuesto como una restricción efectiva mientras sus comprobaciones de monto estén desactivadas. Los dispositivos `decorativo` se usan para escena, no para objetivos que exijan interacción.
+## 3. Validar mientras desarrollas
 
-## Desafíos generados
+Desde la raíz:
 
-El servidor pide al webhook una definición; el cliente puede reconstruir fases, insertar routers, normalizar valores y reprogramar tiempos. Esta recuperación de formato no prueba que el reto sea resoluble. Revisar datos y probar al menos un recorrido completo antes de usar una generación como referencia educativa.
+```powershell
+pnpm --filter @cybersim/frontend exec vitest --run tests/scenarioCatalog.test.ts
+pnpm --filter @cybersim/frontend run typecheck
+```
 
-Los resultados usan el slug `ai-generated-scenario`, aunque la definición externa tenga otro. Distintos retos comparten historial y ranking. No agregar ese slug al catálogo estático suponiendo que exista una definición reproducible. Si se necesita trazabilidad por generación, diseñar primero almacenamiento de definición/versión e identidad de intento.
+El catálogo valida también escenarios `draft`, aunque no los muestre. Entre otros errores detecta:
 
-## Exportar para RAG
+- IDs o slugs duplicados;
+- versión, estado, capacidad o perfil desconocidos;
+- fase inexistente;
+- dispositivo atacado inexistente;
+- red inexistente en la zona;
+- nombre/ID de dispositivo duplicado;
+- huella que no coincide con el contenido.
+
+Un error detiene la importación del catálogo: no lo ocultes ni lo conviertas en fallback.
+
+## 4. Probar el ejercicio
+
+Un `draft` no aparece en el selector. Para una prueba visual local puedes cambiarlo temporalmente a `validated` y cargarlo mediante una prueba dirigida, o marcarlo `published` solo en tu rama mientras recorres:
+
+- selección y carga;
+- todas las zonas y dispositivos;
+- cada objetivo y condición de mitigación;
+- pausa/reanudación y tiempos;
+- finalización y guardado del intento.
+
+La validación estructural NO demuestra que el ejercicio sea resoluble o pedagógicamente correcto.
+
+## 5. Publicar una revisión
+
+Cuando el contenido esté listo:
+
+```ts
+export const escenarioRespuestaPhishing = defineScenario(scenarioDefinition, {
+  revision: 1,
+  status: 'published',
+})
+```
+
+Después de aplicar migraciones al entorno correspondiente, ejecuta:
+
+```powershell
+pnpm --filter @cybersim/backend run db:sync-scenarios
+```
+
+El comando descubre los archivos, valida el contrato y SHA-256, sincroniza solo revisiones `published`, impide sobrescribir una revisión con contenido distinto y archiva la revisión publicada anterior cuando aparece una nueva. Si la revisión ya existe con el mismo hash, completa o actualiza sus metadatos y manifiesto sin crear un duplicado.
+
+Este comando escribe en la base configurada. Revisa `DATABASE_URL` o las variables PostgreSQL antes de ejecutarlo. La preparación local mediante Docker lo ejecuta automáticamente después de migrar y sembrar; no se ejecuta durante build ni en el CI general.
+
+Si cambias un escenario ya publicado, aumenta `revision`. Reutilizar el número con otro contenido falla deliberadamente.
+
+## 6. Actualizar conocimiento RAG
 
 ```powershell
 pnpm --filter @cybersim/frontend run export:rag
 ```
 
-El script escribe en **`apps/frontend/scripts/rag-output/`** porque resuelve la ruta desde su propio archivo. Actualmente hay JSON previos en **`scripts/rag-output/`** de la raíz. No asumir que se actualizaron: revisar la salida y decidir cuál es el destino que realmente utiliza la ingestión externa.
+El exportador descubre las mismas revisiones publicadas. Revisa la salida en `apps/frontend/scripts/rag-output/` antes de incorporarla al índice de conocimiento; generar JSON no publica puntos en Qdrant.
 
-Revisar ambos JSON: conteos, slugs, textos, topología, nombres y datos de prueba. La lista de cinco imports es explícita: el exportador no descubre automáticamente nuevos archivos.
-
-Para consumir esos JSON en Qdrant, el operador del workflow debe definir colección, fragmentación, modelo de embeddings, dimensión y actualización de puntos. Nada de eso se publica al ejecutar el script. Reindexar de forma coherente si cambia el modelo de embeddings; consultar [integraciones](../architecture/integraciones.md).
-
-## Validar el cambio
+## 7. Cierre de calidad
 
 ```powershell
-pnpm --filter @cybersim/frontend run typecheck
-pnpm --filter @cybersim/frontend run lint
-pnpm --filter @cybersim/frontend run test
-pnpm --filter @cybersim/frontend run build
+pnpm run format:check
+pnpm run lint
+pnpm run typecheck
+pnpm run test
+pnpm run build
 ```
 
-Comprobar además en el navegador: aparición del nivel, desbloqueo esperado, escena/topología sin referencias rotas, objetivos alcanzables, pausa/reanudación, cierre y guardado de un intento. El E2E actual usa un fixture y no prueba un nivel nuevo automáticamente.
+Si cambiaste Prisma, ejecuta además:
 
-Si se cambian reglas del motor, agregar cobertura dirigida a ese comportamiento. Una modificación de metadatos por sí sola no necesita tests que copien los mismos valores.
+```powershell
+pnpm --filter @cybersim/backend exec prisma validate
+pnpm --filter @cybersim/backend run db:generate
+```
 
-## Fuentes
+## Cuando el manifiesto no alcanza
 
-- [Tipos](../../apps/frontend/src/shared/types/EscenarioTypes.ts), [enums de dispositivos/eventos](../../apps/frontend/src/shared/types/DeviceEnums.ts) y [acciones](../../apps/frontend/src/shared/types/AccionesEnums.ts).
-- [Ejemplo de tutorial](../../apps/frontend/src/data/escenarios/escenarioTutorial.ts), [índice](../../apps/frontend/src/data/escenarios/index.ts), [registro frontend](../../apps/frontend/src/data/escenarios/registry.ts) y [metadatos backend](../../apps/backend/src/auth/domain/scenarioMetadata.ts).
-- [Exportador](../../apps/frontend/scripts/export-rag-knowledge.ts), [normalización](../../apps/frontend/src/visual/features/agent-malvado/presentation/utils/scenarioNormalizer.ts) y [builder del generador](../../apps/frontend/src/visual/features/agent-malvado/presentation/hooks/useScenarioBuilder.ts).
+Detente si el ejercicio necesita un evento, acción, verificador, dispositivo o presentación que no existe. Eso es una **capacidad nueva**, no datos faltantes. Implementa primero la capacidad en código, añádela al registro cerrado de `packages/scenario-contract`, prueba su comportamiento y solo después úsala desde el escenario.
+
+No uses valores libres para simular una capacidad ni relajes el validador. Esa separación permite que la autoría futura siga siendo segura y específica de ciberseguridad.
+
+## Checklist
+
+- [ ] ID y slug son únicos y estables.
+- [ ] Todas las referencias de fases, redes y dispositivos existen.
+- [ ] El recorrido completo es resoluble.
+- [ ] La revisión aumentó si el contenido ya estaba publicado.
+- [ ] `db:sync-scenarios` sincronizó la base correcta.
+- [ ] El export RAG fue revisado si aplica.
+- [ ] Formato, lint, tipos, tests y build pasan.

@@ -34,10 +34,11 @@ Con una copia de seguridad y una conexión verificada de la base destino:
 
 ```powershell
 pnpm --filter @cybersim/backend run migrate:deploy
+pnpm --filter @cybersim/backend run db:sync-scenarios
 pnpm --filter @cybersim/backend run start
 ```
 
-La migración aplica el historial ya versionado. No usar `db:push`, `migrate reset` ni el seed como preparación de una base con datos reales. Migraciones con datos sensibles, nuevas restricciones o pérdida de columnas necesitan un procedimiento propio y ensayo sobre una copia.
+La migración aplica el historial ya versionado y la sincronización publica los manifiestos completos del catálogo. No usar `db:push`, `migrate reset` ni el seed como preparación de una base con datos reales. Migraciones con datos sensibles, nuevas restricciones o pérdida de columnas necesitan un procedimiento propio y ensayo sobre una copia.
 
 Servir `apps/frontend/dist` mediante un hosting estático. React usa `BrowserRouter`: configurar fallback a `index.html` para rutas de interfaz como `/docente/grupo/1`, `/perfil` y `/auth/confirm`, sin interceptar endpoints reales de la API.
 

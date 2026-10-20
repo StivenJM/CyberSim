@@ -60,10 +60,10 @@ El corpus inicial y los catálogos se distribuyen con el proyecto. n8n incorpora
 
 ## Cómo transcurre una práctica
 
-1. El estudiante accede y selecciona un escenario del catálogo o uno generado.
-2. El frontend construye la escena y ejecuta la simulación con su motor ECS.
+1. El estudiante selecciona una revisión publicada del catálogo o un escenario generado.
+2. El frontend valida el manifiesto, lo compila y construye la escena con su motor ECS.
 3. Acciones locales cambian dispositivos/redes y las verificaciones determinan objetivos y resultados.
-4. Al fallar una fase o completar el escenario, se envía un intento a Express y se inserta en PostgreSQL.
+4. Al fallar una fase o completar el escenario, se envía un intento con revisión y SHA-256 a Express y se inserta en PostgreSQL.
 5. Perfil/ranking consultan historial; tutor, feedback o análisis usan las integraciones correspondientes.
 
 ## Dónde trabajar en el repositorio
@@ -74,7 +74,7 @@ El proyecto contiene dos workspaces de pnpm, `@cybersim/frontend` y `@cybersim/b
 |---|---|---|
 | Pantallas, componentes o navegación | [apps/frontend/src/visual](../../apps/frontend/src/visual) | React/TypeScript, estado del cliente y consumidores de API |
 | Reglas, acciones o escena simulada | [apps/frontend/src/ecs](../../apps/frontend/src/ecs) | Motor ECS/Three.js; preservar condiciones de objetivos y fases |
-| Escenarios del catálogo | [apps/frontend/src/data/escenarios](../../apps/frontend/src/data/escenarios) | Catálogo activo y exportación del conocimiento asociado |
+| Escenarios del catálogo | [apps/frontend/src/data/escenarios](../../apps/frontend/src/data/escenarios) y [compilador](../../apps/frontend/src/scenarios) | Manifiestos versionados, validación, publicación y conocimiento asociado |
 | Cuentas, cursos o intentos | [apps/backend/src](../../apps/backend/src) | Módulos por funcionalidad, contratos HTTP y permisos del servidor |
 | Tutor, gateway IA o conocimiento | [apps/backend/src/integrations](../../apps/backend/src/integrations) | Coordinación, sesiones, fuentes, presupuestos y validación |
 | Prompts o lógica de workflows | [infra/n8n](../../infra/n8n) | JSON en Git; exportar/aplicar explícitamente, sin sobrescribir al reiniciar |
@@ -103,6 +103,7 @@ Los datos educativos se conservan en PostgreSQL y n8n mantiene su SQLite y crede
 | Estructura, tecnologías y procesos | [Visión técnica](vision-general.md) |
 | Interfaz y estado del cliente | [Frontend](frontend.md) |
 | Reglas del motor | [Simulación ECS](simulacion-ecs.md) |
+| Crear o versionar ejercicios | [Escenarios modulares](escenarios-modulares.md), [contrato](contrato-de-escenarios.md) y [guía](../guides/escenarios.md) |
 | Servidor y endpoints | [Backend](backend.md), [API HTTP](api-http.md) |
 | Tablas y relaciones | [Modelo de datos](modelo-de-datos.md) |
 | Tutor y generación | [Integraciones](integraciones.md) |

@@ -19,7 +19,8 @@ El `ECSManager` actual no ejecuta un ciclo general de `actualizar()` ni mantiene
 
 ```mermaid
 flowchart TD
-    definicion[Definición TypeScript del escenario] --> builder[EscenarioBuilder]
+    definicion[Manifiesto versionado] --> validator[Validador y compilador]
+    validator --> builder[EscenarioBuilder]
     builder --> escenario[EscenarioComponent]
     escenario --> fases[FaseComponent y objetivos]
     escenario --> zonas[ZonaComponent]
@@ -31,7 +32,7 @@ flowchart TD
     dispositivos --> transform[TransformComponent]
 ```
 
-`DefinicionEscenario` representa contenido declarativo con zonas, oficinas, espacios y dispositivos; `Escenario` representa parte del estado de ejecución con entidades ECS. Existen casts en los puntos de carga, por lo que TypeScript no sustituye la validación de una respuesta generada externamente.
+`DefinicionEscenario` representa contenido declarativo con zonas, oficinas, espacios y dispositivos. `defineScenario` completa el sobre reproducible y `compileScenario` valida antes de producir el contrato de ejecución. TypeScript no sustituye la validación runtime de una respuesta generada externamente.
 
 El builder requiere que `SistemaJerarquiaEscenario` ya esté registrado. Crea una entidad de red Internet global, relaciona zonas y redes, incorpora apps del catálogo y construye componentes de ataques y eventos. Dispositivos decorativos enriquecen la escena y se excluyen de interacciones previstas.
 
@@ -52,22 +53,23 @@ El builder requiere que `SistemaJerarquiaEscenario` ya esté registrado. Crea un
 
 ## Flujo de partida
 
-1. Selección de una definición en `data/escenarios/index.ts` o del generador.
-2. Creación del singleton y registro de jerarquía.
-3. Construcción de entidades e inicialización de sistemas y listeners.
-4. Creación de reloj simulado y total; carga de eventos ordenados por notificación.
-5. Acción del jugador → actualización de componentes → registro de acción → eventos visuales.
-6. Cuando el reloj coincide con `tiempoNotificacion`, se notifica; con `tiempoEnOcurrir`, se ejecuta la verificación o ataque.
-7. Un objetivo completado avanza el índice de `SistemaFase`. El nombre de evento/ataque debe coincidir exactamente con la descripción del objetivo.
-8. `FASE_NO_COMPLETADA` guarda un intento fallido; `ESCENARIO_COMPLETADO` guarda un intento exitoso.
+1. Descubrimiento de una revisión publicada mediante `scenarioCatalog` o adaptación de una generación.
+2. Validación del sobre, huella y referencias mediante el compilador canónico.
+3. Creación del singleton y registro de jerarquía.
+4. Construcción de entidades e inicialización de sistemas y listeners.
+5. Creación de reloj simulado y total; carga de eventos ordenados por notificación.
+6. Acción del jugador → actualización de componentes → registro de acción → eventos visuales.
+7. Cuando el reloj coincide con `tiempoNotificacion`, se notifica; con `tiempoEnOcurrir`, se ejecuta la verificación o ataque.
+8. Un objetivo completado avanza el índice de `SistemaFase`. El nombre de evento/ataque debe coincidir exactamente con la descripción del objetivo.
+9. `FASE_NO_COMPLETADA` guarda un intento fallido; `ESCENARIO_COMPLETADO` guarda un intento exitoso.
 
 El tiempo simulado se puede pausar al mostrar logs. El reloj total continúa mientras se pausa el simulado. Las comparaciones de programación usan segundos y coincidencia exacta: tiempos fraccionarios o un tiempo de ejecución ausente pueden impedir la activación. `SistemaFase` utiliza `fase - 1` como posición, por lo que los IDs de fase deben ser consecutivos desde uno.
 
 ## Catálogo y generación
 
-Los cinco escenarios activos son `tutorial`, `amenazas`, `criptografia`, `control-acceso` y `hacking-etico`. Existen archivos adicionales cuyo export está comentado; su presencia no los habilita.
+Los cinco escenarios publicados son `tutorial`, `amenazas`, `criptografia`, `control-acceso` y `hacking-etico`. Los archivos adicionales permanecen `draft`: se validan, pero no aparecen en selección.
 
-El generador normaliza zonas, redes, activos y fases, puede insertar routers y eventos de cierre, deduplica eventos y reconstruye objetivos. Reprograma acciones desde 15 segundos, con incrementos de 15 y ejecución a 10 segundos de la notificación; los cierres usan el mismo segundo para ambos tiempos. Usa el slug común `ai-generated-scenario` y un ID de respaldo `777`. Distintas generaciones se agrupan bajo ese mismo slug en progreso y ranking, y no se guarda la definición usada.
+El generador normaliza zonas, redes, activos y fases, puede insertar routers y eventos de cierre, deduplica eventos y reconstruye objetivos. Después crea un manifiesto `validated` y utiliza el mismo compilador. Usa el slug común `ai-generated-scenario` y un ID de respaldo `777`; los intentos conservan revisión y SHA-256 aunque esa generación no se publique en el catálogo.
 
 ## Persistencia y límites
 
@@ -80,5 +82,5 @@ Se envían `terminado`, `tiempo` total y una cadena de acciones esperadas/realiz
 - [Core ECS](../../apps/frontend/src/ecs/core/ECSManager.ts) y [tipos de escenario](../../apps/frontend/src/shared/types/EscenarioTypes.ts).
 - [Builder](../../apps/frontend/src/ecs/utils/EscenarioBuilder.ts), [controlador de escenario](../../apps/frontend/src/ecs/controllers/EscenarioController.ts) y [progreso](../../apps/frontend/src/ecs/controllers/ProgresoController.ts).
 - [Tiempo](../../apps/frontend/src/ecs/systems/SistemaTiempo.ts), [fases](../../apps/frontend/src/ecs/systems/SistemaFase.ts) y [red](../../apps/frontend/src/ecs/systems/SistemaRed.ts).
-- [Exports activos](../../apps/frontend/src/data/escenarios/index.ts) y [normalización de generación](../../apps/frontend/src/visual/features/agent-malvado/presentation/hooks/useScenarioBuilder.ts).
+- [Catálogo y compilador](../../apps/frontend/src/scenarios) y [normalización de generación](../../apps/frontend/src/visual/features/agent-malvado/presentation/hooks/useScenarioBuilder.ts).
 - [Guía de escenarios](../guides/escenarios.md) y [ADR 0002](../project/adrs/0002-simulacion-ecs-en-cliente.md).

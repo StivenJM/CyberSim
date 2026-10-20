@@ -2,7 +2,7 @@
 
 > Actualización Docker del 18 de octubre de 2026: para composición, integraciones, permisos de IA y estado funcional actuales consultar [arquitectura Docker](desarrollo-docker.md), [contrato vigente](contrato-desarrollo-docker.md) y [evidencia](../project/estado-desarrollo-docker.md). El detalle siguiente conserva la revisión anterior donde no se ha sustituido expresamente; sus afirmaciones sobre puertos, rutas antiguas o servicios externos no prevalecen sobre esas referencias.
 
-PostgreSQL persiste identidad y actividad educativa. El esquema vigente está en [`schema.prisma`](../../apps/backend/prisma/schema.prisma), con ocho modelos. No existe una tabla activa de escenarios: el catálogo vive en TypeScript y el progreso se identifica por slug.
+PostgreSQL persiste identidad, actividad educativa y el historial de publicación de escenarios. El esquema vigente está en [`schema.prisma`](../../apps/backend/prisma/schema.prisma). El catálogo incorporado vive en manifiestos TypeScript y se sincroniza como identidades y revisiones inmutables.
 
 ## Relaciones
 
@@ -14,6 +14,8 @@ erDiagram
     curso ||--o{ matricula : contiene
     estudiante ||--o{ matricula : participa
     estudiante ||--o{ progreso : registra
+    escenario ||--o{ revision_escenario : publica
+    revision_escenario ||--o{ progreso : origina
     estudiante ||--o{ retroalimentacion_estudiante : recibe
     curso ||--o{ retroalimentacion_curso : recibe
 ```
@@ -29,15 +31,17 @@ Cada perfil puede carecer de vínculo a identidad porque su FK es opcional. El e
 | `profesor` | ID, cuatro nombres, FK opcional a identidad | FK única; cursos referencian con `NoAction` |
 | `curso` | ID, propietario, nombre, código y expiración opcionales | Código único; matrículas `NoAction`; feedback de curso en cascada |
 | `matricula` | ID, curso, estudiante y fecha | Ambas FKs `NoAction`; sin unicidad de par o estudiante |
-| `progreso` | ID, estudiante, slug, resultado opcional, tiempo, acciones y fecha | FK estudiante `NoAction`; múltiples filas por escenario |
+| `progreso` | ID, estudiante, slug, revisión/hash, resultado, tiempo, acciones y fecha | FK estudiante `NoAction`, FK de revisión nullable; múltiples filas por escenario |
+| `escenario` | UUID, slug único y metadatos actuales | Identidad estable para todas sus revisiones |
+| `revision_escenario` | Número, estado, manifiesto JSON, SHA-256, versiones y semilla | Número/hash únicos por escenario; borrado en cascada desde identidad |
 | `retroalimentacion_estudiante` | ID, estudiante, slug, cuatro textos, número de intentos y fecha | Cascada al eliminar estudiante; histórico de generaciones |
 | `retroalimentacion_curso` | ID, curso, ID profesor desnormalizado, cinco textos y fecha | Cascada al eliminar curso; `id_profesor` sin FK directa |
 
-La mayor parte de IDs son enteros autoincrementales. Matrícula usa una fecha sin hora; feedback usa timestamp y progreso fecha/hora opcional. Los slugs son texto libre, sin FK al catálogo.
+La mayor parte de IDs educativos son enteros autoincrementales. Escenarios y revisiones usan UUID. Matrícula usa una fecha sin hora; feedback usa timestamp y progreso fecha/hora opcional. El slug se conserva en progreso para compatibilidad y la FK de revisión es nullable para intentos históricos.
 
 ## Formatos y consultas
 
-`progreso.acciones` es texto que pretende contener `accionesEsperadas` y `accionesRealizadas`. El backend no comprueba que sea JSON válido. Cada intento se inserta; el resumen cuenta filas y busca cualquier `terminado: true`. El historial ordena por ID, no por puntuación.
+`progreso.acciones` es texto que pretende contener `accionesEsperadas` y `accionesRealizadas`. El backend no comprueba que sea JSON válido. Cada intento se inserta; los nuevos guardan número/hash de revisión y, cuando existe en el catálogo persistido, su FK. El resumen cuenta filas y busca cualquier `terminado: true`; el historial ordena por ID, no por puntuación.
 
 La retroalimentación individual almacena el conteo de intentos al generarse. La habilitación compara el conteo actual con el del último feedback. No hay bloqueo o clave única para evitar generaciones simultáneas iguales.
 
@@ -57,7 +61,7 @@ La única unicidad de matrícula es su ID autoincremental. `hasAnyMatricula` ant
 
 El cliente se genera en `apps/backend/src/generated/prisma` y el build lo copia a `dist/generated/prisma` con [un script](../../apps/backend/scripts/copy-prisma-client.mjs). Ambas rutas son artefactos ignorados.
 
-Para una base nueva aplicar migraciones con `migrate:deploy`; para cambios de desarrollo crear una migración con `db:migrate`. `db:push` sincroniza sin crear historial y es una alternativa para bases desechables. El seed hace inserciones directas, no es idempotente y usa credenciales conocidas de prueba; no ejecutarlo sobre datos reales.
+Para una base nueva aplicar migraciones con `migrate:deploy`, ejecutar el seed de instalación y después `db:sync-scenarios` para persistir los manifiestos publicados completos; la preparación local de Docker realiza esa secuencia. Para cambios de desarrollo crear una migración con `db:migrate`. `db:push` sincroniza sin crear historial y es una alternativa para bases desechables. El seed usa credenciales conocidas de prueba; no ejecutarlo sobre datos reales.
 
 ## Fuera de PostgreSQL
 
@@ -65,6 +69,6 @@ Para una base nueva aplicar migraciones con `migrate:deploy`; para cambios de de
 - Tokens y perfil del cliente viven en `localStorage`.
 - Conversaciones viven en un `Map` del proceso backend.
 - Conocimiento vectorial vive en Qdrant; su ingestión es externa.
-- No se persisten definiciones de escenarios generados, progreso parcial de escena ni audio del tutor en estas tablas.
+- Los manifiestos publicados se persisten por revisión. Los generados conservan revisión/hash en el intento, pero no se convierten automáticamente en entradas publicadas del catálogo.
 
 Consultar [ADR 0003](../project/adrs/0003-persistencia-de-intentos.md), [operación de la base](../guides/operacion-y-despliegue.md) y [hallazgos de integridad](revision-del-sistema.md).

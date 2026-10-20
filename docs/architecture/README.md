@@ -8,6 +8,8 @@ Documentación técnica del sistema implementado. Para procedimientos de ejecuci
 | [Visión general](vision-general.md) | ¿Qué procesos y servicios componen CyberSim? |
 | [Frontend](frontend.md) | ¿Cómo se organizan las pantallas, rutas y estado del cliente? |
 | [Simulación ECS](simulacion-ecs.md) | ¿Cómo se construyen escenarios y se ejecutan acciones, eventos y fases? |
+| [Escenarios modulares](escenarios-modulares.md) | ¿Cómo se crean, validan, compilan, versionan y publican ejercicios? |
+| [Contrato de escenarios](contrato-de-escenarios.md) | ¿Qué campos, validaciones e invariantes debe cumplir un manifiesto? |
 | [Backend](backend.md) | ¿Cómo se componen los módulos y sus reglas de aplicación? |
 | [API HTTP](api-http.md) | ¿Qué endpoints, entradas, respuestas y protecciones existen? |
 | [Modelo de datos](modelo-de-datos.md) | ¿Qué se persiste y qué restricciones garantiza PostgreSQL? |

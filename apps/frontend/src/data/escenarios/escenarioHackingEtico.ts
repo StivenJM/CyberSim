@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	AccionesRealizables,
 	ObjetosManejables,
@@ -15,14 +16,16 @@ import type { DefinicionEscenario } from '../../shared/types/EscenarioTypes'
 import { ColoresRed } from '../colores'
 import { PlantillasCorreoPhishing } from '../plantillas/Plantillas'
 
-function generarContrasenia(): string {
+function generarContrasenia(seed = 5): string {
 	const caracteres =
 		'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789'
 	let resultado = ''
 	const longitud = 7
+	let state = seed >>> 0
 
 	for (let i = 0; i < longitud; i++) {
-		const indice = Math.floor(Math.random() * caracteres.length)
+		state = (Math.imul(state, 1664525) + 1013904223) >>> 0
+		const indice = state % caracteres.length
 		resultado += caracteres[indice]
 	}
 
@@ -31,7 +34,7 @@ function generarContrasenia(): string {
 
 const contrasenia = generarContrasenia()
 
-export const escenarioHackingEtico: DefinicionEscenario = {
+const escenarioHackingEticoDefinition: DefinicionEscenario = {
 	id: 5,
 	slug: 'hacking-etico',
 	titulo: 'Hacking Ético y Análisis de Vulnerabilidades',
@@ -608,3 +611,10 @@ export const escenarioHackingEtico: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioHackingEtico = defineScenario(
+	escenarioHackingEticoDefinition,
+	{
+		status: 'published',
+	},
+)

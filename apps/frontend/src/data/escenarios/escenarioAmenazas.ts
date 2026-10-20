@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	AccionesRealizables,
 	ObjetosManejables,
@@ -30,7 +31,7 @@ import { ColoresRed } from '../colores'
  *
  * Dificultad: ★★☆☆☆ (Fácil-Medio)
  */
-export const escenarioAmenazas: DefinicionEscenario = {
+const escenarioAmenazasDefinition: DefinicionEscenario = {
 	id: 8,
 	slug: 'amenazas',
 	titulo: 'Amenazas y Ataques Comunes',
@@ -307,3 +308,7 @@ export const escenarioAmenazas: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioAmenazas = defineScenario(escenarioAmenazasDefinition, {
+	status: 'published',
+})

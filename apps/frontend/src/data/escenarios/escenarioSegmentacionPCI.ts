@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	EstadoAtaqueDispositivo,
 	Mueble,
@@ -22,7 +23,7 @@ import { ColoresRed } from '../colores'
  *
  * Dificultad: ★★★★☆ (Medio-Alto)
  */
-export const escenarioSegmentacionPCI: DefinicionEscenario = {
+const escenarioSegmentacionPCIDefinition: DefinicionEscenario = {
 	id: 11,
 	slug: 'segmentacion-pci',
 	titulo: 'Segmentación PCI-DSS: Empresa Retail',
@@ -405,3 +406,7 @@ export const escenarioSegmentacionPCI: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioSegmentacionPCI = defineScenario(
+	escenarioSegmentacionPCIDefinition,
+)

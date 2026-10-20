@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	AccionesRealizables,
 	ObjetosManejables,
@@ -28,7 +29,7 @@ import { ColoresRed } from '../colores'
  *
  * Dificultad: ★★★★★ (Alto)
  */
-export const escenarioIoT: DefinicionEscenario = {
+const escenarioIoTDefinition: DefinicionEscenario = {
 	id: 13,
 	slug: 'iot',
 	titulo: 'Seguridad IoT e Infraestructura Crítica',
@@ -418,3 +419,5 @@ export const escenarioIoT: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioIoT = defineScenario(escenarioIoTDefinition)

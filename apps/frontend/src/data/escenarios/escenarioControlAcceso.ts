@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	AccionesRealizables,
 	ObjetosManejables,
@@ -32,7 +33,7 @@ import { ColoresRed } from '../colores'
  *
  * Dificultad: ★★★☆☆ (Medio)
  */
-export const escenarioControlAcceso: DefinicionEscenario = {
+const escenarioControlAccesoDefinition: DefinicionEscenario = {
 	id: 10,
 	slug: 'control-acceso',
 	titulo: 'Control de Acceso y Protocolos Seguros',
@@ -477,3 +478,10 @@ export const escenarioControlAcceso: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioControlAcceso = defineScenario(
+	escenarioControlAccesoDefinition,
+	{
+		status: 'published',
+	},
+)

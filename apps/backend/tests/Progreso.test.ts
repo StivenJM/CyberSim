@@ -61,6 +61,24 @@ describe('Progreso UseCases', () => {
 			expect(result.id_progreso).toBe(1)
 			expect(progresoRepo.guardarProgresoEstudiante).toHaveBeenCalled()
 		})
+
+		it('debe exigir revisión y hash juntos', async () => {
+			const useCase = new GuardarProgresoUseCase(progresoRepo)
+
+			await expect(
+				useCase.execute({
+					id_estudiante: 1,
+					slug_escenario: 'tutorial',
+					terminado: true,
+					tiempo: 120,
+					acciones: '',
+					revision_escenario: 1,
+				}),
+			).rejects.toThrow(
+				'La revisión y el hash del escenario deben enviarse juntos',
+			)
+			expect(progresoRepo.guardarProgresoEstudiante).not.toHaveBeenCalled()
+		})
 	})
 
 	// ==========================

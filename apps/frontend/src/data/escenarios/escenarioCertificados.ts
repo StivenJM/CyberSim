@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	EstadoAtaqueDispositivo,
 	Mueble,
@@ -22,7 +23,7 @@ import { ColoresRed } from '../colores'
  *
  * Dificultad: ★★★☆☆ (Medio)
  */
-export const escenarioCertificados: DefinicionEscenario = {
+const escenarioCertificadosDefinition: DefinicionEscenario = {
 	id: 9,
 	slug: 'certificados',
 	titulo: 'Certificados Digitales y PKI',
@@ -345,3 +346,7 @@ export const escenarioCertificados: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioCertificados = defineScenario(
+	escenarioCertificadosDefinition,
+)

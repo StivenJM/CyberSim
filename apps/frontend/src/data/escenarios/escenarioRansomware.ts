@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	EstadoAtaqueDispositivo,
 	Mueble,
@@ -11,7 +12,7 @@ import type { DefinicionEscenario } from '../../shared/types/EscenarioTypes'
 import { TipoProtocolo } from '../../shared/types/TrafficEnums'
 import { ColoresRed } from '../colores'
 
-export const escenarioRansomware: DefinicionEscenario = {
+const escenarioRansomwareDefinition: DefinicionEscenario = {
 	id: 6,
 	slug: 'ransomware',
 	titulo: 'Gestión de Riesgos: Respuesta a Incidentes',
@@ -348,3 +349,5 @@ export const escenarioRansomware: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioRansomware = defineScenario(escenarioRansomwareDefinition)

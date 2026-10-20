@@ -15,8 +15,15 @@ const obtenerTodosProgresos = new ObtenerTodosProgresosUseCase(repo)
 // POST /progreso - Guardar progreso de un estudiante
 router.post('/', async (req: Request, res: Response) => {
 	try {
-		const { id_estudiante, slug_escenario, terminado, tiempo, acciones } =
-			req.body
+		const {
+			id_estudiante,
+			slug_escenario,
+			terminado,
+			tiempo,
+			acciones,
+			revision_escenario,
+			content_hash_escenario,
+		} = req.body
 
 		// Validación de campos requeridos
 		if (
@@ -30,6 +37,15 @@ router.post('/', async (req: Request, res: Response) => {
 				success: false,
 				error:
 					'Faltan campos requeridos: id_estudiante, slug_escenario, terminado, tiempo, acciones',
+			})
+		}
+		if (
+			(revision_escenario === undefined) !==
+			(content_hash_escenario === undefined)
+		) {
+			return res.status(400).json({
+				success: false,
+				error: 'La revisión y el hash del escenario deben enviarse juntos',
 			})
 		}
 

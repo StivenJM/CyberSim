@@ -13,14 +13,11 @@
 
 import fs from 'node:fs'
 import path from 'node:path'
-import { fileURLToPath } from 'node:url'
+import { fileURLToPath, pathToFileURL } from 'node:url'
 
 // ─── Resolver __dirname en ESM ───────────────────────────────────────────────
 const __filename = fileURLToPath(import.meta.url)
 const __dirname = path.dirname(__filename)
-
-// ─── Imports de los 5 escenarios activos ─────────────────────────────────────
-import { escenariosActivos } from '../src/data/escenarios/activos.js'
 
 // ─── Tipos internos para el script ───────────────────────────────────────────
 // biome-ignore lint/suspicious/noExplicitAny: The exporter reads heterogeneous scenario definitions.
@@ -110,8 +107,35 @@ interface AtaqueRAG {
 	condicionMitigacion: unknown
 }
 
-// ─── Escenarios activos ───────────────────────────────────────────────────────
-const ESCENARIOS_ACTIVOS = escenariosActivos as unknown as EscenarioRaw[]
+// ─── Escenarios publicados ────────────────────────────────────────────────────
+async function loadPublishedScenarios(): Promise<EscenarioRaw[]> {
+	const directory = path.resolve(__dirname, '../src/data/escenarios')
+	const files = fs
+		.readdirSync(directory)
+		.filter((file) => /^escenario.+\.ts$/.test(file))
+		.sort()
+	const scenarios: EscenarioRaw[] = []
+
+	for (const file of files) {
+		const module = (await import(
+			pathToFileURL(path.join(directory, file)).href
+		)) as Record<string, unknown>
+		for (const value of Object.values(module)) {
+			if (
+				value &&
+				typeof value === 'object' &&
+				(value as EscenarioRaw).schemaVersion === 1 &&
+				(value as EscenarioRaw).status === 'published'
+			) {
+				scenarios.push(value as EscenarioRaw)
+			}
+		}
+	}
+
+	return scenarios.sort((left, right) => Number(left.id) - Number(right.id))
+}
+
+const ESCENARIOS_ACTIVOS = await loadPublishedScenarios()
 
 // ─── Helpers ──────────────────────────────────────────────────────────────────
 function extraerNombreRed(red: unknown): string {

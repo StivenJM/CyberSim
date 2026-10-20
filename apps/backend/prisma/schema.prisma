@@ -57,13 +57,18 @@ model profesor {
 model progreso {
   id_progreso   Int        @id @default(autoincrement())
   id_estudiante Int
+  id_revision_escenario String? @db.Uuid
+  revision_escenario_numero Int?
+  content_hash_escenario String? @db.VarChar
   slug_escenario String    @db.VarChar
   terminado     Boolean?   @default(false)
   tiempo        Float?
   acciones      String?    @db.Text
   fecha_creacion DateTime?  @default(now())
-  // escenario     escenario  @relation(fields: [id_escenario], references: [id_escenario], onDelete: NoAction, onUpdate: NoAction, map: "fk_progreso_escenario")
   estudiante    estudiante @relation(fields: [id_estudiante], references: [id_estudiante], onDelete: NoAction, onUpdate: NoAction, map: "fk_progreso_estudiante")
+  revision_escenario revision_escenario? @relation(fields: [id_revision_escenario], references: [id_revision_escenario], onDelete: SetNull, onUpdate: NoAction, map: "fk_progreso_revision_escenario")
+
+  @@index([id_revision_escenario], map: "progreso_revision_escenario_idx")
 }
 
 model usuario_auth {
@@ -106,12 +111,37 @@ model retroalimentacion_curso {
 
   curso            curso      @relation(fields: [id_curso], references: [id_curso], onDelete: Cascade, onUpdate: NoAction, map: "fk_retro_curso")
 }
-//
-// model escenario {
-//   id_escenario Int        @id @default(autoincrement())
-//   nombre       String     @db.VarChar
-//   progreso     progreso[]
-// }
+model escenario {
+  id_escenario String @id @default(uuid()) @db.Uuid
+  slug String @unique @db.VarChar
+  titulo String @db.VarChar
+  categoria String @db.VarChar
+  descripcion String @db.Text
+  creado_en DateTime @default(now()) @db.Timestamptz
+  actualizado_en DateTime @updatedAt @db.Timestamptz
+  revisiones revision_escenario[]
+}
+
+model revision_escenario {
+  id_revision_escenario String @id @default(uuid()) @db.Uuid
+  id_escenario String @db.Uuid
+  numero Int
+  schema_version Int
+  estado String @db.VarChar
+  manifest Json
+  content_hash String @db.VarChar
+  engine_version String @db.VarChar
+  asset_catalog_version String @db.VarChar
+  seed Int
+  creado_en DateTime @default(now()) @db.Timestamptz
+  publicado_en DateTime? @db.Timestamptz
+  escenario escenario @relation(fields: [id_escenario], references: [id_escenario], onDelete: Cascade, onUpdate: NoAction, map: "fk_revision_escenario")
+  progresos progreso[]
+
+  @@unique([id_escenario, numero], map: "revision_escenario_numero_key")
+  @@unique([id_escenario, content_hash], map: "revision_escenario_hash_key")
+  @@index([estado], map: "revision_escenario_estado_idx")
+}
 
 model coordinacion_integracion {
   id Int @id

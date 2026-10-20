@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	AccionesRealizables,
 	ObjetosManejables,
@@ -36,7 +37,7 @@ import { ColoresRed } from '../colores'
  * ║  └────────────────────────┘  ║
  * ╚══════════════════════════════╝
  */
-export const escenarioCriptografia: DefinicionEscenario = {
+const escenarioCriptografiaDefinition: DefinicionEscenario = {
 	id: 2,
 	slug: 'criptografia',
 	titulo: 'Criptografía: Firma Digital y Comunicación Segura',
@@ -446,3 +447,10 @@ export const escenarioCriptografia: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioCriptografia = defineScenario(
+	escenarioCriptografiaDefinition,
+	{
+		status: 'published',
+	},
+)

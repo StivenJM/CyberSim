@@ -1,0 +1,23 @@
+{
+	"name": "@cybersim/scenario-contract",
+	"private": true,
+	"version": "1.0.0",
+	"type": "module",
+	"exports": {
+		".": {
+			"types": "./dist/index.d.ts",
+			"import": "./dist/index.js"
+		}
+	},
+	"scripts": {
+		"build": "tsc --project tsconfig.json",
+		"pretypecheck": "pnpm run build",
+		"typecheck": "tsc --project tsconfig.json --noEmit",
+		"pretest": "pnpm run build",
+		"test": "vitest --run"
+	},
+	"devDependencies": {
+		"typescript": "~5.9.3",
+		"vitest": "^4.0.2"
+	}
+}

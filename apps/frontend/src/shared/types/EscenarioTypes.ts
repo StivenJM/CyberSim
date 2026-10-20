@@ -1,9 +1,4 @@
 import type { ColoresRed } from '../../data/colores'
-import type {
-	AtaqueComponent,
-	EventoComponent,
-	FaseComponent,
-} from '../../ecs/components'
 import type { Entidad } from '../../ecs/core'
 import type { AccionesRealizables, ObjetosManejables } from './AccionesEnums'
 import type {
@@ -20,19 +15,10 @@ import type { TipoLogGeneral } from './EventosEnums'
 import type { AccionFirewall, DireccionTrafico } from './FirewallTypes'
 import type { TipoProtocolo } from './TrafficEnums'
 
-export interface Escenario {
-	id: number
-	slug: string
-	titulo: string
-	descripcion: string
+export type Escenario = Omit<DefinicionEscenario, 'presupuestoInicial'> & {
 	presupuestoInicial: number
-	zonas: Entidad[]
-	ataques: AtaqueComponent[]
-	eventos: EventoComponent[]
-	fases: FaseComponent[]
 	redes: Entidad[]
-	accionesEsperadas: unknown[]
-}
+} & ScenarioRevisionMetadata
 
 export interface EscenarioPreview {
 	id: number
@@ -290,3 +276,5 @@ export interface DefinicionEscenario {
 		}[]
 	}[]
 }
+
+import type { ScenarioRevisionMetadata } from '@cybersim/scenario-contract'

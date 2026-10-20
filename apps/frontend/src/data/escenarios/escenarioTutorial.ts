@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	AccionesRealizables,
 	ObjetosManejables,
@@ -39,7 +40,7 @@ import { ColoresRed } from '../colores'
  * ║  └─────────────────────┘  ║   ╚═══════════════════════╝
  * ╚═══════════════════════════╝
  */
-export const escenarioTutorial: DefinicionEscenario = {
+const escenarioTutorialDefinition: DefinicionEscenario = {
 	id: 1,
 	slug: 'tutorial',
 	titulo: 'Tutorial: Introducción a la Seguridad',
@@ -322,3 +323,7 @@ export const escenarioTutorial: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioTutorial = defineScenario(escenarioTutorialDefinition, {
+	status: 'published',
+})

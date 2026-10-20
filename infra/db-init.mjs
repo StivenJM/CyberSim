@@ -15,7 +15,7 @@ process.env.DIRECT_URL = url.toString()
 const db = new Pool({ connectionString: url.toString() })
 try {
 	await db.query('SELECT current_database(),version()')
-	for (const script of ['migrate:deploy', 'db:seed']) {
+	for (const script of ['migrate:deploy', 'db:seed', 'db:sync-scenarios']) {
 		const r = spawnSync(
 			'pnpm',
 			['--filter', '@cybersim/backend', 'run', script],

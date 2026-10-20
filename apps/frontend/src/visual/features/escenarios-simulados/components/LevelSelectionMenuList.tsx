@@ -114,6 +114,14 @@ export default function LevelSelectionMenuList() {
 		) as Escenario
 		if (escenarioCompleto) {
 			localStorage.setItem('slug_escenario_actual', escenario.slug)
+			localStorage.setItem(
+				'revision_escenario_actual',
+				String(escenarioCompleto.revision),
+			)
+			localStorage.setItem(
+				'content_hash_escenario_actual',
+				escenarioCompleto.contentHash,
+			)
 			setSelectedEscenario(escenarioCompleto)
 			navigate('/')
 		}

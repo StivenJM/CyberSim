@@ -33,6 +33,7 @@ try {
 	for (const args of [
 		['--filter', '@cybersim/backend', 'run', 'migrate:deploy'],
 		['--filter', '@cybersim/backend', 'run', 'db:seed'],
+		['--filter', '@cybersim/backend', 'run', 'db:sync-scenarios'],
 		[
 			'--filter',
 			'@cybersim/backend',

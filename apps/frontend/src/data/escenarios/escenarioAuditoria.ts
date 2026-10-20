@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	AccionesRealizables,
 	ObjetosManejables,
@@ -26,7 +27,7 @@ import { ColoresRed } from '../colores'
  *
  * Dificultad: ★★★★☆ (Medio-Alto)
  */
-export const escenarioAuditoria: DefinicionEscenario = {
+const escenarioAuditoriaDefinition: DefinicionEscenario = {
 	id: 12,
 	slug: 'auditoria',
 	titulo: 'Auditoría de Seguridad Empresarial',
@@ -340,3 +341,5 @@ export const escenarioAuditoria: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioAuditoria = defineScenario(escenarioAuditoriaDefinition)

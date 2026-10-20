@@ -18,7 +18,12 @@ export class ProgresoController {
 		accionesEsperadas: unknown[],
 		accionesRealizadas: [string, string, number | undefined, unknown?][],
 	) {
-		const { id_estudiante, slug_escenario } = await this.getDatosSesion()
+		const {
+			id_estudiante,
+			slug_escenario,
+			revision_escenario,
+			content_hash_escenario,
+		} = await this.getDatosSesion()
 		const acciones = this.formatearAcciones(
 			accionesEsperadas ?? [],
 			accionesRealizadas ?? [],
@@ -29,6 +34,8 @@ export class ProgresoController {
 			terminado: terminado,
 			tiempo: tiempo,
 			acciones: acciones,
+			revision_escenario,
+			content_hash_escenario,
 		}
 
 		try {
@@ -98,12 +105,26 @@ export class ProgresoController {
 	private async getDatosSesion(): Promise<{
 		id_estudiante: number
 		slug_escenario: string
+		revision_escenario?: number
+		content_hash_escenario?: string
 	}> {
 		const id_estudiante = JSON.parse(
 			localStorage.getItem('user')!,
 		).id_estudiante
 		const slug_escenario = localStorage.getItem('slug_escenario_actual')!
-		return { id_estudiante, slug_escenario }
+		const revisionRaw = localStorage.getItem('revision_escenario_actual')
+		const content_hash_escenario = localStorage.getItem(
+			'content_hash_escenario_actual',
+		)
+		const revision_escenario = revisionRaw ? Number(revisionRaw) : undefined
+		return {
+			id_estudiante,
+			slug_escenario,
+			revision_escenario: Number.isInteger(revision_escenario)
+				? revision_escenario
+				: undefined,
+			content_hash_escenario: content_hash_escenario ?? undefined,
+		}
 	}
 
 	private formatearAcciones(

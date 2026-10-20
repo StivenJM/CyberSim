@@ -1,3 +1,4 @@
+import { defineScenario } from '../../scenarios/defineScenario'
 import {
 	EstadoAtaqueDispositivo,
 	Mueble,
@@ -46,7 +47,7 @@ import { ColoresRed } from '../colores'
  * ║ └──────────────────┘  ║   ║ └──────────────────┘  ║
  * ╚══════════════════════╝   ╚══════════════════════╝
  */
-export const escenarioRedes: DefinicionEscenario = {
+const escenarioRedesDefinition: DefinicionEscenario = {
 	id: 4,
 	slug: 'redes',
 	titulo: 'Seguridad de Redes: Firewall, Segmentación y VPN',
@@ -464,3 +465,5 @@ export const escenarioRedes: DefinicionEscenario = {
 		},
 	],
 }
+
+export const escenarioRedes = defineScenario(escenarioRedesDefinition)

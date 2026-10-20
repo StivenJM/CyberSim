@@ -1,7 +1,8 @@
 import { useCallback } from 'react'
 import { useNavigate } from 'react-router'
+import { compileGeneratedScenario } from '../../../../../scenarios'
 import { TipoEvento } from '../../../../../shared/types/DeviceEnums'
-import type { Escenario } from '../../../../../shared/types/EscenarioTypes'
+import type { DefinicionEscenario } from '../../../../../shared/types/EscenarioTypes'
 import { useSelectedLevel } from '../../../../common/contexts/SelectedLevelContext'
 import { useAgentMalvado } from '../context/AgentMalvadoContext'
 import {
@@ -155,7 +156,7 @@ export function useScenarioBuilder() {
 
 		const logLimpio = deduplicarEventos(todosLosEventos)
 
-		const levelToPlay: Escenario = {
+		const definition: DefinicionEscenario = {
 			id: Number(scenario.id) || 777,
 			slug: 'ai-generated-scenario',
 			titulo: String(
@@ -168,6 +169,7 @@ export function useScenarioBuilder() {
 					scenario.descripcion_desafio ??
 					'Simulación generada dinámicamente.',
 			),
+			categoria: 'Escenario generado de ciberseguridad',
 			presupuestoInicial: Number(scenario.presupuestoInicial) || 5000,
 			fases: fasesNormalizadas,
 			eventos: logLimpio.filter((e) => e.tipoEvento !== undefined),
@@ -176,11 +178,19 @@ export function useScenarioBuilder() {
 			),
 			zonas: zonasNormalizadas,
 			accionesEsperadas: (scenario.accionesEsperadas ??
-				[]) as Escenario['accionesEsperadas'],
-			redes: [],
-		} as unknown as Escenario
+				[]) as DefinicionEscenario['accionesEsperadas'],
+		} as DefinicionEscenario
+		const levelToPlay = compileGeneratedScenario(definition)
 
-		localStorage.setItem('slug_escenario_actual', 'ai-generated-scenario')
+		localStorage.setItem('slug_escenario_actual', levelToPlay.slug)
+		localStorage.setItem(
+			'revision_escenario_actual',
+			String(levelToPlay.revision),
+		)
+		localStorage.setItem(
+			'content_hash_escenario_actual',
+			levelToPlay.contentHash,
+		)
 		setSelectedEscenario(levelToPlay)
 		clearScenario()
 		navigate('/')

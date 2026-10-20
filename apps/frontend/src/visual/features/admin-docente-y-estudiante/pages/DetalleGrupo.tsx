@@ -62,6 +62,21 @@ export default function DetalleGrupo() {
 	const [confirmDeleteGrupo, setConfirmDeleteGrupo] = useState(false)
 	const { checkLatestAnalysis } = useGenerateCourseAnalysis()
 	const insights = useGroupInsights(grupo?.id_curso ?? null)
+	const analysisCourseId = grupo?.id_curso
+	useEffect(() => {
+		if (activeTab !== 'analysis' || !analysisCourseId) return
+		let cancelled = false
+		setIsCheckingAnalysis(true)
+		void checkLatestAnalysis(analysisCourseId).then((result) => {
+			if (!cancelled) {
+				setAnalysis(result.success && result.analysis ? result.analysis : null)
+				setIsCheckingAnalysis(false)
+			}
+		})
+		return () => {
+			cancelled = true
+		}
+	}, [activeTab, analysisCourseId, checkLatestAnalysis])
 
 	useEffect(() => {
 		const loadGrupo = async () => {
@@ -205,17 +220,7 @@ export default function DetalleGrupo() {
 						</button>
 						<button
 							className={`${styles.tab} ${activeTab === 'analysis' ? styles.tabActive : ''}`}
-							onClick={async () => {
-								setActiveTab('analysis')
-								if (grupo && !analysis) {
-									setIsCheckingAnalysis(true)
-									const result = await checkLatestAnalysis(grupo.id_curso)
-									if (result.success && result.analysis) {
-										setAnalysis(result.analysis)
-									}
-									setIsCheckingAnalysis(false)
-								}
-							}}
+							onClick={() => setActiveTab('analysis')}
 						>
 							{activeTab === 'analysis' && (
 								<motion.div

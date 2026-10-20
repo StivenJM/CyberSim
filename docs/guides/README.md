@@ -8,6 +8,7 @@ Procedimientos para ejecutar, usar y mantener CyberSim. Cada guía enlaza a los 
 | [Configuración](configuracion.md) | Completar variables con sus requisitos reales de arranque |
 | [Uso del sistema](uso-del-sistema.md) | Registrar estudiantes, practicar y gestionar cursos como docente |
 | [Calidad para desarrolladores](pruebas-y-calidad.md) | Preparar el entorno, asegurar lint, tests y build y diagnosticar fallos |
+| [Tests de integración](tests-de-integracion.md) | Recorrer las HUs como docente y estudiante, restaurar datos iniciales y probar servicios reales fuera de CI |
 | [Escenarios y RAG](escenarios.md) | Crear un nivel, habilitarlo y exportar su conocimiento |
 | [Mantenimiento para humanos e IA](mantenimiento.md) | Encontrar puntos de cambio y preservar reglas y documentación |
 | [Operación y despliegue](operacion-y-despliegue.md) | Preparar build, migraciones, hosting y comprobaciones operativas |

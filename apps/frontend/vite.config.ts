@@ -55,6 +55,7 @@ export default defineConfig(({ mode }) => {
 		],
 		server: {
 			allowedHosts: ['localhost', 'frontend'],
+			watch: { ignored: ['**/playwright-report/**', '**/test-results/**'] },
 			proxy: apiProxy,
 		},
 		preview: {
@@ -62,7 +63,11 @@ export default defineConfig(({ mode }) => {
 		},
 		test: {
 			// Los specs E2E (tests/e2e) los corre Playwright, no Vitest.
-			exclude: [...configDefaults.exclude, 'tests/e2e/**'],
+			exclude: [
+				...configDefaults.exclude,
+				'tests/e2e/**',
+				'tests/integration/**',
+			],
 			coverage: {
 				provider: 'v8',
 				exclude: [

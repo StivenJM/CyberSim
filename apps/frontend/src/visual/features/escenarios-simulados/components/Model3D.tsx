@@ -16,6 +16,7 @@ import RadialMenu from './RadialMenu'
 
 interface Model3DProps {
 	modelPath: string
+	name?: string
 	position?: [number, number, number]
 	rotation?: [number, number, number]
 	scale?: number | [number, number, number]
@@ -48,6 +49,7 @@ interface Model3DProps {
 const Model3DView = React.memo<Model3DProps & { scene: Group }>(
 	({
 		scene,
+		name,
 		position = [0, 0, 0],
 		rotation = [0, 0, 0],
 		scale = 1,
@@ -140,6 +142,7 @@ const Model3DView = React.memo<Model3DProps & { scene: Group }>(
 
 		return (
 			<group
+				name={name}
 				ref={groupRef}
 				position={position}
 				rotation={rotation}

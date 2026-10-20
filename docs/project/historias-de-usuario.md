@@ -343,6 +343,8 @@ Soporte: parcial; JWT aplicado solo a dos rutas de auth y varias áreas pública
 
 ## Uso del catálogo
 
+La [suite de integración del frontend](../guides/tests-de-integracion.md#cobertura-por-historia-y-pantalla) relaciona HU001–HU025 con sus recorridos, pantallas y límites de cobertura. Sus resultados deben consultarse en el reporte de la ejecución correspondiente; la existencia de esos tests no cambia por sí sola el estado de aceptación de las historias.
+
 Refinar criterios manteniendo IDs. Una mejora puede cubrir parte de una HU sin completarla; registrar esa diferencia al revisar trabajo. Los límites de implementación viven en las reglas/revisión y la validación futura debe aportar evidencia por criterio.
 
 El catálogo no asigna responsables, sprints, plazos ni prioridad institucional. Ver [requisitos y trazabilidad](requisitos.md) para relación con commits y requisitos no funcionales.

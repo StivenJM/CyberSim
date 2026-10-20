@@ -60,6 +60,7 @@ export class EscenarioController {
 	private sistemaActivo?: SistemaActivo
 	private sistemaComandos?: SistemaComandos
 	private progresoController?: ProgresoController
+	private guardadoProgreso?: Promise<unknown>
 	private escenarioIniciado: boolean = false // FLAG PARA EVITAR MÚLTIPLES INICIALIZACIONES
 
 	private static instance: EscenarioController | null = null
@@ -251,24 +252,30 @@ export class EscenarioController {
 
 		// Oyentes para guardar el progreso
 		this.ecsManager.on(EventosPublicos.FASE_NO_COMPLETADA, () => {
-			this.progresoController?.guardarProgresoEstudiante(
-				false,
-				this.getTiempoTotalTranscurrido(),
-				this.escenario.accionesEsperadas,
-				this.ecsManager.getAccionesSimulacion(),
-			)
+			this.guardadoProgreso =
+				this.progresoController?.guardarProgresoEstudiante(
+					false,
+					this.getTiempoTotalTranscurrido(),
+					this.escenario.accionesEsperadas,
+					this.ecsManager.getAccionesSimulacion(),
+				) ?? Promise.resolve()
 			this.sistemaTiempo?.destruir()
 		})
 
 		this.ecsManager.on(EventosPublicos.ESCENARIO_COMPLETADO, () => {
-			this.progresoController?.guardarProgresoEstudiante(
-				true,
-				this.getTiempoTotalTranscurrido(),
-				this.escenario.accionesEsperadas,
-				this.ecsManager.getAccionesSimulacion(),
-			)
+			this.guardadoProgreso =
+				this.progresoController?.guardarProgresoEstudiante(
+					true,
+					this.getTiempoTotalTranscurrido(),
+					this.escenario.accionesEsperadas,
+					this.ecsManager.getAccionesSimulacion(),
+				) ?? Promise.resolve()
 			this.sistemaTiempo?.destruir()
 		})
+	}
+
+	public async esperarGuardadoProgreso(): Promise<void> {
+		await this.guardadoProgreso
 	}
 
 	private agregarLogGeneralEscenario(log: LogGeneral): void {

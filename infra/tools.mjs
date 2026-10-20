@@ -149,7 +149,8 @@ async function bootstrap(apply = false, discard = false) {
 			(!map.credentials['cybersim-google'] ||
 				!process.env.GOOGLE_DRIVE_FOLDER_ID)
 		) {
-			pending = true
+			// Drive requiere OAuth aparte. No bloquear los workflows educativos ni
+			// la indexación del corpus versionado por esa configuración opcional.
 			continue
 		}
 		const body = JSON.parse(

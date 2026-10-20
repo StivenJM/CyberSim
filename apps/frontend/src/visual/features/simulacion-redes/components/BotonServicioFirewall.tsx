@@ -21,6 +21,8 @@ export default function BotonServicioFirewall({
 
 	return (
 		<button
+			aria-pressed={bloqueado}
+			aria-label={`${label} ${direccion}`}
 			className={`${styles.servicioBtn}
             ${bloqueado ? styles.bloqueado : styles.permitido}
             `}

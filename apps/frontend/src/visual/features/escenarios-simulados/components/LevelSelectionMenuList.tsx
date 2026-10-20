@@ -106,6 +106,9 @@ export default function LevelSelectionMenuList() {
 	}
 
 	const handleSelectLevel = (escenario: EscenarioPreview) => {
+		const index = allSlugs.indexOf(escenario.slug)
+		if (index < 0 || (!isUnlocked(index) && !isCompletado(escenario.slug)))
+			return
 		const escenarioCompleto = nivelController.cargarEscenario(
 			escenario.id,
 		) as Escenario
@@ -222,6 +225,7 @@ export default function LevelSelectionMenuList() {
 							const offset = zigzagOffset(globalIndex)
 							const idx = globalIndex++
 							const unlocked = isUnlocked(idx)
+							const canPlay = unlocked || completado
 
 							const nodeState = completado
 								? 'done'
@@ -269,7 +273,7 @@ export default function LevelSelectionMenuList() {
 										transition={{ duration: 0.25, delay: idx * 0.05 }}
 										role="button"
 										tabIndex={0}
-										aria-label={`${esc.titulo} — ${completado ? 'Completado' : attempted ? 'En progreso' : 'Disponible'}`}
+										aria-label={`${esc.titulo} — ${completado ? 'Completado' : !canPlay ? 'Bloqueado' : attempted ? 'En progreso' : 'Disponible'}`}
 										aria-expanded={isOpen}
 										onClick={(e) => {
 											e.stopPropagation()
@@ -309,17 +313,20 @@ export default function LevelSelectionMenuList() {
 												</span>
 												<p className={styles.tooltipDesc}>{esc.descripcion}</p>
 												<button
+													disabled={!canPlay}
 													className={`${styles.tooltipBtn} ${styles[`tooltipBtn--${nodeState}`]}`}
 													onClick={(e) => {
 														e.stopPropagation()
 														handleSelectLevel(esc)
 													}}
 												>
-													{completado
-														? 'Repetir'
-														: attempted
-															? 'Continuar'
-															: 'Empezar'}
+													{!canPlay
+														? 'Bloqueado'
+														: completado
+															? 'Repetir'
+															: attempted
+																? 'Continuar'
+																: 'Empezar'}
 												</button>
 											</motion.div>
 										)}

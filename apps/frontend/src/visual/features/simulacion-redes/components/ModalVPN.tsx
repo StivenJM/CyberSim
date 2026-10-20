@@ -227,6 +227,7 @@ export default function ModalVPN() {
 						<p className={styles.label}>LAN Local</p>
 						<ComboBox
 							items={lanLocalOpciones}
+							ariaLabel="LAN local"
 							placeholder="Seleccionar"
 							value={lanLocal}
 							onChange={setLanLocal}
@@ -238,6 +239,7 @@ export default function ModalVPN() {
 						<p className={styles.label}>Dominio Remoto</p>
 						<ComboBox
 							items={dominioRemotoOpciones}
+							ariaLabel="Dominio remoto"
 							placeholder="Seleccionar"
 							value={dominioRemoto}
 							onChange={setDominioRemoto}
@@ -255,6 +257,7 @@ export default function ModalVPN() {
 						<p className={styles.label}>Protección</p>
 						<ComboBox
 							items={OPCIONES_PROTECCION}
+							ariaLabel="Protección"
 							placeholder="Seleccionar"
 							value={proteccion}
 							onChange={setProteccion}
@@ -266,6 +269,7 @@ export default function ModalVPN() {
 						<p className={styles.label}>Host en LAN</p>
 						<ComboBox
 							items={hostLanOpciones}
+							ariaLabel="Host en LAN"
 							placeholder="Seleccionar"
 							value={hostLan}
 							onChange={setHostLan}
@@ -277,6 +281,7 @@ export default function ModalVPN() {
 						<p className={styles.label}>Host remoto</p>
 						<ComboBox
 							items={hostRemotoOpciones}
+							ariaLabel="Host remoto"
 							placeholder="Seleccionar"
 							value={hostRemoto}
 							onChange={setHostRemoto}
@@ -286,6 +291,7 @@ export default function ModalVPN() {
 					</div>
 					<button
 						onClick={agregarConfiguracion}
+						aria-label="Añadir perfil VPN"
 						disabled={!isFormularioCompleto}
 					>
 						+

@@ -20,6 +20,7 @@ export interface CourseAnalysisData {
 export interface CourseAnalysisResponse {
 	id_curso: number
 	fecha_generacion: string
-	resumen: CourseAnalysisSummary
+	// /generate incluye agregados; el historial /latest conserva las secciones.
+	resumen?: CourseAnalysisSummary
 	analisis: CourseAnalysisData
 }

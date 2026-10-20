@@ -7,7 +7,7 @@
 		"dev": "vite",
 		"build": "pnpm run typecheck && vite build",
 		"preview": "vite preview --host",
-		"typecheck": "tsc --project tsconfig.json --noEmit",
+		"typecheck": "tsc --project tsconfig.json --noEmit && tsc --project tsconfig.integration.json --noEmit",
 		"lint": "biome check . --error-on-warnings",
 		"test": "vitest --run",
 		"coverage": "vitest run --coverage",
@@ -34,7 +34,8 @@
 		"three-stdlib": "2.36.1"
 	},
 	"devDependencies": {
-		"@playwright/test": "^1.50.0",
+		"@biomejs/biome": "2.5.15",
+		"@playwright/test": "^1.64.1",
 		"@types/node": "^24.10.1",
 		"@types/react": "^19.1.16",
 		"@types/react-dom": "^19.1.9",
@@ -44,7 +45,6 @@
 		"tsx": "^4.21.0",
 		"typescript": "~5.9.3",
 		"vite": "^7.1.7",
-		"vitest": "^4.0.2",
-		"@biomejs/biome": "2.5.15"
+		"vitest": "^4.0.2"
 	}
 }

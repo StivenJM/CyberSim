@@ -1,5 +1,7 @@
 # Guía de calidad para desarrolladores
 
+Los recorridos de navegador con frontend, API y PostgreSQL reales tienen su propia [guía de tests de integración](tests-de-integracion.md). Incluyen reset protegido, datos de instalación y HUs de ambos perfiles; se ejecutan aparte de los checks habituales y de GitHub Actions.
+
 Esta guía explica cómo comprobar que un cambio de CyberSim conserva el lint, el formato, los tipos, los tests y el build. Ejecuta los comandos desde la raíz del repositorio y repite los checks afectados después de corregir un fallo. Un build correcto confirma la compilación; las pruebas y verificaciones de ejecución cubren riesgos diferentes.
 
 ## 1. Elegir el entorno y preparar las dependencias
@@ -147,7 +149,7 @@ pnpm test:e2e --grep-invert @slow
 pnpm test:e2e --grep @slow
 ```
 
-El segundo comando incluye el smoke WebGL. Para consultar el reporte HTML usa `pnpm --filter @cybersim/frontend exec playwright show-report` después de una ejecución con el reporter HTML predeterminado, o revisa trazas y errores en los artefactos de la ejecución.
+El segundo comando incluye el smoke WebGL. Para consultar el reporte HTML usa `pnpm --filter @cybersim/frontend exec playwright show-report playwright-report/e2e` después de una ejecución con el reporter HTML predeterminado, o revisa trazas y errores en los artefactos de la ejecución. Los reportes E2E e integración usan carpetas hermanas para que una ejecución no borre las evidencias de la otra.
 
 ## 5. Asegurar el build y revisar sus artefactos
 

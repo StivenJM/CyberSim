@@ -45,17 +45,19 @@ Se verificaron las afirmaciones contra documentación primaria. Hallazgos releva
 
 ## Alternativas
 
-- **Komodo v2:** outbound confirmado y buena cobertura de Compose, pero exige Core y MongoDB. Con dos hosts no hay ubicación segura: en producción concentra el control de ambos; en staging no es fiable porque el equipo se apaga; un tercer host no existe. Se reconsiderará si aparece un host dedicado o varios operadores.
-- **Portainer Edge:** requiere 9443/8000 y socket de Docker; CE queda en 2.x y 3.x prioriza Kubernetes. Se descarta para un proyecto que permanece en Compose.
-- **GitHub Actions + Tailscale:** técnicamente sólido (OIDC, nodos efímeros, ACL), pero añade un servicio externo y un modelo push donde un workflow puede ejecutar comandos en producción. Se reconsiderará si la universidad provee VPN administrativa y exige aprobaciones nativas.
+- **Komodo v2:** outbound confirmado y buena cobertura de Compose, pero exige Core y MongoDB. Con dos hosts no hay ubicación segura: en producción concentra el control de ambos; en staging no es fiable porque el equipo se apaga; un tercer host no existe. **Además, Komodo v2 acumula CVEs críticos en su primer año:** CVE-2026-110005 (inyección de comandos en Periphery, CVSS 9.9, ejecución como root) y CVE-2026-110631 (bypass de autenticación en Periphery hasta 2.3.3, acceso sin autenticar). No es una base madura para datos reales. Se reconsiderará solo con un host dedicado, varios operadores y una línea 2.3.x estable sin CVEs abiertos.
+- **Portainer Edge:** requiere 9443/8000 y socket de Docker; CE queda en 2.x y 3.x prioriza Kubernetes. **Portainer CE arrastra un historial de CVEs críticos** (bypass de autorización hasta 2.44.0 con acceso root al host; inicialización de administrador sin autenticar durante la ventana de setup; path traversal en restore). Se descarta para un proyecto que permanece en Compose.
+- **GitHub Actions + Tailscale:** técnicamente sólido (OIDC, nodos efímeros, ACL) y con un modelo de seguridad maduro (WireGuard extremo a extremo, tailnet lock, SOC 2, auditorías). Se añade, no obstante, un servicio externo y un modelo push donde un workflow puede ejecutar comandos en producción. **Se recomienda adoptarlo para acceso administrativo (sustituir SSH expuesto), no para disparar despliegues**, si la universidad lo aprueba.
 - **Ansible Pull:** mismo patrón con herramienta madura, pero la lógica de migración, backup y rollback seguiría siendo propia. Se considerará para aprovisionar el host, no para releases.
 - **Runner self-hosted:** descartado en el [ADR 0021](0021-artefactos-y-despliegue-pull.md) por ejecución de código de GitHub en el host.
 
 ## Evidencia y validación
 
 - [Komodo v2.0.0](https://komo.do/docs/releases/v2.0.0) (outbound periphery, PKI) y [setup](https://komo.do/docs/setup) (MongoDB/FerretDB).
-- [Portainer Edge Agent](https://docs.portainer.io/advanced/edge-agent) y [Portainer 3.0](https://www.portainer.io/blog/portainer-3-0-is-coming).
-- [Tailscale GitHub Action](https://tailscale.com/docs/integrations/github/github-action).
+- [CERT/CC VU#456950](https://kb.cert.org/vuls/id/456950) — CVE-2026-110005, inyección de comandos en Periphery (CVSS 9.9).
+- [CVE-2026-110631](https://www.ionix.io/threat-center/cve-2026-110631) — bypass de autenticación en Periphery.
+- [Portainer Edge Agent](https://docs.portainer.io/advanced/edge-agent), [Portainer 3.0](https://www.portainer.io/blog/portainer-3-0-is-coming) y [CVEs de Portainer](https://app.opencve.io/cve/?vendor=portainer).
+- [Tailscale GitHub Action](https://tailscale.com/docs/integrations/github/github-action) y [Tailscale: seguridad](https://tailscale.com/security).
 - [ansible-pull](https://docs.ansible.com/projects/ansible/latest/cli/ansible-pull.html).
 - [GitHub: environments](https://docs.github.com/en/actions/how-tos/deploy/configure-and-manage-deployments/manage-environments) para la corrección sobre repos privados.
 

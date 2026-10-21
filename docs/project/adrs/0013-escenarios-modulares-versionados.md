@@ -16,6 +16,7 @@ Adoptar una arquitectura híbrida:
 - capacidades, verificadores, activos y perfiles visuales confiables permanecen en código;
 - cada ejercicio es un manifiesto declarativo con versión, revisión, capacidades, entorno, semilla y SHA-256;
 - un catálogo único descubre, valida y publica definiciones;
+- el paquete del contrato expone TypeScript fuente a los workspaces, de modo que desarrollo, tests y builds no dependen de un paso previo de compilación;
 - un compilador canónico adapta manifiestos incorporados o generados al ECS;
 - PostgreSQL conserva revisiones inmutables y los intentos registran la revisión utilizada;
 - el ciclo de autoría persistido es `draft → validated → published → archived`.

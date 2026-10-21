@@ -12,6 +12,7 @@ import {
 	feedbackRouter,
 	health,
 	internalRouter,
+	readiness,
 	scenarioRouter,
 } from './integrations/routes.js'
 
@@ -23,8 +24,15 @@ app.get('/health/live', (_req, res) => res.json({ status: 'alive' }))
 app.get('/health', (_req, res) => res.json({ status: 'alive' }))
 app.get('/health/ready', async (_req, res) => {
 	try {
-		const result = await health()
-		res.status(result.state === 'listo' ? 200 : 503).json(result)
+		const result = await readiness()
+		res.status(result.ready ? 200 : 503).json(result)
+	} catch {
+		res.status(503).json({ ready: false, state: 'not_ready' })
+	}
+})
+app.get('/health/status', async (_req, res) => {
+	try {
+		res.json(await health())
 	} catch {
 		res.status(503).json({ state: 'error' })
 	}

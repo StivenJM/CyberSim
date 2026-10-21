@@ -15,7 +15,10 @@ En las tablas, **pública** significa que el código no exige JWT; no implica qu
 | Método y ruta | Entrada | Respuesta / estado de éxito | Protección |
 |---|---|---|---|
 | `GET /` | Ninguna | Mensaje, versión literal `1.0.0`, mapa de áreas; 200 | Pública |
-| `GET /health` | Ninguna | `{ status: "ok", message }`; 200 | Pública |
+| `GET /health/live` | Ninguna | `{ status: "alive" }`; 200 | Pública |
+| `GET /health` | Ninguna | Alias de liveness; 200 | Pública |
+| `GET /health/ready` | Ninguna | `{ ready, state, components: { database, coordinator } }`; 200 si está listo, 503 si no | Pública |
+| `GET /health/status` | Ninguna | `{ contractHash, build, state, components, installationId, revisionId }`; 200 | Pública |
 | `POST /auth/register/estudiante` | Correo, contraseña, código y nombres | Perfil creado dentro de `data`; 201 | Pública |
 | `POST /auth/register/profesor` | Correo, contraseña y nombres | Perfil creado dentro de `data`; 201 | Pública |
 | `POST /auth/login` | `correo_electronico`, `contrasenia` | `data: { role, user, token, confirmado }`; 200 | Pública |

@@ -27,6 +27,10 @@ COPY apps/frontend apps/frontend
 
 # Export is a build artifact consumed by preparation, not by either app image.
 FROM frontend-source AS frontend-build
+ARG BUILD_VERSION=dev
+ARG BUILD_COMMIT=dev
+ENV BUILD_VERSION=$BUILD_VERSION
+ENV BUILD_COMMIT=$BUILD_COMMIT
 RUN pnpm --filter @cybersim/frontend run build
 
 FROM frontend-source AS knowledge-build
@@ -68,8 +72,12 @@ COPY infra/caddy/Caddyfile /etc/caddy/Caddyfile
 COPY --from=frontend-build /workspace/apps/frontend/dist /srv
 
 FROM node:24.22.0-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5 AS backend-runtime
+ARG BUILD_VERSION=dev
+ARG BUILD_COMMIT=dev
 WORKDIR /workspace
 ENV NODE_ENV=production
+ENV BUILD_VERSION=$BUILD_VERSION
+ENV BUILD_COMMIT=$BUILD_COMMIT
 RUN apt-get update \
   && apt-get install -y --no-install-recommends openssl ca-certificates \
   && rm -rf /var/lib/apt/lists/*

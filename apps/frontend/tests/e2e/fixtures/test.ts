@@ -4,7 +4,7 @@ import { test as base, expect } from '@playwright/test'
 // contract and must not receive the generic empty-data response used by views.
 export const test = base.extend({
 	page: async ({ page }, use) => {
-		await page.route('**/api/health/ready', (route) =>
+		await page.route('**/api/health/status', (route) =>
 			route.fulfill({ json: { state: 'listo', components: {} } }),
 		)
 		await use(page)

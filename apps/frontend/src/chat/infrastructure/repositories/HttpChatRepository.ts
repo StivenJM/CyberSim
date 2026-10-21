@@ -46,7 +46,7 @@ export class HttpChatRepository implements IChatRepository {
 	async checkHealth(): Promise<boolean> {
 		try {
 			const r = await fetch(
-				`${this.baseUrl.replace(/\/api\/?$/, '')}/api/health/ready`,
+				`${this.baseUrl.replace(/\/api\/?$/, '')}/api/health/status`,
 			)
 			return r.ok && (await r.json()).state === 'listo'
 		} catch {

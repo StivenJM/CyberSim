@@ -34,6 +34,7 @@ import {
 } from './coordinator.js'
 import { endRound, startRound } from './drive-round.js'
 import { codeHash } from './evidence.js'
+import { readinessFrom } from './health.js'
 import {
 	ensureSources,
 	indexUnit,
@@ -744,20 +745,35 @@ internalRouter.post(
 		res.json({ success: true })
 	}),
 )
-export async function health(): Promise<Record<string, unknown>> {
+async function coreHealth(): Promise<{
+	components: Record<string, unknown>
+	coordinationState?: Awaited<ReturnType<typeof coordination>>
+}> {
 	const components: Record<string, unknown> = {}
-	let c: Awaited<ReturnType<typeof coordination>> | undefined
 	try {
-		c = await coordination()
+		const c = await coordination()
 		components.database = 'ready'
 		components.coordinator = c.pausada
 			? 'paused'
 			: c.activa && (await operation(c.activa)).estado === 'incierta'
 				? 'uncertain'
 				: 'ready'
+		return { components, coordinationState: c }
 	} catch {
 		components.database = 'unavailable'
+		return { components }
 	}
+}
+
+export async function readiness(): Promise<ReturnType<typeof readinessFrom>> {
+	const { components } = await coreHealth()
+	return readinessFrom(components)
+}
+
+export async function health(): Promise<Record<string, unknown>> {
+	const core = await coreHealth()
+	const components = core.components
+	const c = core.coordinationState
 	try {
 		await qdrant('/collections')
 		components.qdrant = c?.revision_id ? 'ready' : 'pending_index'
@@ -801,16 +817,10 @@ export async function health(): Promise<Record<string, unknown>> {
 	} catch {
 		components.disk = 'unknown'
 	}
-	let frontendHash = 'unavailable'
-	try {
-		frontendHash = String(
-			object(await httpJson('http://frontend:5173/__dev/fingerprint', {}, 2000))
-				.hash,
-		)
-	} catch {
-		/* preparation may precede Vite */
-	}
-	const contractHash = `${await codeHash()}:${frontendHash}`
+	// El hash cubre artefactos presentes en cualquier entorno. La paridad con el
+	// frontend la verifica el agente de despliegue leyendo /build-info.json; el
+	// backend no consulta el servidor de desarrollo ni necesita la CA interna.
+	const contractHash = await codeHash()
 	let evidence: Record<string, unknown> = {}
 	try {
 		evidence = object(
@@ -866,6 +876,10 @@ export async function health(): Promise<Record<string, unknown>> {
 		components.verification === 'passed'
 	return {
 		contractHash,
+		build: {
+			version: process.env.BUILD_VERSION || 'dev',
+			commit: process.env.BUILD_COMMIT || 'dev',
+		},
 		state: ready
 			? 'listo'
 			: Object.values(components).includes('requires_configuration')

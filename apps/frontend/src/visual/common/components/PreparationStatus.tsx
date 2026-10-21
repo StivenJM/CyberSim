@@ -5,7 +5,7 @@ export default function PreparationStatus() {
 	const [status, setStatus] = useState<Status | null>(null)
 	useEffect(() => {
 		const poll = () =>
-			fetch('/api/health/ready')
+			fetch('/api/health/status')
 				.then((r) => r.json())
 				.then(setStatus)
 				.catch(() => setStatus({ state: 'sin_conexion' }))

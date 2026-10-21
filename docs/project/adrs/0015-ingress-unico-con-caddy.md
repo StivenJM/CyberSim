@@ -26,6 +26,7 @@ Servir el frontend compilado y el proxy desde la misma imagen de Caddy, en un ú
 - **La configuración del proxy pasa a ser contrato:** una ruta nueva debe clasificarse explícitamente; si se equivoca, falla en silencio con 404.
 - **El backend deja de ser alcanzable desde la LAN:** reduce superficie, pero obliga a diagnosticar a través del proxy o de la red interna.
 - **La imagen web y la backend se versionan juntas:** el release debe desplegar ambas.
+- **La CA interna vive en `/data`:** sin un volumen persistente, cada recreación del contenedor emite una CA distinta y la confianza instalada en los dispositivos deja de servir.
 
 ## Alternativas
 

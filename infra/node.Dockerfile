@@ -12,6 +12,7 @@ FROM base AS workspace-manifests
 COPY package.json pnpm-lock.yaml pnpm-workspace.yaml biome.json .gitignore ./
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/frontend/package.json apps/frontend/package.json
+COPY packages/scenario-contract/package.json packages/scenario-contract/package.json
 
 # The full toolchain is only used by explicit maintenance/test tools.
 FROM workspace-manifests AS dependencies
@@ -21,6 +22,7 @@ FROM workspace-manifests AS frontend-dependencies
 RUN --mount=type=cache,id=cybersim-pnpm,target=/pnpm/store pnpm --filter @cybersim/frontend install --frozen-lockfile --store-dir /pnpm/store
 
 FROM frontend-dependencies AS frontend-source
+COPY packages/scenario-contract packages/scenario-contract
 COPY apps/frontend apps/frontend
 
 # Export is a build artifact consumed by preparation, not by either app image.
@@ -34,6 +36,7 @@ FROM workspace-manifests AS backend-dependencies
 RUN --mount=type=cache,id=cybersim-pnpm,target=/pnpm/store pnpm --filter @cybersim/backend install --frozen-lockfile --store-dir /pnpm/store
 
 FROM backend-dependencies AS backend-source
+COPY packages/scenario-contract packages/scenario-contract
 COPY apps/backend apps/backend
 RUN pnpm --filter @cybersim/backend run db:generate
 # Runtime evidence hashes these inputs; no frontend source or export is needed.
@@ -43,7 +46,37 @@ COPY knowledge knowledge
 FROM backend-source AS backend-dev
 CMD ["pnpm","--filter","@cybersim/backend","run","dev"]
 
+# Production build. The compiled output and the production dependency tree are
+# the only things taken from this stage; sources, toolchain and devDependencies
+# never reach the runtime image.
+FROM backend-dependencies AS backend-build
+COPY packages/scenario-contract packages/scenario-contract
+COPY apps/backend apps/backend
+RUN pnpm --filter @cybersim/backend run build
+RUN pnpm --filter @cybersim/backend --prod deploy /deploy
+
+# The repository layout is preserved because the backend derives its root from
+# its own module URL (apps/backend/dist/integrations -> repository root) and
+# hashes the lockfile, the workflows and the knowledge corpus at startup.
+FROM node:24.22.0-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5 AS backend-runtime
+WORKDIR /workspace
+ENV NODE_ENV=production
+RUN apt-get update \
+  && apt-get install -y --no-install-recommends openssl ca-certificates \
+  && rm -rf /var/lib/apt/lists/*
+COPY package.json pnpm-lock.yaml pnpm-workspace.yaml ./
+COPY --from=backend-build /deploy/package.json ./apps/backend/package.json
+COPY --from=backend-build /deploy/node_modules ./apps/backend/node_modules
+COPY --from=backend-build /workspace/apps/backend/dist ./apps/backend/dist
+COPY knowledge ./knowledge
+COPY infra/n8n ./infra/n8n
+USER node
+WORKDIR /workspace/apps/backend
+EXPOSE 3000 3001
+CMD ["node","dist/server.js"]
+
 FROM dependencies AS tools-dev
+COPY packages/scenario-contract packages/scenario-contract
 COPY apps/backend apps/backend
 COPY apps/frontend apps/frontend
 COPY infra infra

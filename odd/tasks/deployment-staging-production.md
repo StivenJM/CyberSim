@@ -1,0 +1,37 @@
+# Despliegue en staging y producción
+
+Objetivo: llevar CyberSim desde su entorno de desarrollo actual hasta dos entornos on-prem independientes, seguros y reproducibles, documentando cada decisión de arquitectura con su fundamento y sus riesgos.
+Rama: `feat/deploy-staging-production`. Estrategia de entrega: `ask-on-risk` (por confirmar al superar 400 líneas autoradas). Runner: Vitest, Playwright, Biome, TypeScript, builds pnpm y Docker.
+Plan maestro y decisiones: `workspace/0.fases-cd.md`. Este documento es el registro de ejecución; el plan conserva el detalle de fases.
+
+## Specs
+
+- **S1 — Plan persistido.** Requisito del usuario: «quiero realmente pongas absolutamente todas las fases en C:\Users\stive\Documents\CyberSim\workspace\0.fases-cd.md». El documento debe ser autocontenido y consultable sin el historial de chat.
+- **S2 — Decisiones documentadas.** Requisito del usuario: «todas las decisiones de arquitectura debes documentarlas, quiero que se documente el qué pero también el porqué». Cada decisión se registra como ADR con contexto, decisión, consecuencias, alternativas y evidencia.
+- **S3 — Menor riesgo, no menor esfuerzo.** Requisito del usuario: «no lo hagas simplemente "porque es lo más rápido y sencillo en este momento", sino que quiero que realmente investigues en internet qué opción los riesgos que dejan, y quiero que veas la opción que deje menor riesgo siempre tomando en cuenta diseño seguro del software». Cada alternativa se evalúa con fuentes primarias y su riesgo residual.
+- **S4 — Staging en Windows Home.** Host de laboratorio con Windows Home, 16 GB RAM, 256 GB disco, apagado ocasional; Docker Desktop per-user (WSL2); requiere sesión iniciada tras reinicio; datos sintéticos.
+- **S5 — Producción en Ubuntu con datos reales.** 16 GB RAM, 256 GB disco; datos reales de estudiantes; TLS con cifrado aunque el certificado no sea confiable; SMTP real.
+- **S6 — Independencia de entornos.** Proyectos Compose, volúmenes, secretos, bases y configuraciones separados. Nunca copiar volúmenes entre entornos.
+- **S7 — Ingress único.** Caddy sirve el frontend estático y replica la semántica `/api` del proxy de Vite; único puerto publicado (443).
+- **S8 — Artefactos inmutables.** Imágenes construidas en CI, publicadas en GHCR por digest; despliegue pull mediante Release; sin runner self-hosted en producción.
+- **S9 — Recuperación.** RPO 24 h / RTO 4 h con `pg_dump` cifrado, volumen `/state` y SQLite de n8n; restauración ensayada.
+- **S10 — Compuertas de producción.** No se habilita producción sin cerrar RP-01 (autorización en `/groups` y `/progreso`) y sin aprobación de privacidad/retención de datos de estudiantes.
+
+## Tasks
+
+- [~] **T1** — S1, S2, S3: ADRs 0014–0022 y actualización del índice; verificar que el plan maestro refleje las decisiones aprobadas. Ruta: inline (documentación). Risk: item 3 (contratos/documentación compartida).
+- [ ] **T2** — S7, S8: etapa `backend-runtime` (multi-stage, `pnpm deploy --prod`, no-root, Debian slim) y verificación de arranque con `/health/live`. Ruta: inline.
+- [ ] **T3** — S7: imagen `web` (dist + Caddy) con SPA fallback y reescritura `/api` exacta. Ruta: inline (depende de T2 para probar el conjunto).
+- [ ] **T4** — S7: desacoplar `/health/ready` del servidor de desarrollo (`build-info.json`); separar readiness de diagnóstico. Ruta: inline.
+- [ ] **T5** — S6, S10: `SEED_DEMO_DATA` en `infra/db-init.mjs`; seed prohibido en producción. Ruta: inline.
+- [ ] **T6** — S6: `compose.deploy.yaml` + plantillas de entorno por entorno; volumen de Postgres sin nombre fijo. Ruta: inline.
+- [ ] **T7** — S4: desplegar en staging y verificar acceso desde la LAN, reinicio y límites. Ruta: inline (requiere el host físico; no verificable desde este equipo).
+- [ ] **T8** — S8: `release.yml`, `release.json`, agente pull y rollback (Fase 4). Ruta: inline.
+- [ ] **T9** — S5, S9, S10: go-live de producción con backups, monitorización y compuertas (Fase 5). Ruta: inline.
+
+## Log
+
+- **L1 — 2026-10-21.** Requisito del usuario: «Listo, ahora sí por favor, arranquemos con el plan». Se autoriza la implementación de la Fase 1 y siguientes, con dos condiciones: documentar todas las decisiones de arquitectura (qué y por qué) y elegir la opción de menor riesgo con base en investigación y diseño seguro del software.
+- **L2 — 2026-10-21.** Decisiones de infraestructura confirmadas por el usuario: salida a internet en ambas máquinas; HTTPS con certificado aunque el navegador no lo confíe; producción con datos reales; repositorio en GitHub con despliegue automatizado; producción Ubuntu y staging Windows Home, ambas 16 GB/256 GB; SMTP real en ambos entornos; RPO 24 h y RTO 4 h.
+- **L3 — 2026-10-21.** Verificación del repositorio: la rama `new-branch` está en `31cfd92` y limpia; el worktree de la sesión estaba en un historial divergente (`51303ef`), por lo que se trabaja en `C:\Users\stive\Documents\CyberSim` sobre `feat/deploy-staging-production` creada desde `new-branch`.
+- **L4 — 2026-10-21.** Próximo paso: T1 (ADRs) y después T2 (imagen de producción del backend). La compilación de imágenes requiere el daemon de Docker, que no estaba en ejecución al iniciar.

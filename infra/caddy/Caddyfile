@@ -27,6 +27,11 @@
 		Referrer-Policy strict-origin-when-cross-origin
 	}
 
+	# Salud en la raíz para monitorización y agente de despliegue.
+	handle /health/* {
+		reverse_proxy backend:3000
+	}
+
 	# Rutas que conservan el prefijo /api: contrato del backend.
 	handle /api/chat* {
 		reverse_proxy backend:3000

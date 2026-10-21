@@ -1,0 +1,63 @@
+# Overlay de despliegue. Se aplica sobre compose.yaml:
+#
+#   docker compose -f compose.yaml -f compose.deploy.yaml \
+#     --env-file deploy/env/staging -p cybersim-staging up -d
+#
+# Requiere Docker Compose >= 2.24 por el uso de !override en ports.
+# El archivo de entorno define SITE_ADDRESS, FRONTEND_URL, secretos y
+# SEED_DEMO_DATA. Ningún valor sensible vive en este archivo.
+
+services:
+  backend:
+    build:
+      target: backend-runtime
+    image: cybersim-backend:${RELEASE_VERSION:-dev}
+    environment:
+      NODE_ENV: production
+      FRONTEND_URL: ${FRONTEND_URL:?Define FRONTEND_URL}
+    restart: unless-stopped
+
+  migrate:
+    environment:
+      NODE_ENV: production
+      SEED_DEMO_DATA: ${SEED_DEMO_DATA:-false}
+      FRONTEND_URL: ${FRONTEND_URL:?Define FRONTEND_URL}
+    restart: "no"
+
+  # El servicio conserva el nombre `frontend` para no duplicar el grafo, pero
+  # en despliegue es la imagen estática con Caddy, no el servidor de Vite.
+  frontend:
+    build:
+      target: web
+    image: cybersim-web:${RELEASE_VERSION:-dev}
+    command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
+    environment:
+      SITE_ADDRESS: ${SITE_ADDRESS:?Define SITE_ADDRESS}
+    ports: !override
+      - "443:443"
+    volumes:
+      - caddy_data:/data
+      - caddy_config:/config
+    restart: unless-stopped
+
+  postgres:
+    restart: unless-stopped
+
+  qdrant:
+    restart: unless-stopped
+
+  n8n:
+    restart: unless-stopped
+
+  runner:
+    restart: unless-stopped
+
+  piper:
+    restart: unless-stopped
+
+  preparation:
+    restart: unless-stopped
+
+volumes:
+  caddy_data:
+  caddy_config:

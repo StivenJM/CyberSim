@@ -5,15 +5,12 @@
 	"type": "module",
 	"exports": {
 		".": {
-			"types": "./dist/index.d.ts",
-			"import": "./dist/index.js"
+			"types": "./src/index.ts",
+			"import": "./src/index.ts"
 		}
 	},
 	"scripts": {
-		"build": "tsc --project tsconfig.json",
-		"pretypecheck": "pnpm run build",
 		"typecheck": "tsc --project tsconfig.json --noEmit",
-		"pretest": "pnpm run build",
 		"test": "vitest --run"
 	},
 	"devDependencies": {

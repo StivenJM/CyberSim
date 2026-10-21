@@ -35,6 +35,7 @@ Los ADRs se conservan en `docs/project/adrs/` según la organización del proyec
 | [0020](0020-datos-demo-condicionados-por-entorno.md) | Aceptada; implementación pendiente | Seed demo solo con `SEED_DEMO_DATA=true` |
 | [0021](0021-artefactos-y-despliegue-pull.md) | Aceptada; implementación pendiente | GHCR por digest, Release y agente pull |
 | [0022](0022-host-de-staging-en-windows-home.md) | Aceptada por restricción del entorno | Docker Desktop per-user en Windows Home |
+| [0023](0023-mecanismo-de-despliegue-continuo.md) | Aceptada; implementación pendiente | Agente pull propio; staging automático y producción con disparo humano |
 
 El estado de implementación y aceptación se mantiene en [estado del entorno](../estado-desarrollo-docker.md). Las decisiones D01–D26 están cerradas; las credenciales y pruebas reales del equipo siguen pendientes. ADR 0005 conserva un alcance de autorización más amplio que los recorridos de IA incorporados.
 

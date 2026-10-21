@@ -13,11 +13,16 @@ usando `compose.yaml` sin cambios.
 
 ## Preparar un entorno
 
-```sh
-cp deploy/env/staging.example deploy/env/staging
-# Generar cada secreto:
-openssl rand -base64 48
+En Windows, el script genera el archivo con secretos aleatorios, saltos de línea
+LF y permisos restringidos:
+
+```powershell
+.\deploy\bootstrap-staging.ps1 -SiteAddress https://172.31.107.26
 ```
+
+El destino por defecto es `deploy/env/staging`. Rechaza una barra final y no
+imprime los secretos. En Linux, copiar la plantilla y generar cada secreto con
+`openssl rand -base64 48`.
 
 Editar `deploy/env/staging` y completar:
 
@@ -83,7 +88,11 @@ y privacidad/retención aprobada.
 4. Activar el inicio de Docker Desktop al iniciar sesión.
 5. Crear `%USERPROFILE%\.wslconfig` con `memory=10GB` y `swap=2GB`.
 6. Reservar IP por DHCP o solicitar IP fija.
-7. Firewall de Windows: entrada **solo TCP 443**, perfil Privado.
+7. Firewall de Windows: entrada **solo TCP 443**. Comprobar el perfil con
+   `Get-NetConnectionProfile`: si la red es `Public`, una regla para `Private`
+   no aplica. Limitar el alcance a la subred del laboratorio con `-RemoteAddress`
+   en lugar de abrir 443 a toda la red del campus. Staging usa cuentas demo
+   conocidas y no debe quedar expuesto a una red amplia.
 8. Deshabilitar suspensión e hibernación.
 9. Verificar `docker run --rm hello-world` y `docker compose version >= 2.24`.
 

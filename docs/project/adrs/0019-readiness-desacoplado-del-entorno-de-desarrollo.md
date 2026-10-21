@@ -14,10 +14,11 @@ Además, la misma señal devuelve 503 si falta SMTP, Drive u otra dependencia op
 
 ## Decisión
 
-1. **Readiness** responde si el proceso puede atender tráfico: proceso vivo y base de datos accesible. Es la señal que usan el proxy, el agente de despliegue y la monitorización.
-2. **Diagnóstico** se expone en un endpoint separado con el inventario completo (Qdrant, Piper, SMTP, Drive, OpenAI configurado). No devuelve 503 por dependencias opcionales.
-3. El frontend emite un **`build-info.json`** en el build (versión y hash). Readiness lo consulta a través del proxy para verificar que el frontend servido corresponde al release; si no puede leerlo, lo reporta como diagnóstico, no como caída.
-4. `/health/live` se mantiene como liveness puro.
+1. **Readiness** (`/health/ready`) responde si el proceso puede atender tráfico: proceso vivo, base de datos accesible y coordinación disponibles. Devuelve `{ ready, state, components: { database, coordinator } }`.
+2. **Diagnóstico** (`/health/status`) expone el inventario completo (Qdrant, Piper, SMTP, Drive, OpenAI configurado, workflows, verificación, disco) y el `build`. No devuelve 503 por dependencias opcionales.
+3. El frontend emite un **`build-info.json`** en el build con versión y commit. **El agente de despliegue** lo compara con el manifiesto y con el campo `build` de `/health/status`. El backend no consulta el proxy ni necesita la CA interna de Caddy, evitando un acoplamiento TLS entre servicios.
+4. `/health/live` se mantiene como liveness puro. `/health` queda como alias de liveness por compatibilidad.
+5. El `contractHash` deja de incluir el hash del frontend; cubre únicamente artefactos presentes en cualquier entorno. La evidencia de aceptación se recalcula por entorno.
 
 ## Consecuencias
 

@@ -623,9 +623,7 @@
     }
   },
   "volumes": {
-    "postgres_data": {
-      "name": "cybersim_postgres_data"
-    },
+    "postgres_data": {},
     "n8n_data": {},
     "qdrant_data": {},
     "piper_voices": {},

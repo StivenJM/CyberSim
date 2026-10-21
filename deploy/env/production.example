@@ -1,0 +1,44 @@
+# Plantilla de entorno para producción.
+# Copiar a deploy/env/production (sin .example) en el host de producción.
+# deploy/env/.gitignore excluye el archivo real.
+#
+# Generar secretos con: openssl rand -base64 48
+# SITE_ADDRESS y FRONTEND_URL deben ser el mismo origen exacto.
+# SEED_DEMO_DATA nunca se activa en producción.
+
+COMPOSE_PROJECT_NAME=cybersim-prod
+SITE_ADDRESS=https://cybersim.universidad.edu
+FRONTEND_URL=https://cybersim.universidad.edu
+RELEASE_VERSION=CAMBIAR_POR_SHA
+SEED_DEMO_DATA=false
+
+POSTGRES_USER=cybersim
+POSTGRES_PASSWORD=CAMBIAR_48_BYTES
+POSTGRES_DB=cybersim
+
+JWT_SECRET=CAMBIAR_48_BYTES
+INTERNAL_SIGNING_KEY=CAMBIAR_48_BYTES
+N8N_ENCRYPTION_KEY=CAMBIAR_48_BYTES
+N8N_RUNNERS_AUTH_TOKEN=CAMBIAR_48_BYTES
+N8N_TO_BACKEND_TOKEN=CAMBIAR_48_BYTES
+BACKEND_TO_N8N_TOKEN=CAMBIAR_48_BYTES
+MAINTENANCE_TOKEN=CAMBIAR_48_BYTES
+N8N_ADMIN_API_KEY=CAMBIAR
+
+OPENAI_API_KEY=
+OPENAI_TUTOR_MODEL=gpt-6-luna
+OPENAI_COMPLEX_MODEL=gpt-6.1-sol
+OPENAI_EMBEDDING_MODEL=text-embedding-3-small
+
+GOOGLE_CLIENT_ID=
+GOOGLE_CLIENT_SECRET=
+GOOGLE_DRIVE_FOLDER_ID=
+
+# Correo real. Usar el relay institucional y un remitente propio del proyecto.
+SMTP_HOST=
+SMTP_PORT=587
+SMTP_SECURE=false
+SMTP_USER=
+SMTP_PASS=
+FROM_EMAIL=
+VERIFY_RECIPIENT=

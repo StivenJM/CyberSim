@@ -19,6 +19,7 @@ Servir el frontend compilado y el proxy desde la misma imagen de Caddy, en un ú
 - `/` sirve la SPA con fallback a `index.html`.
 - `/api/chat*` y `/api/agent-malvado*` se reenvían a `backend:3000` **sin recortar**.
 - El resto de `/api/*` se reenvía a `backend:3000` **recortando** `/api`.
+- `/health/*` se reenvía a `backend:3000` sin recortar, para monitorización y agente de despliegue.
 
 ## Consecuencias
 

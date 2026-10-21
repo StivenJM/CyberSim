@@ -26,6 +26,15 @@ Los ADRs se conservan en `docs/project/adrs/` según la organización del proyec
 | [0011](0011-pnpm-como-gestor-unico.md) | Incorporada por solicitud del usuario | pnpm fijado para desarrollo, Docker, mantenimiento y CI |
 | [0012](0012-biome-lint-y-formato.md) | Incorporada por solicitud del usuario | Biome compartido para lint, formato e imports, adaptado desde Cuero |
 | [0013](0013-escenarios-modulares-versionados.md) | Aceptada e incorporada por solicitud del usuario | Manifiestos versionados compilados al ECS y revisiones persistidas |
+| [0014](0014-plataforma-de-despliegue-en-host-unico.md) | Aceptada; implementación pendiente | Compose en un host único por entorno |
+| [0015](0015-ingress-unico-con-caddy.md) | Aceptada; implementación pendiente | Caddy sirve la SPA y el proxy en un único origen |
+| [0016](0016-imagen-de-runtime-del-backend.md) | Aceptada; verificación de build pendiente | Runtime multi-stage, `pnpm deploy --prod`, usuario no root |
+| [0017](0017-aislamiento-de-entornos.md) | Aceptada; implementación pendiente | Proyecto Compose, volúmenes y secretos por entorno |
+| [0018](0018-postura-tls-en-la-lan.md) | Aceptada con riesgo residual | Cifrado sin cadena confiable; HSTS desactivado |
+| [0019](0019-readiness-desacoplado-del-entorno-de-desarrollo.md) | Aceptada; implementación pendiente | Readiness separado del diagnóstico y de Vite |
+| [0020](0020-datos-demo-condicionados-por-entorno.md) | Aceptada; implementación pendiente | Seed demo solo con `SEED_DEMO_DATA=true` |
+| [0021](0021-artefactos-y-despliegue-pull.md) | Aceptada; implementación pendiente | GHCR por digest, Release y agente pull |
+| [0022](0022-host-de-staging-en-windows-home.md) | Aceptada por restricción del entorno | Docker Desktop per-user en Windows Home |
 
 El estado de implementación y aceptación se mantiene en [estado del entorno](../estado-desarrollo-docker.md). Las decisiones D01–D26 están cerradas; las credenciales y pruebas reales del equipo siguen pendientes. ADR 0005 conserva un alcance de autorización más amplio que los recorridos de IA incorporados.
 

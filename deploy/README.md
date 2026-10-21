@@ -9,6 +9,8 @@ usando `compose.yaml` sin cambios.
 - Puerto **443** libre.
 - Un archivo de entorno real por host, copiado desde `deploy/env/*.example`.
 - `SITE_ADDRESS` y `FRONTEND_URL` con el **mismo origen exacto**.
+- `SITE_HOST` con el host de `SITE_ADDRESS` (sin `https://`). Es obligatorio para
+  que Caddy elija el certificado cuando el cliente conecta por IP y no envía SNI.
 - Compose >= 2.24 se comprueba con `docker compose version`.
 
 ## Preparar un entorno
@@ -56,6 +58,11 @@ Si `ready` es 503, revisar `components.database` y `components.coordinator`.
 Si el navegador advierte por el certificado, es esperado: Caddy usa su CA interna
 (ADR 0018). Instalar la raíz de Caddy o usar un certificado institucional elimina
 la advertencia sin cambiar el diseño.
+
+Si el navegador muestra `ERR_SSL_PROTOCOL_ERROR` en lugar de la advertencia de
+certificado, comprobar que `SITE_HOST` existe y coincide con el host de
+`SITE_ADDRESS`. Sin ese valor Caddy no puede elegir el certificado cuando el
+cliente conecta por IP y el handshake termina en `internal_error`.
 
 ## Operación
 

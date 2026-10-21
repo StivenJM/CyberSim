@@ -28,10 +28,12 @@ function New-Secret {
 }
 
 $seed = if ($DisableDemoSeed) { 'false' } else { 'true' }
+$siteHost = $SiteAddress -replace '^https://', ''
 
 $content = @"
 COMPOSE_PROJECT_NAME=$ProjectName
 SITE_ADDRESS=$SiteAddress
+SITE_HOST=$siteHost
 FRONTEND_URL=$SiteAddress
 RELEASE_VERSION=dev
 SEED_DEMO_DATA=$seed

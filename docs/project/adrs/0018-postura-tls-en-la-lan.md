@@ -23,6 +23,7 @@ Un certificado autofirmado sin raíz instalada aporta la primera y no la segunda
 2. **HSTS permanece desactivado.** Con un certificado no confiable, HSTS impediría a los usuarios continuar y dejaría el sitio inaccesible.
 3. Se documenta el riesgo residual: un atacante activo en la LAN podría interceptar credenciales y sesiones.
 4. Mejora recomendada, sin cambiar el diseño: instalar la raíz de Caddy en los dispositivos del piloto o usar la CA institucional. El certificado presentado cambia; la arquitectura no.
+5. **Acceso por IP sin SNI:** los clientes no envían SNI cuando el destino es una dirección IP. Caddy fija `default_sni` al host de `SITE_ADDRESS` (`SITE_HOST`) para seleccionar el certificado. Sin ese valor el handshake termina en `internal_error` y el navegador muestra `ERR_SSL_PROTOCOL_ERROR`, que no se puede aceptar.
 
 ## Consecuencias
 
@@ -30,6 +31,7 @@ Un certificado autofirmado sin raíz instalada aporta la primera y no la segunda
 - El cifrado protege datos en tránsito frente a observadores pasivos, incluidos otros equipos de la LAN.
 - No se puede afirmar que la conexión sea auténtica. Los controles compensatorios son: red segmentada, acceso limitado, rate limiting en login (Fase 2) y no reutilizar credenciales institucionales.
 - En producción, con datos reales, la raíz instalada o la CA institucional deja de ser opcional desde el punto de vista de riesgo; se recomienda fuertemente antes del go-live.
+- `SITE_HOST` debe coincidir con el host de `SITE_ADDRESS`; si no, el certificado por defecto no corresponde y el handshake falla o presenta un certificado incorrecto.
 
 ## Alternativas
 

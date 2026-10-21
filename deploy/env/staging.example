@@ -7,6 +7,7 @@
 
 COMPOSE_PROJECT_NAME=cybersim-staging
 SITE_ADDRESS=https://cybersim-staging.lab
+SITE_HOST=cybersim-staging.lab
 FRONTEND_URL=https://cybersim-staging.lab
 RELEASE_VERSION=dev
 SEED_DEMO_DATA=true

@@ -11,6 +11,10 @@
 {
 	admin off
 	auto_https disable_redirects
+	# Los clientes que conectan por IP no envían SNI. Sin este valor Caddy no
+	# puede elegir el certificado y aborta el handshake (ERR_SSL_PROTOCOL_ERROR
+	# en el navegador). Debe coincidir con el host de SITE_ADDRESS.
+	default_sni {$SITE_HOST}
 	# La CA interna vive en /data. Persistir /data y /config en volúmenes: sin
 	# ellos, cada recreación emite una CA nueva y la confianza instalada deja de
 	# servir. No se instala la raíz dentro del contenedor.

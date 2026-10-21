@@ -33,6 +33,7 @@ services:
     command: ["caddy", "run", "--config", "/etc/caddy/Caddyfile", "--adapter", "caddyfile"]
     environment:
       SITE_ADDRESS: ${SITE_ADDRESS:?Define SITE_ADDRESS}
+      SITE_HOST: ${SITE_HOST:?Define SITE_HOST}
     ports: !override
       - "443:443"
     volumes:

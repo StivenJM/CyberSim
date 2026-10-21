@@ -19,8 +19,8 @@ Plan maestro y decisiones: `workspace/0.fases-cd.md`. Este documento es el regis
 
 ## Tasks
 
-- [~] **T1** — S1, S2, S3: ADRs 0014–0022 y actualización del índice; verificar que el plan maestro refleje las decisiones aprobadas. Ruta: inline (documentación). Risk: item 3 (contratos/documentación compartida).
-- [ ] **T2** — S7, S8: etapa `backend-runtime` (multi-stage, `pnpm deploy --prod`, no-root, Debian slim) y verificación de arranque con `/health/live`. Ruta: inline.
+- [x] **T1** — S1, S2, S3: ADRs 0014–0022 y actualización del índice; verificar que el plan maestro refleje las decisiones aprobadas. Ruta: inline (documentación). Risk: item 3 (contratos/documentación compartida). Commit: `15bcbd1`.
+- [x] **T2** — S7, S8: etapa `backend-runtime` (multi-stage, `pnpm deploy --prod`, no-root, Debian slim) y verificación de arranque con `/health/live`. Ruta: inline. Commit: `d4c0c81`.
 - [ ] **T3** — S7: imagen `web` (dist + Caddy) con SPA fallback y reescritura `/api` exacta. Ruta: inline (depende de T2 para probar el conjunto).
 - [ ] **T4** — S7: desacoplar `/health/ready` del servidor de desarrollo (`build-info.json`); separar readiness de diagnóstico. Ruta: inline.
 - [ ] **T5** — S6, S10: `SEED_DEMO_DATA` en `infra/db-init.mjs`; seed prohibido en producción. Ruta: inline.
@@ -35,3 +35,4 @@ Plan maestro y decisiones: `workspace/0.fases-cd.md`. Este documento es el regis
 - **L2 — 2026-10-21.** Decisiones de infraestructura confirmadas por el usuario: salida a internet en ambas máquinas; HTTPS con certificado aunque el navegador no lo confíe; producción con datos reales; repositorio en GitHub con despliegue automatizado; producción Ubuntu y staging Windows Home, ambas 16 GB/256 GB; SMTP real en ambos entornos; RPO 24 h y RTO 4 h.
 - **L3 — 2026-10-21.** Verificación del repositorio: la rama `new-branch` está en `31cfd92` y limpia; el worktree de la sesión estaba en un historial divergente (`51303ef`), por lo que se trabaja en `C:\Users\stive\Documents\CyberSim` sobre `feat/deploy-staging-production` creada desde `new-branch`.
 - **L4 — 2026-10-21.** Próximo paso: T1 (ADRs) y después T2 (imagen de producción del backend). La compilación de imágenes requiere el daemon de Docker, que no estaba en ejecución al iniciar.
+- **L5 — 2026-10-21.** T1 cerrada con `15bcbd1` (nueve ADRs, índice y este documento). T2 cerrada con `d4c0c81`: la imagen `backend-runtime` se construyó con BuildKit y se verificó en ejecución — `/health/live` respondió 200, el proceso corre como `uid=1000(node)`, no contiene `pnpm`, `tsc` ni `src`, el cliente Prisma está en `dist/generated/prisma` y `@prisma/client` está presente; tamaño de imagen 545 MB. Hallazgo corregido: `packages/scenario-contract` no se copiaba en ninguna etapa, por lo que `backend-build`, `frontend-source` y `tools-dev` no podían resolver el workspace; se añadió la copia en las tres etapas. Próximo paso: T3 (imagen web + ingress) y T4 (readiness).

@@ -1,0 +1,49 @@
+# Ingress único de CyberSim.
+#
+# SITE_ADDRESS es obligatorio (por ejemplo https://cybersim.lab o
+# https://192.168.1.50). Si falta, Caddy no arranca: es preferible fallar a
+# servirse con un origen ambiguo.
+#
+# TLS interno: cifra el transporte. La cadena no es confiable para el navegador
+# salvo que se instale la CA de Caddy o se use un certificado institucional
+# (ADR 0018). HSTS queda desactivado a propósito.
+
+{
+	admin off
+	auto_https disable_redirects
+	# La CA interna vive en /data. Persistir /data y /config en volúmenes: sin
+	# ellos, cada recreación emite una CA nueva y la confianza instalada deja de
+	# servir. No se instala la raíz dentro del contenedor.
+	skip_install_trust
+}
+
+{$SITE_ADDRESS} {
+	tls internal
+	encode zstd gzip
+
+	header {
+		-Server
+		X-Content-Type-Options nosniff
+		Referrer-Policy strict-origin-when-cross-origin
+	}
+
+	# Rutas que conservan el prefijo /api: contrato del backend.
+	handle /api/chat* {
+		reverse_proxy backend:3000
+	}
+
+	handle /api/agent-malvado* {
+		reverse_proxy backend:3000
+	}
+
+	# El resto de /api pierde el prefijo, igual que el proxy de Vite.
+	handle_path /api/* {
+		reverse_proxy backend:3000
+	}
+
+	handle {
+		root * /srv
+		try_files {path} /index.html
+		file_server
+	}
+}

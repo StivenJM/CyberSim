@@ -40,4 +40,6 @@ En producción eso recrearía credenciales públicas en cada despliegue. No es u
 - Dependencia del arnés: [run.mjs](../../../infra/integration/run.mjs).
 - Criterio de seguridad: [OWASP ASVS 5.0](https://owasp.org/www-project-application-security-verification-standard/), requisitos de credenciales por defecto y cuentas integradas.
 
+Implementación: `infra/seed-policy.mjs` decide la secuencia (`migrate:deploy`, seed opcional, `db:sync-scenarios`); `infra/db-init.mjs` la ejecuta; el servicio `migrate` de Compose fija `SEED_DEMO_DATA=true` solo en desarrollo. Pruebas: `node --test infra/seed-policy.test.mjs`, cuatro casos, incluidos `undefined`, `false` y valores distintos de `true`.
+
 Criterio para considerarla implementada: en un entorno sin `SEED_DEMO_DATA=true`, la base no contiene las cuentas demo; en staging sí; las pruebas de integración siguen pasando con la variable explícita.

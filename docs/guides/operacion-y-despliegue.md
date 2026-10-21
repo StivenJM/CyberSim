@@ -1,5 +1,9 @@
 # Operación y despliegue
 
+> Para el entorno de staging actual (Windows Home, Docker Desktop) seguir
+> [`deploy/staging.md`](../../deploy/staging.md), que cubre puesta en marcha,
+> verificación y mantenimiento. Esta página conserva la referencia general.
+
 > Para el entorno Docker integrado usar [la guía actual de desarrollo](desarrollo-local.md) y [su arquitectura](../architecture/desarrollo-docker.md). Esta referencia conserva procedimientos y hallazgos anteriores; las variables por workspace, puertos publicados o bloqueos de arranque descritos aquí no sustituyen la configuración raíz y el diagnóstico actuales.
 
 El repositorio contiene scripts de build/start y un entorno Docker de desarrollo con las apps y servicios locales. Ese entorno no define una plataforma de despliegue de producción ni un reverse proxy. Los pasos siguientes preparan una instancia con PostgreSQL y las integraciones ya administrados.

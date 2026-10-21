@@ -74,6 +74,7 @@
       ],
       "environment": {
         "NODE_ENV": "development",
+        "SEED_DEMO_DATA": "true",
         "PORT": "3000",
         "INTERNAL_PORT": "3001",
         "PGHOST": "postgres",

@@ -12,6 +12,7 @@
 		"lint": "biome check . --error-on-warnings",
 		"typecheck": "pnpm -r run typecheck",
 		"test": "pnpm -r run test",
+		"test:infra": "node --test infra/seed-policy.test.mjs",
 		"build": "pnpm -r run build",
 		"test:e2e": "pnpm --filter @cybersim/frontend run test:e2e",
 		"test:integration": "node infra/integration/run.mjs",

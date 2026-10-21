@@ -1,6 +1,7 @@
 import { spawnSync } from 'node:child_process'
 import { mkdir, readFile, writeFile } from 'node:fs/promises'
 import { Pool } from 'pg'
+import { startupScripts } from './seed-policy.mjs'
 
 const url = new URL('postgresql://localhost')
 url.hostname = process.env.PGHOST || 'postgres'
@@ -15,7 +16,7 @@ process.env.DIRECT_URL = url.toString()
 const db = new Pool({ connectionString: url.toString() })
 try {
 	await db.query('SELECT current_database(),version()')
-	for (const script of ['migrate:deploy', 'db:seed', 'db:sync-scenarios']) {
+	for (const script of startupScripts(process.env.SEED_DEMO_DATA)) {
 		const r = spawnSync(
 			'pnpm',
 			['--filter', '@cybersim/backend', 'run', script],

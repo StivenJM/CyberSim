@@ -98,6 +98,8 @@ En una instalación nueva puedes entrar con estas cuentas:
 
 Comprueba que puedes iniciar sesión y consultar los datos de demostración. Las cuentas vienen confirmadas, por lo que este primer acceso no requiere enviar correo.
 
+Estas cuentas solo se crean cuando `SEED_DEMO_DATA=true`, valor que el servicio de desarrollo fija en Compose. Staging debe activarlo explícitamente; **producción nunca lo define o lo define en `false`**, porque el seed crea credenciales conocidas.
+
 Si faltan credenciales externas, el diagnóstico indicará qué funciones requieren configuración. Puedes abrir la aplicación y trabajar en el código mientras completas esos accesos; las funciones de IA, Google Drive y correo necesitan sus respectivas integraciones.
 
 ## 5. Configura las integraciones que necesites

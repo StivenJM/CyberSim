@@ -26,6 +26,9 @@ COPY packages/scenario-contract packages/scenario-contract
 COPY apps/frontend apps/frontend
 
 # Export is a build artifact consumed by preparation, not by either app image.
+FROM frontend-source AS frontend-build
+RUN pnpm --filter @cybersim/frontend run build
+
 FROM frontend-source AS knowledge-build
 RUN pnpm --filter @cybersim/frontend run export:rag
 
@@ -58,6 +61,12 @@ RUN pnpm --filter @cybersim/backend --prod deploy /deploy
 # The repository layout is preserved because the backend derives its root from
 # its own module URL (apps/backend/dist/integrations -> repository root) and
 # hashes the lockfile, the workflows and the knowledge corpus at startup.
+# Static frontend and ingress. Caddy terminates TLS and owns the /api contract;
+# this image contains no application source and no Node runtime.
+FROM caddy:2-alpine@sha256:d8542f48d34a9cf4e4c11a478865229840e87e4c96ea3f439101f31a5d35f75f AS web
+COPY infra/caddy/Caddyfile /etc/caddy/Caddyfile
+COPY --from=frontend-build /workspace/apps/frontend/dist /srv
+
 FROM node:24.22.0-bookworm-slim@sha256:a5f4366e834695d5f363b920c104953a535d3a9864d1bdf74566a0ebe01daee5 AS backend-runtime
 WORKDIR /workspace
 ENV NODE_ENV=production

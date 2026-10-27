@@ -135,3 +135,8 @@ excepción con `title:{}` y aceptaba `null`, listas y claves desconocidas. B4: p
 aceptaban con `client_only`. Corrección: validación de frontera siempre activa, comprobación
 `Q89-error`, Q6 exige S1/S2, `not_supported`/red desconocida en AndeanLogix y esquema estricto con
 vigencia ISO en NubeAndina. 5 tests de regresión nuevos.
+
+L10. Recheck limitado a los cuatro blockers: PASS en los cuatro, con 14/14 casos de frontera sin tocar
+la base y S0 fallando Q6 mientras S1/S2 pasan. Suite completa: contract 19, ledger 30, exercises 63,
+backend 55 (+6 skipped), frontend 100; typecheck 5/5; lint y format limpios; build de frontend y backend
+correcto.

@@ -153,8 +153,8 @@ describe('attempt cycle', () => {
 			kind: 'run-test',
 			operationId: 'op-test-stale',
 			expectedRevision: 0,
-			testId: 'student-1',
-			fixtureId: 'fixture-1',
+			testId: 'B1',
+			fixtureId: 'envelope-AP-R01-K1',
 			outcome: 'pass',
 		})
 
@@ -350,7 +350,7 @@ describe('attempt cycle', () => {
 			kind: 'run-test',
 			operationId: 'op-test-own',
 			expectedRevision: 1,
-			testId: 'own-check',
+			testId: 'C1',
 			fixtureId: 'envelope-AP-R01-K1',
 			outcome: 'pass',
 		})
@@ -380,7 +380,7 @@ describe('attempt cycle', () => {
 		}
 
 		expect(studentTests(delivered.record).map((test) => test.testId)).toEqual([
-			'own-check',
+			'C1',
 		])
 		expect(teacherTests(delivered.record).map((test) => test.testId)).toEqual([
 			'B1',

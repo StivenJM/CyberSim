@@ -48,8 +48,16 @@ evidencia y no se reescribe.
 - Repetir un `operationId` devuelve `replayed` con la operación ya almacenada; no duplica revisiones,
   pruebas, ayudas ni efectos. Es el camino de recuperación cuando se pierde la respuesta después de
   persistir.
-- `expectedRevision` distinto de la revisión vigente devuelve `revision-conflict` sin mutar el intento:
-  una pestaña obsoleta no sobrescribe el trabajo de otra.
+- `expectedRevision` distinto de la revisión vigente devuelve `revision-conflict` sin mutar el intento en
+  los comandos que crean o interpretan evidencia (diagnóstico, revisión, prueba, ayuda, entrega, reset,
+  explicación, adjudicación). Una pestaña obsoleta no sobrescribe el trabajo de otra.
+- `pause`, `resume` y `record-incident` son operativos: no escriben evidencia y aceptan una revisión
+  anterior porque un evento de plataforma puede llegar después de que el cliente avanzara.
+- Si el servicio recibe los conjuntos de versiones del intérprete, un intento producido con otra rúbrica,
+  forma, fixtures, motor, verificador o ayudas se rechaza con `version-mismatch` en lugar de leerse bajo
+  la rúbrica nueva.
+- La creación valida el registro completo antes de insertarlo: un caso, identificador o versión inválidos
+  se rechazan y no dejan un intento almacenado inutilizable.
 - El puerto `AttemptStore.save(record, expectedSequence)` hace compare-and-swap sobre la secuencia de
   comandos. Dos escrituras concurrentes con la misma secuencia producen un solo `applied` y un
   `revision-conflict`; el orden lo fija el intento, nunca la llegada de la petición.
@@ -60,9 +68,12 @@ evidencia y no se reescribe.
 
 - La exposición A0–A3 se guarda como `aids[]` con `segmentId` cerrado por caso y nivel; el segmento no
   puede repetirse y no desaparece con un reset.
+- Las pruebas del alumno solo admiten un verificador y un fixture del registro cerrado del caso; no se
+  puede inventar un identificador de prueba.
 - La batería que ejecuta el corrector tras la entrega se guarda con `source: 'teacher'`. Los selectores
-  `studentTests` y `teacherTests` la mantienen separada de las pruebas elegidas por el alumno. Esa
-  batería nunca cuenta como prueba elegida.
+  `studentTests` y `teacherTests` la mantienen separada de las pruebas elegidas por el alumno, y un
+  mismo identificador puede existir una vez en cada registro. Esa batería nunca cuenta como prueba
+  elegida.
 - El reset crea una revisión nueva del mismo `attemptId`; no abre un intento distinto ni borra el
   diagnóstico previo.
 

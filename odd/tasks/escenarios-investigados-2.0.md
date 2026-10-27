@@ -70,11 +70,15 @@ inventar éxito; no ejecutar seed, migraciones, publicación, despliegue ni oper
 |---|---|---|---|
 | T1 | S3, S4 | inline | hecho — commit `0860454`; 18 tests del contrato + 3 de frontend verdes |
 | T2 | S5, S6 | inline | hecho — paquete `@cybersim/attempt-ledger`, 13 tests verdes |
-| T3 | S7 | inline | pendiente |
-| T4–T8 | S8 | pendiente | pendiente |
-| T9 | S9 | pendiente | pendiente |
-| T10 | S10 | pendiente | pendiente |
-| T11 | S11 | pendiente | pendiente |
+| T3 | S7 | inline | parcial — apartado `/ejercicios` con catálogo, detalle y verificación accesible; faltan escritorios por caso |
+| T4 | S8 (CWE-321) | inline | hecho — AES-256-GCM real; 11 tests |
+| T5 | S8 (CWE-89) | inline | hecho — SQLite real en pruebas; 13 tests |
+| T6 | S8 (CWE-434) | inline | hecho — 13 tests |
+| T7 | S8 (CWE-306) | inline | hecho — batería de 144 + 12; 11 tests |
+| T8 | S8 (CWE-502) | inline | hecho — HMAC real y S01–S08; 10 tests |
+| T9 | S9 | pendiente | publicación/seed requieren autorización separada |
+| T10 | S10 | pendiente | informe y rúbricas |
+| T11 | S11 | parcial | suites completas verdes; documentación de comportamiento actualizada |
 | T12 | S12, S13 | documentación | pendiente |
 
 ## Log
@@ -111,3 +115,11 @@ prueba legítima llamada `B1` volvía la entrega imposible. Corrección en un so
 creación, unicidad por `source`, `expectedRevision` aplicado al diagnóstico sellado, `run-test` limitado
 a verificadores y fixtures del registro cerrado, y comprobación de versiones del intérprete
 (`version-mismatch`). Añadidos 8 tests de regresión (`attemptGuards.test.ts`).
+
+L7. Solicitud del usuario: terminar los cinco ejercicios, probados, y crear un apartado dedicado solo a
+ellos. Implementado `packages/exercises` con un modelo y un verificador por caso: AndinaPay descifra los
+siete envelopes AES-GCM con WebCrypto; BibliotecaViva ejecuta SQLite real con `node:sqlite`; TalentoAndino
+reproduce el catálogo inerte y la cuarentena; AndeanLogix evalúa 144 peticiones contra un oráculo escrito
+desde la ficha; NubeAndina reproduce bytes, SHA-256 y HMAC de S01–S08. 58 tests del paquete más 3 del
+apartado. Apartado `/ejercicios` y `/ejercicios/:caseId` con navegación por teclado; el banco SQL declara
+su dependencia del Worker en vez de simularse.

@@ -87,6 +87,22 @@ La evaluación sigue ocurriendo en el cliente: este agregado no es un árbitro a
 backend solo puede ser autoridad si persiste el intento y recalcula los hechos; esa persistencia no
 está implementada todavía.
 
+## Informe y rúbrica
+
+`buildAttemptReport(record, automatic?)` produce un perfil por dimensión (D1–D4) con la evidencia
+citada y los segmentos de ayuda. Reglas aplicadas:
+
+- Cada dimensión conserva un nivel ordinal (`0`–`3`, `NE`) o `null`; **no** existe total, promedio,
+  porcentaje ni nota derivada.
+- El estado distingue `assessed`, `requires_review`, `no_attempt`, `technical_error` y
+  `not_presented`. Una incidencia técnica bloqueante nunca se presenta como desconocimiento.
+- Las pruebas del alumno y la batería docente viajan en listas separadas; D4 solo cita pruebas
+  elegidas por el alumno.
+- Un desacuerdo entre la adjudicación humana y la batería automática se conserva como
+  `disagreements[]`, sin corregir ni borrar ninguna de las dos versiones.
+- El texto original de las explicaciones se conserva literal, con su marca temporal.
+- La exposición de ayuda se clasifica como `before-delivery` o `after-delivery` y no se elimina.
+
 ## Brechas pendientes
 
 - Adaptador Prisma y endpoint HTTP: requieren una migración de esquema. La migración no se ejecutó en

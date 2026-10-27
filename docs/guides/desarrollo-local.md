@@ -104,7 +104,7 @@ Si faltan credenciales externas, el diagnóstico indicará qué funciones requie
 
 ## 5. Configura las integraciones que necesites
 
-Solicita al responsable del equipo las credenciales y el acceso de lectura a la carpeta compartida de Google Drive. Completa los siguientes campos en el `.env` raíz:
+Solicita al responsable del equipo las credenciales y el acceso de lectura a la carpeta compartida de Google Drive. Si el equipo aún no tiene el cliente OAuth, el procedimiento para crearlo está en [Google Cloud desde cero](google-cloud-desde-cero.md). Completa los siguientes campos en el `.env` raíz:
 
 | Integración | Configuración |
 |---|---|

@@ -65,3 +65,7 @@ En la tercera ronda se aceptaron D19 (recuperación sana y contexto suficiente),
 El cierre posterior del 18 de octubre concreta el diseño en el contrato v1 y ADR 0009. Las menciones anteriores a mecanismos por cerrar se conservan como cronología; la configuración manual y aceptación real quedaron diferidas por el usuario. ADR 0005 se concreta solo en el subconjunto de recorridos de IA incluido, no en toda la aplicación.
 
 Usar [la plantilla](plantilla.md), numeración consecutiva de cuatro dígitos y un nombre descriptivo. Registrar contexto, decisión, consecuencias, alternativas y evidencia. Cuando una nueva decisión sustituya otra, conservar ambas y enlazarlas. Actualizar este índice y las páginas afectadas cuando se implemente una propuesta.
+
+## Propuesta de ejercicios investigativos
+
+- [ADR0025: entorno, modelos, hechos e interpretación](0025-evidencias-y-modelos-de-ejercicios.md) — propuesta documental, sin implementación ni validación humana.

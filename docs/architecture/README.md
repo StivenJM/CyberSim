@@ -26,3 +26,7 @@ Documentación técnica del sistema implementado. Para procedimientos de ejecuci
 | [Contrato técnico Docker v1](contrato-desarrollo-docker.md) | ¿Qué contratos, límites y garantías rigen el entorno y cuál es su evidencia ejecutable? |
 
 Las decisiones observadas se registran en [ADRs](../project/adrs/README.md). Este índice y las rutas de código usan la estructura actual de workspaces de pnpm `apps/frontend` y `apps/backend`.
+
+## Ejercicios investigados
+
+- [Escenarios investigativos: integración propuesta](escenarios-investigativos.md): cinco casos, diseño y capacidades pendientes; sin implementación.

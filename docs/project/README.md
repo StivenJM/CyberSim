@@ -4,7 +4,13 @@ Contexto no técnico de CyberSim: propósito, actores, alcance, reglas educativa
 
 | Documento | Contenido |
 |---|---|
+| [Cinco ejercicios definidos: especificaciones2.0](ejercicios/README.md) | Contrato común y cinco casos completos con materiales, estados, soluciones, rúbricas, investigación adicional y comprobaciones; sin implementación ni validación con estudiantes |
+| [Plan de implementación futura](ejercicios/plan-implementacion.md) | Tareas pendientes, dependencias, invariantes y aceptación para los cinco casos |
+| [Investigación de los nuevos casos](ejercicios/investigacion-especificaciones.md) |17revisiones progresivas, fuentes por caso, decisiones y límites |
 | [Visión y alcance](vision-y-alcance.md) | Problema, propuesta educativa, actores, funciones y límites |
+| [Marco de evaluación de ciberseguridad](marco-evaluacion-ciberseguridad.md) | Pregunta investigativa, cinco casos vigentes, evidencias, rúbricas, autoría y validación propuesta |
+| [Evidencia del marco de evaluación](evidencia-marco-evaluacion.md) | Doce iteraciones de investigación, fuentes originales, acceso real, decisiones y límites |
+| [Soluciones de evidencia por ejercicio](soluciones-evidencia-ejercicios.md) | Aclaración de éxito/comprensión y prototipado, consignas concretas, diez contrastes adicionales y prueba lógica con sus límites |
 | [Requisitos](requisitos.md) | Requisitos funcionales/no funcionales y trazabilidad de cambios |
 | [Historias de usuario](historias-de-usuario.md) | Catálogo HU001–HU025 con actores, criterios de aceptación y evidencia |
 | [Reglas funcionales](reglas-funcionales.md) | Comportamiento observable y restricciones del producto |

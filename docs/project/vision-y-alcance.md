@@ -2,9 +2,11 @@
 
 ## Propósito
 
+La pregunta rectora de la investigación es **«Qué tanto saben los estudiantes de ciberseguridad y cómo evaluarlos»**, confirmada por el usuario el 26 de octubre de 2026. **CyberSim es un recurso instrumental de esa investigación, no su objeto principal.** Las decisiones sobre ejercicios, entornos y seguimiento deben justificarse por la evidencia que permiten obtener y las interpretaciones educativas que sustentan. El [marco de evaluación](marco-evaluacion-ciberseguridad.md) desarrolla esta orientación y distingue propuestas de validación pendiente.
+
 CyberSim es una plataforma educativa de ciberseguridad que permite aprender mediante acciones sobre oficinas, dispositivos y redes simulados. Une práctica guiada, objetivos por fases, registro de intentos y apoyo conversacional para que estudiantes y docentes puedan observar el aprendizaje.
 
-La intención educativa se deduce del README, del catálogo y de las pantallas actuales. El repositorio no contiene una validación formal de eficacia pedagógica ni una especificación institucional aprobada.
+La descripción funcional siguiente se deduce del README, del catálogo y de las pantallas actuales; no reemplaza la finalidad investigativa anterior. No se ha aportado una validación formal de eficacia pedagógica ni una aprobación institucional de los nuevos instrumentos de evaluación.
 
 ## Personas y necesidades
 
@@ -41,6 +43,8 @@ El ranking depende de resultados enviados por el cliente y los textos de IA pued
 La interfaz de alta registra estudiantes; el backend tiene registro de profesores, pero no hay un proceso completo de incorporación docente en la pantalla actual. Debe definirse para una instancia real.
 
 ## Criterios de evaluación propuestos
+
+Para evaluar conocimientos del estudiante, la referencia es el [marco investigativo](marco-evaluacion-ciberseguridad.md): diagnóstico, explicación, intervención y verificación, con condiciones de ayuda explícitas y validación por uso. Los criterios siguientes son complementarios de calidad del producto; su cumplimiento no demuestra cuánto sabe el estudiante.
 
 Estos criterios orientan futuras revisiones; no representan métricas ya medidas:
 

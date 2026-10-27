@@ -23,6 +23,7 @@ function loadDefinitions(): ScenarioDefinition[] {
 	)
 	const ids = new Set<number>()
 	const slugs = new Set<string>()
+	const exerciseCases = new Set<string>()
 
 	for (const definition of definitions) {
 		const result = validateScenarioDefinition(definition)
@@ -36,6 +37,13 @@ function loadDefinitions(): ScenarioDefinition[] {
 		}
 		if (slugs.has(definition.slug)) {
 			throw new Error(`Duplicate scenario slug "${definition.slug}"`)
+		}
+		const caseId = definition.exercise?.caseId
+		if (caseId !== undefined) {
+			if (exerciseCases.has(caseId)) {
+				throw new Error(`Duplicate investigated case "${caseId}"`)
+			}
+			exerciseCases.add(caseId)
 		}
 		ids.add(definition.id)
 		slugs.add(definition.slug)

@@ -1,3 +1,9 @@
+import {
+	caseExtensionCapability,
+	type InvestigatedCaseExtension,
+	validateInvestigatedCaseExtension,
+} from './investigated.js'
+
 export const SCENARIO_SCHEMA_VERSION = 1 as const
 
 export const SCENARIO_STATUSES = [
@@ -10,11 +16,16 @@ export const SCENARIO_STATUSES = [
 export const SCENARIO_CAPABILITIES = [
 	'asset-transfer',
 	'attack-simulation',
+	'authorization-matrix',
+	'crypto-key-rotation',
 	'digital-signature',
+	'file-admission',
 	'firewall',
 	'hardening',
 	'network-traffic',
 	'phishing-email',
+	'session-restore',
+	'sql-query-binding',
 	'terminal',
 	'vpn',
 ] as const
@@ -69,12 +80,17 @@ export interface ScenarioRevisionMetadata {
 }
 
 export type ScenarioManifest<TDefinition extends ScenarioIdentity> =
-	TDefinition & ScenarioRevisionMetadata
+	TDefinition &
+		ScenarioRevisionMetadata & {
+			readonly exercise?: InvestigatedCaseExtension
+		}
 
 export type ScenarioManifestOptions = Omit<
 	ScenarioRevisionMetadata,
 	'schemaVersion' | 'contentHash'
->
+> & {
+	readonly exercise?: InvestigatedCaseExtension
+}
 
 export interface ScenarioValidationResult {
 	ok: boolean
@@ -249,6 +265,24 @@ export function validateScenarioEnvelope(
 		})
 	}
 
+	if (manifest.exercise !== undefined) {
+		const exercise = validateInvestigatedCaseExtension(manifest.exercise)
+		errors.push(...exercise.errors)
+		const extension = manifest.exercise as { caseId?: unknown }
+		if (typeof extension.caseId === 'string') {
+			const capability = caseExtensionCapability(extension.caseId)
+			if (
+				capability &&
+				(!Array.isArray(manifest.capabilities) ||
+					!manifest.capabilities.includes(capability))
+			) {
+				errors.push(
+					`exercise.caseId: case "${extension.caseId}" requires capability "${capability}"`,
+				)
+			}
+		}
+	}
+
 	const environment = manifest.environment
 	if (
 		!environment ||
@@ -317,3 +351,6 @@ export function verifyScenarioContentHash(value: unknown): boolean {
 	const manifest = value as Record<string, unknown>
 	return manifest.contentHash === computeScenarioContentHash(manifest)
 }
+
+export * from './attempt.js'
+export * from './investigated.js'

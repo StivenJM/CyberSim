@@ -19,6 +19,7 @@
 		"format:check": "biome format ."
 	},
 	"dependencies": {
+		"@cybersim/exercises": "workspace:*",
 		"@cybersim/scenario-contract": "workspace:*",
 		"@phosphor-icons/react": "^2.1.10",
 		"@react-three/drei": "^10.7.6",

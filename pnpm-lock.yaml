@@ -260,6 +260,9 @@ importers:
 
   apps/frontend:
     dependencies:
+      '@cybersim/exercises':
+        specifier: workspace:*
+        version: link:../../packages/exercises
       '@cybersim/scenario-contract':
         specifier: workspace:*
         version: link:../../packages/scenario-contract
@@ -346,6 +349,22 @@ importers:
         specifier: workspace:*
         version: link:../scenario-contract
     devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.2
+        version: 4.1.4(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(tsx@4.21.0))
+
+  packages/exercises:
+    dependencies:
+      '@cybersim/scenario-contract':
+        specifier: workspace:*
+        version: link:../scenario-contract
+    devDependencies:
+      '@types/node':
+        specifier: ^24.10.1
+        version: 24.12.2
       typescript:
         specifier: ~5.9.3
         version: 5.9.3

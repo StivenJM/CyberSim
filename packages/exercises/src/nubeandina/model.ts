@@ -266,8 +266,31 @@ function schemaError(
 	data: Parsed,
 	extensions: readonly unknown[],
 ): string | null {
+	const allowedRoot = new Set([
+		'type',
+		'owner',
+		'expiresAt',
+		'filters',
+		'template',
+		'preferences',
+		'extensions',
+		'role',
+		'note',
+	])
+	for (const key of Object.keys(data)) {
+		if (!allowedRoot.has(key)) return 'unknown_field'
+	}
 	if (data.type !== 'WorkspaceSession') return 'root_type'
 	if (!isRecord(data.filters)) return 'filters'
+	if (typeof data.filters.track !== 'string') return 'filters'
+	if (typeof data.filters.pageSize !== 'number') return 'filters'
+	if (typeof data.template !== 'string') return 'template'
+	if (
+		!isRecord(data.preferences) ||
+		typeof data.preferences.theme !== 'string'
+	) {
+		return 'preferences'
+	}
 	if (extensions.length > ND_LIMITS.extensions) return 'extensions'
 	for (const extension of extensions) {
 		if (!isRecord(extension) || extension.type !== 'PassiveNote') {
@@ -285,8 +308,13 @@ function schemaError(
 
 function authorityError(data: Parsed): string | null {
 	if (data.owner !== 'org-7') return 'owner'
-	if (typeof data.expiresAt !== 'string' || data.expiresAt <= ND_NOW)
+	if (
+		typeof data.expiresAt !== 'string' ||
+		!/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}:\d{2}Z$/.test(data.expiresAt)
+	) {
 		return 'expiry'
+	}
+	if (data.expiresAt <= ND_NOW) return 'expiry'
 	return null
 }
 

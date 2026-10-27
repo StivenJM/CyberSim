@@ -230,6 +230,13 @@ export function dispatchAndeanLogix(
 		reachedHandler,
 	})
 
+	if (!['cancel', 'reassign', 'reset', 'tracking'].includes(request.action)) {
+		return deny(422, 'not_supported', false)
+	}
+	if (request.network !== 'public' && request.network !== 'ops') {
+		return deny(503, 'connection_blocked', false)
+	}
+
 	if (request.action === 'tracking') {
 		if (!state.config.publicTracking) return deny(503, 'unavailable', false)
 		if (request.method !== 'GET') return deny(405, 'method_not_allowed')

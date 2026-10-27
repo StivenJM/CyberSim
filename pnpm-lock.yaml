@@ -340,6 +340,19 @@ importers:
         specifier: ^4.0.2
         version: 4.1.4(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(tsx@4.21.0))
 
+  packages/attempt-ledger:
+    dependencies:
+      '@cybersim/scenario-contract':
+        specifier: workspace:*
+        version: link:../scenario-contract
+    devDependencies:
+      typescript:
+        specifier: ~5.9.3
+        version: 5.9.3
+      vitest:
+        specifier: ^4.0.2
+        version: 4.1.4(@types/node@24.12.2)(@vitest/coverage-v8@4.1.4)(vite@7.3.2(@types/node@24.12.2)(jiti@2.6.1)(tsx@4.21.0))
+
   packages/scenario-contract:
     devDependencies:
       typescript:

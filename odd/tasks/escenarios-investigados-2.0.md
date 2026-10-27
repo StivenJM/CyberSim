@@ -68,8 +68,8 @@ inventar éxito; no ejecutar seed, migraciones, publicación, despliegue ni oper
 
 | ID | Specs | Ruta | Estado |
 |---|---|---|---|
-| T1 | S3, S4 | inline | pendiente |
-| T2 | S5, S6 | inline | pendiente |
+| T1 | S3, S4 | inline | hecho — commit `0860454`; 18 tests del contrato + 3 de frontend verdes |
+| T2 | S5, S6 | inline | hecho — paquete `@cybersim/attempt-ledger`, 13 tests verdes |
 | T3 | S7 | inline | pendiente |
 | T4–T8 | S8 | pendiente | pendiente |
 | T9 | S9 | pendiente | pendiente |
@@ -91,3 +91,15 @@ pendientes y la entrega documental no implementó la aplicación.
 
 L3. Alcance decidido: I12 se documenta como planificación (requiere personas e institución) y la
 publicación/seed de I09 queda fuera por no estar autorizada. El resto se implementa en orden.
+
+L4. T1: registro cerrado de los cinco casos con operaciones, controles, verificadores, fixtures y
+segmentos tomados literalmente de cada ficha; sobre `attempt` con versiones, hash, diagnóstico sellado,
+pruebas, ayudas, entrega, adjudicación e incidencias. `defineScenario` añade la capacidad del caso y el
+catálogo rechaza `caseId` duplicado. Evidencia: 18 tests del contrato, 3 de frontend, typecheck y lint
+verdes.
+
+L5. T2: agregado de intento en un paquete nuevo `@cybersim/attempt-ledger` con puerto de persistencia
+compare-and-swap y adaptador en memoria. Cubre duplicado, escritura concurrente, respuesta perdida,
+reconexión antes/después de entrega, error a mitad de prueba, reset asistido y propiedad del intento.
+Mutación de control sobre la idempotencia produjo 2 fallos y se revirtió: los tests muerden. Brecha
+declarada: adaptador Prisma y endpoint HTTP pendientes por la regla de no ejecutar migraciones.

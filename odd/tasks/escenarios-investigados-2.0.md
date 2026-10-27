@@ -103,3 +103,11 @@ compare-and-swap y adaptador en memoria. Cubre duplicado, escritura concurrente,
 reconexión antes/después de entrega, error a mitad de prueba, reset asistido y propiedad del intento.
 Mutación de control sobre la idempotencia produjo 2 fallos y se revirtió: los tests muerden. Brecha
 declarada: adaptador Prisma y endpoint HTTP pendientes por la regla de no ejecutar migraciones.
+
+L6. Verificación independiente sobre `d984268..4f20a36`: S3 y S6 PASS; S4 y S5 FAIL por dos blockers.
+B2: `AttemptService.create` insertaba sin validar, dejando intentos inutilizables con caso o versión
+inválidos. B1: la batería docente y las pruebas del alumno compartían espacio de `testId`, así que una
+prueba legítima llamada `B1` volvía la entrega imposible. Corrección en un solo lote: validación en
+creación, unicidad por `source`, `expectedRevision` aplicado al diagnóstico sellado, `run-test` limitado
+a verificadores y fixtures del registro cerrado, y comprobación de versiones del intérprete
+(`version-mismatch`). Añadidos 8 tests de regresión (`attemptGuards.test.ts`).

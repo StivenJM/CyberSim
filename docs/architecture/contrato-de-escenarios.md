@@ -98,6 +98,8 @@ Reglas aplicadas por `validateAttemptRecord`:
 - Los campos desconocidos, enums desconocidos, IDs duplicados y secuencias no consecutivas son
   errores; la entrada no se muta.
 - Una entrega exige diagnóstico sellado (`sealedBeforeMenu: true`) y una revisión existente.
+- Las pruebas del alumno y la batería docente son registros separados: el mismo identificador de
+  batería puede aparecer una vez en cada uno, nunca dos veces en el mismo.
 - Los niveles de rúbrica son ordinales (`0`–`3`, `NE`) más un `kind` de adjudicación; no existe
   promedio ni porcentaje.
 - `isAttemptCompatible` compara el juego completo de versiones y devuelve el primer campo

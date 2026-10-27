@@ -1,8 +1,11 @@
 import {
 	type AttemptRecord,
+	type AttemptVersionSet,
 	type CreateAttemptRecordInput,
 	computeAttemptContentHash,
 	createAttemptRecord,
+	isAttemptCompatible,
+	validateAttemptRecord,
 } from '@cybersim/scenario-contract'
 
 import type { LedgerCommand, LedgerOutcome } from './commands.js'
@@ -12,6 +15,15 @@ import type { AttemptStore } from './store.js'
 export interface CreateAttemptOptions {
 	/** Practice attempts never replace or contaminate a measured attempt. */
 	readonly practice?: boolean
+}
+
+export interface AttemptServiceOptions {
+	/**
+	 * Versions of the interpreter reading this ledger. When present, a record
+	 * produced with another rubric, form, fixtures, engine, verifier or aid set
+	 * is refused instead of being reinterpreted under the new rubric.
+	 */
+	readonly interpreter?: AttemptVersionSet
 }
 
 function rejected(
@@ -25,6 +37,7 @@ export class AttemptService {
 	constructor(
 		private readonly store: AttemptStore,
 		private readonly now: () => string = () => new Date().toISOString(),
+		private readonly options: AttemptServiceOptions = {},
 	) {}
 
 	async create(
@@ -42,6 +55,11 @@ export class AttemptService {
 					}),
 				}
 			: created
+
+		const validation = validateAttemptRecord(record)
+		if (!validation.ok) {
+			return rejected('invalid-state', validation.errors)
+		}
 
 		const inserted = await this.store.insert(record)
 		if (!inserted.ok) {
@@ -65,6 +83,18 @@ export class AttemptService {
 			return rejected('forbidden', [
 				'attempt: the requested attempt belongs to another actor',
 			])
+		}
+
+		if (this.options.interpreter) {
+			const compatibility = isAttemptCompatible(
+				record,
+				this.options.interpreter,
+			)
+			if (!compatibility.compatible) {
+				return rejected('version-mismatch', [
+					compatibility.detail ?? 'attempt: interpreter versions do not match',
+				])
+			}
 		}
 
 		const previous = record.operations.find(

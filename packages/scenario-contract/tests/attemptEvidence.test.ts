@@ -2,6 +2,7 @@ import { describe, expect, it } from 'vitest'
 
 import {
 	ATTEMPT_SCHEMA_VERSION,
+	computeAttemptContentHash,
 	createAttemptRecord,
 	isAttemptCompatible,
 	validateAttemptRecord,
@@ -166,10 +167,30 @@ describe('attempt evidence contract', () => {
 		expect(result.errors).toEqual(
 			expect.arrayContaining([
 				'revisions[1]: duplicate revision 1',
-				'tests[1]: duplicate testId "student-1"',
+				'tests[1]: duplicate testId "student-1" for source "student"',
 				'aids[1]: duplicate segmentId "seg-1"',
 			]),
 		)
+	})
+
+	it('keeps student-chosen tests and the teacher battery in separate registers', () => {
+		const record = createAttemptRecord(baseInput)
+		const withBoth = {
+			...record,
+			tests: [
+				{ testId: 'B1', source: 'student', outcome: 'fail' },
+				{ testId: 'B1', source: 'teacher', outcome: 'pass' },
+			],
+			contentHash: computeAttemptContentHash({
+				...record,
+				tests: [
+					{ testId: 'B1', source: 'student', outcome: 'fail' },
+					{ testId: 'B1', source: 'teacher', outcome: 'pass' },
+				],
+			}),
+		}
+
+		expect(validateAttemptRecord(withBoth)).toEqual({ ok: true, errors: [] })
 	})
 
 	it('validates frozen input without mutating it', () => {

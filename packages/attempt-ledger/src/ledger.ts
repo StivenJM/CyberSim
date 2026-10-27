@@ -91,6 +91,11 @@ export function applyCommand(
 					'command save-diagnosis: attempt is not in an active measured state',
 				])
 			}
+			if (command.expectedRevision !== currentRevision(record)) {
+				return reject('revision-conflict', [
+					`command save-diagnosis: expected revision ${command.expectedRevision}, stored revision ${currentRevision(record)}`,
+				])
+			}
 			if (record.diagnosis !== undefined) {
 				return reject('invalid-state', [
 					'command save-diagnosis: the diagnosis is already sealed',
@@ -150,9 +155,29 @@ export function applyCommand(
 					`command run-test: expected revision ${command.expectedRevision}, stored revision ${currentRevision(record)}`,
 				])
 			}
-			if (record.tests.some((test) => test.testId === command.testId)) {
+			if (
+				record.tests.some(
+					(test) => test.testId === command.testId && test.source === 'student',
+				)
+			) {
 				return reject('invalid-state', [
 					`command run-test: duplicate testId "${command.testId}"`,
+				])
+			}
+			const definition = getInvestigatedCase(record.caseId)
+			if (!definition) {
+				return reject('unknown-case', [
+					`command run-test: unsupported investigated case "${record.caseId}"`,
+				])
+			}
+			if (!definition.verifiers.includes(command.testId)) {
+				return reject('invalid-state', [
+					`command run-test: verifier "${command.testId}" is not defined for this case`,
+				])
+			}
+			if (!definition.fixtures.includes(command.fixtureId)) {
+				return reject('invalid-state', [
+					`command run-test: fixture "${command.fixtureId}" is not defined for this case`,
 				])
 			}
 			return commit(record, command, now, {

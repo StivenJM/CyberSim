@@ -13,7 +13,12 @@ import type {
 export interface CommandBase {
 	/** Idempotency key. Replaying the same value returns the stored receipt. */
 	readonly operationId: string
-	/** Evidence revision the client acted on. A stale value is a conflict. */
+	/**
+	 * Evidence revision the client acted on. Commands that create or interpret
+	 * evidence reject a stale value as a conflict. Operational commands
+	 * (`pause`, `resume`, `record-incident`) ignore it because a platform event
+	 * can arrive after the client state moved on.
+	 */
 	readonly expectedRevision: number
 }
 
@@ -107,6 +112,7 @@ export const LEDGER_REJECTION_CODES = [
 	'not-found',
 	'persistence-failure',
 	'unknown-case',
+	'version-mismatch',
 ] as const
 
 export type LedgerRejectionCode = (typeof LEDGER_REJECTION_CODES)[number]

@@ -435,10 +435,16 @@ function validateTests(value: unknown, errors: string[]): void {
 		}
 		if (!isNonEmptyString(entry.testId)) {
 			errors.push(`tests[${index}].testId: must be a non-empty string`)
-		} else if (seen.has(entry.testId)) {
-			errors.push(`tests[${index}]: duplicate testId "${entry.testId}"`)
 		} else {
-			seen.add(entry.testId)
+			// Student-chosen tests and the teacher battery are separate registries:
+			// the same battery identifier may appear once in each.
+			const key = `${String(entry.source)}:${entry.testId}`
+			if (seen.has(key)) {
+				errors.push(
+					`tests[${index}]: duplicate testId "${entry.testId}" for source "${String(entry.source)}"`,
+				)
+			}
+			seen.add(key)
 		}
 		if (typeof entry.source !== 'string' || !sourceSet.has(entry.source)) {
 			errors.push(

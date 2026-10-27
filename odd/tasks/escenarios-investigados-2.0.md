@@ -77,7 +77,7 @@ inventar éxito; no ejecutar seed, migraciones, publicación, despliegue ni oper
 | T7 | S8 (CWE-306) | inline | hecho — batería de 144 + 12; 11 tests |
 | T8 | S8 (CWE-502) | inline | hecho — HMAC real y S01–S08; 10 tests |
 | T9 | S9 | pendiente | publicación/seed requieren autorización separada |
-| T10 | S10 | pendiente | informe y rúbricas |
+| T10 | S10 | inline | hecho — informe por dimensión sin promedio, 8 tests |
 | T11 | S11 | parcial | suites completas verdes; documentación de comportamiento actualizada |
 | T12 | S12, S13 | documentación | pendiente |
 
@@ -123,3 +123,7 @@ reproduce el catálogo inerte y la cuarentena; AndeanLogix evalúa 144 peticione
 desde la ficha; NubeAndina reproduce bytes, SHA-256 y HMAC de S01–S08. 58 tests del paquete más 3 del
 apartado. Apartado `/ejercicios` y `/ejercicios/:caseId` con navegación por teclado; el banco SQL declara
 su dependencia del Worker en vez de simularse.
+
+L8. I10: `buildAttemptReport` entrega perfil por dimensión con evidencia citada, sin total ni promedio;
+separa pruebas del alumno y batería docente, conserva desacuerdos y texto literal, y clasifica la ayuda
+como previa o posterior a la entrega. 8 tests más en `attempt-ledger`.

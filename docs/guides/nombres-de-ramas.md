@@ -155,9 +155,11 @@ fix/db/gate-demo-seed
 ## Ramas existentes
 
 Las ramas creadas antes de esta guía (`feat/extend-docker`, `feat/quality-improve`,
-`feat/deploy-staging-production`, `refactor/structure` y `new-branch`, que contiene la implementación de
-los ejercicios) no se renombran de forma retroactiva. La convención aplica a ramas nuevas y a las que se
-reabran para un resultado distinto.
+`feat/deploy-staging-production` y `refactor/structure`) no se renombran de forma retroactiva. La
+convención aplica a ramas nuevas y a las que se reabran para un resultado distinto.
+
+La antigua `new-branch`, que contiene la implementación de los ejercicios, se renombró a
+`feat/exercises/implement-investigated-exercises` al adoptar esta guía.
 
 ## Reglas obligatorias
 

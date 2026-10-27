@@ -104,4 +104,5 @@ Reglas aplicadas por `validateAttemptRecord`:
   incompatible: un intento viejo no se interpreta con una rúbrica, verificador o fixtures nuevos.
 
 El contrato no persiste nada por sí mismo: el ciclo de vida del agregado (idempotencia, conflicto
-de revisión, ayuda persistida antes de revelarse) pertenece a I02.
+de revisión, ayuda persistida antes de revelarse) pertenece a I02 y se documenta en
+[ciclo de intento y evidencia](intento-evidencia.md).

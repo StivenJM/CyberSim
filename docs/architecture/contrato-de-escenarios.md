@@ -16,6 +16,7 @@ El contrato compartido define la identidad reproducible de un ejercicio de ciber
 | `engineVersion` | Versión del compilador/runtime esperada |
 | `assetCatalogVersion` | Versión de modelos/prefabs permitidos |
 | `seed` | Entero no negativo para resultados deterministas |
+| `exercise` | Opcional: referencia cerrada a uno de los cinco casos investigados |
 | `contentHash` | SHA-256 de la serialización canónica sin el propio hash |
 
 ## Contenido del ejercicio
@@ -60,3 +61,47 @@ La sincronización es idempotente. Una revisión existente con el mismo hash no 
 - Una capacidad desconocida se rechaza, no se degrada silenciosamente.
 - Los activos se resuelven desde registros confiables del código.
 - Un intento conserva como mínimo revisión y hash de su definición.
+
+## Extensión de casos investigados
+
+`packages/scenario-contract/src/investigated.ts` registra los cinco casos del conjunto 2.0
+(`cwe-321-andinapay`, `cwe-89-bibliotecaviva`, `cwe-434-talentoandino`, `cwe-306-andeanlogix`,
+`cwe-502-nubeandina`) con identificadores literales de su ficha: operaciones, controles,
+verificadores (B/Q/C), fixtures y segmentos de ayuda.
+
+- El campo opcional `exercise` solo puede **reducir** esas listas; añadir un identificador que la
+  ficha no define es un error de validación, nunca un string libre.
+- `caseId` y `form` (`A`/`B`) son cerrados. Un caso desconocido rechaza el manifiesto.
+- La capacidad del caso (`crypto-key-rotation`, `sql-query-binding`, `file-admission`,
+  `authorization-matrix`, `session-restore`) es obligatoria en el manifiesto que lo referencia.
+  `defineScenario` la añade automáticamente a partir del registro.
+- El catálogo rechaza dos definiciones que declaren el mismo `caseId`.
+- Las capacidades previas no cambian: la lista anterior sigue admitida y validada.
+
+## Intento y evidencia (`attempt`)
+
+`packages/scenario-contract/src/attempt.ts` define el sobre de un intento evaluable, separado del
+`progreso` legado:
+
+| Grupo | Contenido |
+|---|---|
+| Identidad | `attemptId`, `caseId`, actor seudonimizado, `progressKind: 'attempt-evidence'` |
+| Versiones | `task`, `form`, `fixtures`, `engine`, `verifier`, `rubric`, `aids` + `versionHash` |
+| Orden | `sequence` y registro de operaciones con `operationId`, revisión esperada y resultado |
+| Evidencia | diagnóstico sellado, revisiones, pruebas (alumno/docente), segmentos de ayuda |
+| Cierre | entrega congelada, explicaciones, adjudicación por dimensión y incidencias |
+| Integridad | `contentHash` SHA-256 de la serialización canónica |
+
+Reglas aplicadas por `validateAttemptRecord`:
+
+- Una `schemaVersion` desconocida se rechaza sin interpretar el resto del registro.
+- Los campos desconocidos, enums desconocidos, IDs duplicados y secuencias no consecutivas son
+  errores; la entrada no se muta.
+- Una entrega exige diagnóstico sellado (`sealedBeforeMenu: true`) y una revisión existente.
+- Los niveles de rúbrica son ordinales (`0`–`3`, `NE`) más un `kind` de adjudicación; no existe
+  promedio ni porcentaje.
+- `isAttemptCompatible` compara el juego completo de versiones y devuelve el primer campo
+  incompatible: un intento viejo no se interpreta con una rúbrica, verificador o fixtures nuevos.
+
+El contrato no persiste nada por sí mismo: el ciclo de vida del agregado (idempotencia, conflicto
+de revisión, ayuda persistida antes de revelarse) pertenece a I02.

@@ -1,5 +1,7 @@
 import {
+	caseExtensionCapability,
 	createScenarioManifest,
+	type InvestigatedCaseExtension,
 	type ScenarioCapability,
 	type ScenarioManifest,
 	type ScenarioStatus,
@@ -21,6 +23,7 @@ export interface DefineScenarioOptions {
 	engineVersion?: string
 	assetCatalogVersion?: string
 	seed?: number
+	exercise?: InvestigatedCaseExtension
 }
 
 function collectManagedObjects(definition: DefinicionEscenario): string[] {
@@ -67,10 +70,18 @@ export function defineScenario(
 	definition: DefinicionEscenario,
 	options: DefineScenarioOptions = {},
 ): ScenarioDefinition {
+	const capabilities = inferCapabilities(definition)
+	const exerciseCapability = options.exercise
+		? caseExtensionCapability(options.exercise.caseId)
+		: undefined
+	if (exerciseCapability && !capabilities.includes(exerciseCapability)) {
+		capabilities.push(exerciseCapability)
+	}
+
 	return createScenarioManifest(definition, {
 		revision: options.revision ?? 1,
 		status: options.status ?? 'draft',
-		capabilities: inferCapabilities(definition),
+		capabilities: capabilities.sort(),
 		environment: {
 			profile: options.environmentProfile ?? 'office-3d',
 			version: options.environmentVersion ?? '1',
@@ -78,5 +89,6 @@ export function defineScenario(
 		engineVersion: options.engineVersion ?? 'ecs-1',
 		assetCatalogVersion: options.assetCatalogVersion ?? 'built-in-1',
 		seed: options.seed ?? definition.id,
+		exercise: options.exercise,
 	})
 }

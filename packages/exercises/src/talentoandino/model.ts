@@ -894,8 +894,7 @@ export function verifyTalentoAndino(state: TaState): ExerciseReport {
 					actor: 'visitante',
 				})
 			: undefined
-	const publicDirect =
-		state.policy.delivery === 'D0' && state.policy.storage === 'S0'
+	const publicDirect = state.policy.storage === 'S0'
 	checks.push({
 		id: 'TA-Q6',
 		kind: 'Q',

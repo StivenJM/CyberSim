@@ -127,3 +127,11 @@ su dependencia del Worker en vez de simularse.
 L8. I10: `buildAttemptReport` entrega perfil por dimensión con evidencia citada, sin total ni promedio;
 separa pruebas del alumno y batería docente, conserva desacuerdos y texto literal, y clasifica la ayuda
 como previa o posterior a la entrega. 8 tests más en `attempt-ledger`.
+
+L9. Verificación independiente de los cinco modelos: S10 PASS; S8 FAIL por cuatro blockers. B1: la
+política `raw` de errores pasaba Q sin comprobar el detalle filtrado. B2: TalentoAndino aceptaba
+almacenamiento público S0 con entrega D1. B3: la frontera de tipos de BibliotecaViva lanzaba una
+excepción con `title:{}` y aceptaba `null`, listas y claves desconocidas. B4: páginas fuera de 1–4 se
+aceptaban con `client_only`. Corrección: validación de frontera siempre activa, comprobación
+`Q89-error`, Q6 exige S1/S2, `not_supported`/red desconocida en AndeanLogix y esquema estricto con
+vigencia ISO en NubeAndina. 5 tests de regresión nuevos.

@@ -128,6 +128,15 @@ describe('attempt report', () => {
 		expect(report.limits.join(' ')).toContain('no se promedian')
 	})
 
+	it('detects a nested aggregate field if one is injected', async () => {
+		const report = buildAttemptReport(await delivered())
+		const withNested = {
+			...report,
+			dimensions: [{ ...report.dimensions[0], average: 2 }],
+		}
+		expect(reportHasAggregateScore(withNested)).toBe(true)
+	})
+
 	it('marks missing evidence as no_attempt instead of zero', () => {
 		const record = createAttemptRecord({
 			attemptId: 'empty',

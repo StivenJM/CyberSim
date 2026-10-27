@@ -44,6 +44,18 @@ color para indicar el resultado.
   primer byte alterado y exige que la autoridad venga del servidor. La publicación atómica se prueba
   con una falla anunciada tras el primer campo.
 
+## Fronteras comprobadas
+
+- BibliotecaViva rechaza antes de la base cualquier filtro que no sea texto, claves de entrada
+  desconocidas y páginas fuera de 1–4, con independencia de la política de validación. La política
+  `raw` de errores falla Q aunque los valores estén enlazados.
+- TalentoAndino exige S1 o S2: un directorio público S0 falla Q6 incluso si la entrega pasa por el
+  handler, porque el origen directo sigue expuesto.
+- AndeanLogix devuelve `not_supported` para una operación fuera del catálogo y bloquea una red
+  desconocida antes del handler.
+- NubeAndina rechaza campos adicionales en el documento y exige vigencia en formato ISO antes de
+  publicar.
+
 ## Límites declarados
 
 - BibliotecaViva necesita el motor SQLite/WASM dentro de un Worker para la ejecución en navegador. El

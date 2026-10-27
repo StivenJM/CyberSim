@@ -234,10 +234,21 @@ export function buildAttemptReport(
 	}
 }
 
+const AGGREGATE_KEYS = ['total', 'score', 'percentage', 'grade', 'average']
+
+function hasAggregate(value: unknown, depth = 0): boolean {
+	if (depth > 8 || value === null || typeof value !== 'object') return false
+	if (Array.isArray(value)) {
+		return value.some((entry) => hasAggregate(entry, depth + 1))
+	}
+	for (const [key, entry] of Object.entries(value)) {
+		if (AGGREGATE_KEYS.includes(key.toLowerCase())) return true
+		if (hasAggregate(entry, depth + 1)) return true
+	}
+	return false
+}
+
 /** Percentages, totals and letter grades are deliberately absent. */
 export function reportHasAggregateScore(report: AttemptReport): boolean {
-	const keys = Object.keys(report as unknown as Record<string, unknown>)
-	return keys.some((key) =>
-		['total', 'score', 'percentage', 'grade', 'average'].includes(key),
-	)
+	return hasAggregate(report)
 }

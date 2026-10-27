@@ -221,6 +221,54 @@ export function buildHistoryQuery(
 	return { sql: parts.join('\n'), params: null, interpolated }
 }
 
+const ALLOWED_INPUT_KEYS = new Set([
+	'title',
+	'author',
+	'date',
+	'page',
+	'requestStudent',
+])
+
+function isPlainRecord(value: unknown): value is Record<string, unknown> {
+	return !!value && typeof value === 'object' && !Array.isArray(value)
+}
+
+/**
+ * Boundary validation that never depends on the policy: an out-of-domain
+ * value is rejected before any database access, including pages outside 1–4
+ * and non-text filters. `client_only` only skips the calendar/length checks
+ * that the ficha attributes to the form.
+ */
+export function validateSearchBoundary(
+	input: SearchInput,
+): { ok: true } | { ok: false; detail: string } {
+	if (!isPlainRecord(input)) {
+		return { ok: false, detail: 'input: debe ser un objeto' }
+	}
+	for (const key of Object.keys(input)) {
+		if (!ALLOWED_INPUT_KEYS.has(key)) {
+			return { ok: false, detail: `${key}: campo no admitido` }
+		}
+	}
+	for (const field of ['title', 'author', 'date', 'requestStudent'] as const) {
+		const value = input[field]
+		if (value !== undefined && typeof value !== 'string') {
+			return { ok: false, detail: `${field}: debe ser texto` }
+		}
+	}
+	if (input.page !== undefined) {
+		if (
+			typeof input.page !== 'number' ||
+			!Number.isInteger(input.page) ||
+			input.page < 1 ||
+			input.page > 4
+		) {
+			return { ok: false, detail: 'page: debe ser 1–4' }
+		}
+	}
+	return { ok: true }
+}
+
 function isValidCalendarDate(value: string): boolean {
 	if (!/^\d{4}-\d{2}-\d{2}$/.test(value)) return false
 	const [year, month, day] = value.split('-').map(Number)
@@ -235,10 +283,11 @@ function isValidCalendarDate(value: string): boolean {
 export function validateSearchInput(
 	input: SearchInput,
 ): { ok: true } | { ok: false; detail: string } {
+	const boundary = validateSearchBoundary(input)
+	if (!boundary.ok) return boundary
 	const title = input.title ?? ''
 	const author = input.author ?? ''
 	const date = input.date ?? ''
-	const page = input.page ?? 1
 	if ([...title].length > 80)
 		return { ok: false, detail: 'title: máximo 80 caracteres' }
 	if ([...author].length > 80) {
@@ -246,9 +295,6 @@ export function validateSearchInput(
 	}
 	if (date !== '' && !isValidCalendarDate(date)) {
 		return { ok: false, detail: 'date: formato o calendario no válido' }
-	}
-	if (!Number.isInteger(page) || page < 1 || page > 4) {
-		return { ok: false, detail: 'page: debe ser 1–4' }
 	}
 	return { ok: true }
 }
@@ -269,16 +315,17 @@ export function runSearch(port: SqlPort, request: SearchRequest): SearchResult {
 	if (principal === null) {
 		return { status: 'unauthenticated', rows: [], sql: null, params: null }
 	}
-	if (config.validation === 'typed') {
-		const validation = validateSearchInput(input)
-		if (!validation.ok) {
-			return {
-				status: 'validation_error',
-				rows: [],
-				sql: null,
-				params: null,
-				detail: validation.detail,
-			}
+	const validation =
+		config.validation === 'typed'
+			? validateSearchInput(input)
+			: validateSearchBoundary(input)
+	if (!validation.ok) {
+		return {
+			status: 'validation_error',
+			rows: [],
+			sql: null,
+			params: null,
+			detail: validation.detail,
 		}
 	}
 	if (config.dbRole === 'disabled') {
@@ -491,6 +538,32 @@ export function verifyBibliotecaViva(
 			`write-probe=${q8}`,
 			`users-probe=${q9}`,
 		].join('; '),
+	})
+
+	const brokenPort: SqlPort = {
+		query() {
+			throw new Error('SQLITE_IOERR; loans; /lab/bv.db')
+		},
+		execute() {},
+		snapshot: () => '',
+		close() {},
+	}
+	const hidden = runSearch(brokenPort, {
+		config: { ...config, errorPolicy: 'public_id' },
+		input: {},
+		principal: 'S101',
+	})
+	checks.push({
+		id: 'Q89-error',
+		kind: 'Q',
+		property:
+			'El error público no expone detalle interno; el detalle queda en el inspector autorizado.',
+		passed:
+			config.errorPolicy === 'public_id' &&
+			hidden.status === 'query_error' &&
+			hidden.detail === undefined &&
+			hidden.correlationId === 'BV-E14',
+		evidence: `policy=${config.errorPolicy}; hidden=${hidden.status}/${hidden.correlationId ?? 'sin correlación'}`,
 	})
 
 	const c = run({}, 'S102')

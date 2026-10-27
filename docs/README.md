@@ -15,6 +15,9 @@ Lee primero el resumen y sigue después la guía si aún no tienes el entorno pr
 
 | Si necesitas… | Consulta |
 |---|---|
+| Consultar cómo serán los cinco ejercicios del compañero | [Especificaciones completas2.0](project/ejercicios/README.md): entorno, materiales, acciones, soluciones, ayudas, rúbricas y verificación |
+| Diseñar ejercicios para investigar qué saben los estudiantes y cómo evaluarlos | [Marco de evaluación](project/marco-evaluacion-ciberseguridad.md) y [evidencia, doce iteraciones y bibliografía](project/evidencia-marco-evaluacion.md) |
+| Implementar después los ejercicios investigados | [Guía específica](guides/implementar-ejercicios-investigados.md), [arquitectura propuesta](architecture/escenarios-investigativos.md) y [plan canónico](project/ejercicios/plan-implementacion.md) |
 | Comprender o crear escenarios | [Arquitectura modular](architecture/escenarios-modulares.md), [guía de creación](guides/escenarios.md) y [motor ECS](architecture/simulacion-ecs.md) |
 | Investigar un módulo, contrato o integración | [Índice técnico](architecture/README.md) y [arquitectura Docker](architecture/desarrollo-docker.md) |
 | Ejecutar checks o mantener el proyecto | [Pruebas y calidad](guides/pruebas-y-calidad.md) y [mantenimiento](guides/mantenimiento.md) |

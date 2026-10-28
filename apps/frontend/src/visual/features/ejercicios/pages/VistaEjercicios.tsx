@@ -7,6 +7,9 @@ export default function VistaEjercicios() {
 	return (
 		<section className={styles.section} aria-labelledby="ejercicios-title">
 			<header className={styles.header}>
+				<Link to="/" className={styles.backLink}>
+					← Volver a la oficina
+				</Link>
 				<p className={styles.eyebrow}>Conjunto 2.0</p>
 				<h1 id="ejercicios-title" className={styles.title}>
 					Ejercicios

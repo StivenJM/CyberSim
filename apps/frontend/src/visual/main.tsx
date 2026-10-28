@@ -141,9 +141,29 @@ function AnimatedRoutes() {
 					<Route path="/dispositivos" element={<Dispositivos />} />
 					<Route path="/redes" element={<Redes />} />
 					<Route path="/fases-partida" element={<VistaFasesPartida />} />
-					<Route path="/ejercicios" element={<VistaEjercicios />} />
-					<Route path="/ejercicios/:caseId" element={<VistaEjercicio />} />
 				</Route>
+
+				{/*
+				  El apartado de ejercicios no depende del escenario ECS ni del
+				  escritorio 3D: mantiene su propio layout para que un enlace directo
+				  no exija un nivel seleccionado.
+				*/}
+				<Route
+					path="/ejercicios"
+					element={
+						<ProtectedRoute>
+							<VistaEjercicios />
+						</ProtectedRoute>
+					}
+				/>
+				<Route
+					path="/ejercicios/:caseId"
+					element={
+						<ProtectedRoute>
+							<VistaEjercicio />
+						</ProtectedRoute>
+					}
+				/>
 
 				<Route path="*" element={<NotFound />} />
 			</Routes>

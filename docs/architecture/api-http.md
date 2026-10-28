@@ -69,6 +69,20 @@ Ejemplo de un intento; `acciones` es una **cadena** JSON, no un objeto en el con
 
 Cada POST es un intento nuevo; un reenvío no se deduplica. El caso de uso rechaza tiempo negativo. No se valida pertenencia, catálogo de slugs ni consistencia del JSON de acciones. Sin intentos, la consulta por escenario devuelve `terminado: false, intentos: 0`. El historial incluye ID, slug, título, resultado, tiempo, fecha y acciones.
 
+## Intento y evidencia
+
+| Método y ruta | Entrada | Respuesta | Protección |
+|---|---|---|---|
+| `POST /attempts` | `caseId`, `versions`, `practice` opcional | `record` del intento; 201 | JWT |
+| `POST /attempts/:attemptId/commands` | `operationId`, `kind`, `expectedRevision` y el payload cerrado del comando | `applied` o `replayed` con `record`; 200 | JWT y propiedad del intento |
+| `GET /attempts/:attemptId` | — | `record`; 200 | JWT y propiedad del intento |
+
+El actor seudónimo se deriva en el servidor a partir de la identidad autenticada; un `actorPseudonym` en el cuerpo se ignora. Si el intento pertenece a otro actor, la respuesta es 403 sin revelar el contenido.
+
+Códigos: 400 cuerpo o comando inválido; 401 sin sesión; 403 intento ajeno; 404 intento inexistente; 409 revisión obsoleta o versión incompatible; 422 estado inválido o caso desconocido; 503 persistencia no confirmada. El límite global de cuerpo es 32 KiB.
+
+La batería docente no se acepta desde el cliente: un `deliver` con `tests` falla con `TEACHER_BATTERY_SERVER_ONLY` y el servidor registra `server-battery-pending` con lista vacía hasta que exista el ejecutor del corrector. Esa batería nunca se atribuye a las pruebas elegidas por el alumno.
+
 ## Cursos y matrículas
 
 | Método y ruta | Entrada | Respuesta | Protección |

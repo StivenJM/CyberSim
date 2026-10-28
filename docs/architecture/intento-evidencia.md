@@ -105,7 +105,11 @@ citada y los segmentos de ayuda. Reglas aplicadas:
 
 ## Brechas pendientes
 
-- Adaptador Prisma y endpoint HTTP: requieren una migración de esquema. La migración no se ejecutó en
-  esta entrega porque el plan prohíbe ejecutar migraciones sin autorización separada.
+- Persistencia: adaptador Prisma y superficie HTTP implementados. La migración
+  `20261028120000_attempt_evidence` está escrita y **no se aplicó**; `migrate:deploy` la aplicará cuando se
+  autorice.
+- Ejecutor de la batería docente en servidor: hoy `deliver` no acepta pruebas del cliente y registra
+  `server-battery-pending` con lista vacía. Falta ejecutar los verificadores de `@cybersim/exercises` en el
+  backend y sustituir ese marcador.
 - Vistas de escritorio, banco de pruebas y accesibilidad: I03.
-- Verificadores B/Q/C de cada caso: I04–I08.
+- Verificadores B/Q/C en el servidor: hoy corren en el paquete y en el apartado, no en el backend.

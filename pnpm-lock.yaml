@@ -175,6 +175,9 @@ importers:
 
   apps/backend:
     dependencies:
+      '@cybersim/attempt-ledger':
+        specifier: workspace:*
+        version: link:../../packages/attempt-ledger
       '@cybersim/scenario-contract':
         specifier: workspace:*
         version: link:../../packages/scenario-contract

@@ -42,6 +42,14 @@ export type AidLevel = (typeof AID_LEVELS)[number]
 export type RubricDimension = (typeof RUBRIC_DIMENSIONS)[number]
 export type RubricLevel = (typeof RUBRIC_LEVELS)[number]
 
+export interface InvestigatedView {
+	readonly id: string
+	readonly label: string
+	/** `always` views are A0 material; the rest wait for the sealed diagnosis. */
+	readonly gate: 'always' | 'after-diagnosis'
+	readonly description: string
+}
+
 export interface InvestigatedCaseDefinition {
 	readonly id: InvestigatedCaseId
 	readonly cwe: InvestigatedCwe
@@ -54,6 +62,7 @@ export interface InvestigatedCaseDefinition {
 	readonly fixtures: readonly string[]
 	readonly aidSegments: readonly string[]
 	readonly rubricDimensions: readonly RubricDimension[]
+	readonly views: readonly InvestigatedView[]
 }
 
 const ANDINAPAY: InvestigatedCaseDefinition = {
@@ -110,6 +119,44 @@ const ANDINAPAY: InvestigatedCaseDefinition = {
 	],
 	aidSegments: ['A0', 'A1', 'A2a', 'A2b', 'A3'],
 	rubricDimensions: ['D1', 'D2', 'D3', 'D4'],
+	views: [
+		{
+			id: 'expediente',
+			label: 'Expediente',
+			gate: 'always',
+			description: 'Aviso, logs, inventario de claves y copias inmutables.',
+		},
+		{
+			id: 'repositorio',
+			label: 'Repositorio',
+			gate: 'after-diagnosis',
+			description: 'Tres revisiones, árbol, diferencias y búsqueda literal.',
+		},
+		{
+			id: 'banco',
+			label: 'Banco criptográfico',
+			gate: 'after-diagnosis',
+			description: 'AES-256-GCM real sobre los siete envelopes públicos.',
+		},
+		{
+			id: 'claves',
+			label: 'Respuesta de claves',
+			gate: 'after-diagnosis',
+			description: 'Inventario, referencias, custodia y migración.',
+		},
+		{
+			id: 'comprobaciones',
+			label: 'Comprobaciones',
+			gate: 'after-diagnosis',
+			description: 'Ejecuta B/Q/C y devuelve hechos con procedencia.',
+		},
+		{
+			id: 'informe',
+			label: 'Informe',
+			gate: 'after-diagnosis',
+			description: 'Causa, evidencia, alcance, continuidad y límites.',
+		},
+	],
 }
 
 const BIBLIOTECAVIVA: InvestigatedCaseDefinition = {
@@ -171,12 +218,92 @@ const BIBLIOTECAVIVA: InvestigatedCaseDefinition = {
 	],
 	aidSegments: ['A0', 'A1', 'A2', 'A3'],
 	rubricDimensions: ['D1', 'D2', 'D3', 'D4'],
+	views: [
+		{
+			id: 'expediente',
+			label: 'Expediente',
+			gate: 'always',
+			description:
+				'Política, código fuente, esquema, logs y consulta segura de catálogo.',
+		},
+		{
+			id: 'editor',
+			label: 'Editor de cambios',
+			gate: 'after-diagnosis',
+			description:
+				'Controles de consulta, identidad, validación, errores y rol.',
+		},
+		{
+			id: 'historial',
+			label: 'Historial y SQL',
+			gate: 'after-diagnosis',
+			description: 'Texto generado, parámetros enlazados y filas devueltas.',
+		},
+		{
+			id: 'permisos',
+			label: 'Permisos',
+			gate: 'after-diagnosis',
+			description:
+				'Sonda de escritura y lectura de usuarios sobre copia desechable.',
+		},
+		{
+			id: 'comprobaciones',
+			label: 'Comprobaciones',
+			gate: 'after-diagnosis',
+			description: 'Reejecuta BV01–BV16, BV-C y los predicados B/Q/C.',
+		},
+		{
+			id: 'informe',
+			label: 'Informe',
+			gate: 'after-diagnosis',
+			description: 'Frontera de datos y código, causa, corrección y límites.',
+		},
+	],
 }
 
 const TALENTOANDINO: InvestigatedCaseDefinition = {
 	id: 'cwe-434-talentoandino',
 	cwe: 'CWE-434',
 	slug: 'talentoandino-cargas-seguras',
+	views: [
+		{
+			id: 'expediente',
+			label: 'Expediente',
+			gate: 'always',
+			description: 'Requisitos, UI, código, configuración, logs e inventario.',
+		},
+		{
+			id: 'cargas',
+			label: 'Solicitudes de carga',
+			gate: 'after-diagnosis',
+			description: 'Catálogo T01–T13, campo, nombre, MIME y tamaño observado.',
+		},
+		{
+			id: 'almacenamiento',
+			label: 'Almacenamiento y cuarentena',
+			gate: 'after-diagnosis',
+			description:
+				'Ubicación, nombres internos, cuarentena y evidencia conservada.',
+		},
+		{
+			id: 'entrega',
+			label: 'Entrega',
+			gate: 'after-diagnosis',
+			description: 'Handler, propietario, reclutador, visitante y publicación.',
+		},
+		{
+			id: 'comprobaciones',
+			label: 'Comprobaciones',
+			gate: 'after-diagnosis',
+			description: 'TA-B1/B2, TA-Q1–Q6 y el contraste TA-C1.',
+		},
+		{
+			id: 'informe',
+			label: 'Informe',
+			gate: 'after-diagnosis',
+			description: 'Frontera de admisión, causa, contención y límites.',
+		},
+	],
 	capability: 'file-admission',
 	environmentProfile: 'office-3d',
 	operations: [
@@ -231,6 +358,45 @@ const ANDEANLOGIX: InvestigatedCaseDefinition = {
 	id: 'cwe-306-andeanlogix',
 	cwe: 'CWE-306',
 	slug: 'andeanlogix-funciones-criticas',
+	views: [
+		{
+			id: 'expediente',
+			label: 'Expediente',
+			gate: 'always',
+			description: 'Rutas, identidades, política, red y registros de acceso.',
+		},
+		{
+			id: 'peticiones',
+			label: 'Peticiones',
+			gate: 'after-diagnosis',
+			description:
+				'Constructor de peticiones con método, red, actor y payload.',
+		},
+		{
+			id: 'sesiones',
+			label: 'Sesiones y roles',
+			gate: 'after-diagnosis',
+			description: 'Registro confiable, vigencia y encabezados de rol.',
+		},
+		{
+			id: 'rutas',
+			label: 'Rutas y red',
+			gate: 'after-diagnosis',
+			description: 'Ingreso público, Operaciones, puerto 9090 y mantenimiento.',
+		},
+		{
+			id: 'comprobaciones',
+			label: 'Comprobaciones',
+			gate: 'after-diagnosis',
+			description: 'M306, F306, P306, U306 y los predicados B/Q/C.',
+		},
+		{
+			id: 'informe',
+			label: 'Informe',
+			gate: 'after-diagnosis',
+			description: 'Función expuesta, evidencia, efecto y límite residual.',
+		},
+	],
 	capability: 'authorization-matrix',
 	environmentProfile: 'office-3d',
 	operations: [
@@ -278,6 +444,45 @@ const NUBEANDINA: InvestigatedCaseDefinition = {
 	id: 'cwe-502-nubeandina',
 	cwe: 'CWE-502',
 	slug: 'nubeandina-sesiones-no-confiables',
+	views: [
+		{
+			id: 'expediente',
+			label: 'Expediente',
+			gate: 'always',
+			description: 'Código, logs, dependencias, avisos y documentos S01–S08.',
+		},
+		{
+			id: 'inspector',
+			label: 'Inspector de payload',
+			gate: 'after-diagnosis',
+			description: 'Base64, JSON, tag, esquema y campos del documento.',
+		},
+		{
+			id: 'traza',
+			label: 'Traza del flujo',
+			gate: 'after-diagnosis',
+			description: 'Decodificar, reconstruir, aplicar, validar y publicar.',
+		},
+		{
+			id: 'dependencias',
+			label: 'Dependencias',
+			gate: 'after-diagnosis',
+			description:
+				'Inventario, versión usada, diferencias y política de revisión.',
+		},
+		{
+			id: 'comprobaciones',
+			label: 'Comprobaciones',
+			gate: 'after-diagnosis',
+			description: 'NA-B1/B2, NA-Q1–Q6 y el contraste NA-C1.',
+		},
+		{
+			id: 'informe',
+			label: 'Informe',
+			gate: 'after-diagnosis',
+			description: 'Frontera de confianza, efectos, autoridad y límites.',
+		},
+	],
 	capability: 'session-restore',
 	environmentProfile: 'office-3d',
 	operations: [

@@ -19,4 +19,4 @@ Los comandos se ejecutan desde la raíz del repositorio salvo indicación expres
 
 ## Ejercicios investigados
 
-- [Implementación futura de ejercicios investigados](implementar-ejercicios-investigados.md): cinco casos, diseño y capacidades pendientes; sin implementación.
+- [Implementar ejercicios investigados](implementar-ejercicios-investigados.md): procedimiento y brechas; el dominio, los verificadores y el apartado ya existen, falta la UI por caso y el Worker SQL.

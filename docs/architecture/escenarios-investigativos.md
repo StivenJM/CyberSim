@@ -1,4 +1,9 @@
-# Escenarios investigativos: integración propuesta, no implementada
+# Escenarios investigativos: integración propuesta
+
+> **Estado a 28-10-2026.** El registro cerrado de casos, el sobre de intento, los cinco modelos con
+> verificadores B/Q/C, el apartado `/ejercicios` y los cinco manifiestos están implementados. Este documento
+> conserva el análisis de la integración original; las brechas vigentes están en
+> [implementación](../project/ejercicios/implementacion.md).
 
 Conjunto 2.0: cinco [fichas canónicas](../project/ejercicios/README.md), manteniendo oficina 3D, monitor y escritorio. Este documento separa evidencia del código revisado de los componentes que faltan. No modifica contratos ni registra aplicaciones.
 

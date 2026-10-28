@@ -2,7 +2,7 @@
 
 > **Cierre documental 2.0:** integración revisada y cálculos de autoría comprobados. El siguiente trabajo es implementar/prototipar y validar según el plan, con autorización separada; esta entrega no implementa la aplicación ni acredita validez con estudiantes.
 
-**Pregunta rectora:** «Qué tanto saben los estudiantes de ciberseguridad y cómo evaluarlos». Se adopta el conjunto del compañero y se retiran los diseños anteriores. El [marco](../marco-evaluacion-ciberseguridad.md) conserva D1–D4, ayudas A0–A3 y niveles ordinales 0–3/NE. **Esta entrega define contenido e implementación futura; no incorpora laboratorios ni demuestra validez con estudiantes.**
+**Pregunta rectora:** «Qué tanto saben los estudiantes de ciberseguridad y cómo evaluarlos». Se adopta el conjunto del compañero y se retiran los diseños anteriores. El [marco](../marco-evaluacion-ciberseguridad.md) conserva D1–D4, ayudas A0–A3 y niveles ordinales 0–3/NE. **El dominio, los verificadores B/Q/C, el apartado `/ejercicios` y los cinco manifiestos están implementados** ([estado](implementacion.md)); no hay validación con estudiantes.
 
 ## Lectura y contrato canónico
 

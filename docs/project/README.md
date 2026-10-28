@@ -4,7 +4,7 @@ Contexto no técnico de CyberSim: propósito, actores, alcance, reglas educativa
 
 | Documento | Contenido |
 |---|---|
-| [Cinco ejercicios definidos: especificaciones2.0](ejercicios/README.md) | Contrato común y cinco casos completos con materiales, estados, soluciones, rúbricas, investigación adicional y comprobaciones; sin implementación ni validación con estudiantes |
+| [Cinco ejercicios definidos: especificaciones2.0](ejercicios/README.md) | Contrato común, cinco casos completos y su [estado de implementación](ejercicios/implementacion.md); sin validación con estudiantes |
 | [Plan de implementación futura](ejercicios/plan-implementacion.md) | Tareas pendientes, dependencias, invariantes y aceptación para los cinco casos |
 | [Investigación de los nuevos casos](ejercicios/investigacion-especificaciones.md) |17revisiones progresivas, fuentes por caso, decisiones y límites |
 | [Visión y alcance](vision-y-alcance.md) | Problema, propuesta educativa, actores, funciones y límites |

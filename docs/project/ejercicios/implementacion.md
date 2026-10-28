@@ -30,9 +30,10 @@ color para indicar el resultado.
 - **AndinaPay** descifra los siete envelopes AES-256-GCM publicados con WebCrypto y exige
   `ciphertext || tag`; una clave, tag o AAD incorrectos devuelven `AUTHENTICATION_FAILED` sin texto
   parcial. La recuperación completa exige recifrado con plaintext conservado y lectura posterior.
-- **BibliotecaViva** ejecuta SQLite real (`node:sqlite`) sobre el esquema y las filas de la ficha,
-  reconstruido por prueba. El verificador reejecuta la batería completa, incluida la carga de
-  contraste, la identidad por sesión, el error público frente al inspector autorizado y la sonda de
+- **BibliotecaViva** ejecuta SQLite real. En las pruebas del paquete usa `node:sqlite`; en el navegador usa
+  `sql.js` dentro de un Worker aislado, con una base en memoria por prueba. El verificador reejecuta la
+  batería completa, incluida la carga de contraste, la identidad por sesión, el error público frente al
+  inspector autorizado y la sonda de
   escritura denegada por una conexión de solo lectura.
 - **TalentoAndino** clasifica el catálogo inerte T01–T13 y el inventario LG01–LG03, aplica límites
   exactos, asigna IDs internos sin usar el nombre original y conserva la relación del propietario.
@@ -58,9 +59,9 @@ color para indicar el resultado.
 
 ## Límites declarados
 
-- BibliotecaViva necesita el motor SQLite/WASM dentro de un Worker para la ejecución en navegador. El
-  apartado lo dice explícitamente y no simula el banco; el verificador se ejecuta en las pruebas del
-  paquete con SQLite real.
+- BibliotecaViva ejecuta el banco real en un Worker SQLite/WASM (`sql.js` fijado a una versión exacta, base
+  en memoria por prueba, presupuesto de 4 s y terminación del Worker al agotarse). Decisión y fuentes en
+  [runtime SQL](runtime-sql.md).
 - Las vistas propias de cada caso (expediente, banco criptográfico, editor de parches) son I03. El
   apartado actual expone el modelo y el verificador, no un escritorio por caso.
 - Persistencia: adaptador Prisma y `/attempts` implementados; falta aplicar la migración y ejecutar la

@@ -17,6 +17,14 @@ export interface CreateAttemptOptions {
 	readonly practice?: boolean
 }
 
+export type ReadAttemptOutcome =
+	| { readonly status: 'ok'; readonly record: AttemptRecord }
+	| {
+			readonly status: 'rejected'
+			readonly code: Extract<LedgerOutcome, { status: 'rejected' }>['code']
+			readonly errors: readonly string[]
+	  }
+
 export interface AttemptServiceOptions {
 	/**
 	 * Versions of the interpreter reading this ledger. When present, a record
@@ -30,6 +38,13 @@ function rejected(
 	code: Extract<LedgerOutcome, { status: 'rejected' }>['code'],
 	errors: readonly string[],
 ): LedgerOutcome {
+	return { status: 'rejected', code, errors }
+}
+
+function readRejected(
+	code: Extract<LedgerOutcome, { status: 'rejected' }>['code'],
+	errors: readonly string[],
+): ReadAttemptOutcome {
 	return { status: 'rejected', code, errors }
 }
 
@@ -68,6 +83,35 @@ export class AttemptService {
 			])
 		}
 		return { status: 'applied', record }
+	}
+
+	async read(
+		attemptId: string,
+		actorPseudonym: string,
+	): Promise<ReadAttemptOutcome> {
+		const record = await this.store.load(attemptId)
+		if (!record) {
+			return readRejected('not-found', [
+				`attempt "${attemptId}" does not exist`,
+			])
+		}
+		if (record.actor.pseudonym !== actorPseudonym) {
+			return readRejected('forbidden', [
+				'attempt: the requested attempt belongs to another actor',
+			])
+		}
+		if (this.options.interpreter) {
+			const compatibility = isAttemptCompatible(
+				record,
+				this.options.interpreter,
+			)
+			if (!compatibility.compatible) {
+				return readRejected('version-mismatch', [
+					compatibility.detail ?? 'attempt: interpreter versions do not match',
+				])
+			}
+		}
+		return { status: 'ok', record }
 	}
 
 	async execute(

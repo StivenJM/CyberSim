@@ -63,5 +63,6 @@ color para indicar el resultado.
   paquete con SQLite real.
 - Las vistas propias de cada caso (expediente, banco criptográfico, editor de parches) son I03. El
   apartado actual expone el modelo y el verificador, no un escritorio por caso.
-- Persistencia del intento y endpoint HTTP siguen pendientes de migración autorizada.
+- Persistencia: adaptador Prisma y `/attempts` implementados; falta aplicar la migración y ejecutar la
+  batería docente en el servidor.
 - Informe, rúbrica y validación con personas corresponden a I10 e I12.

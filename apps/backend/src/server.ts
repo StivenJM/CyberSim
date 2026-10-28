@@ -1,8 +1,12 @@
 import 'dotenv/config'
+import { AttemptService } from '@cybersim/attempt-ledger'
 import cors from 'cors'
 import express from 'express'
+import { createAttemptRouter } from './attempt/infrastructure/AttemptController.js'
+import { PrismaAttemptStore } from './attempt/infrastructure/PrismaAttemptStore.js'
 import authRouter from './auth/infrastructure/controllers/AuthController.js'
 import progresoRouter from './auth/infrastructure/controllers/ProgresoController.js'
+import { authMiddleware } from './auth/infrastructure/middlewares/authMiddleware.js'
 import groupsRouter from './groups/infrastructure/controller/GroupsController.js'
 import { recover } from './integrations/coordinator.js'
 import {
@@ -39,6 +43,14 @@ app.get('/health/status', async (_req, res) => {
 })
 app.use('/auth', authRouter)
 app.use('/progreso', progresoRouter)
+app.use(
+	'/attempts',
+	authMiddleware,
+	createAttemptRouter({
+		service: new AttemptService(new PrismaAttemptStore()),
+		actorId: (request) => request.user?.id_usuario_auth ?? null,
+	}),
+)
 app.use('/groups', groupsRouter)
 app.use('/feedback', feedbackRouter)
 app.use('/course-analysis', analysisRouter)

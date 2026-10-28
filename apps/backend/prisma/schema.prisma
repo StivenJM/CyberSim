@@ -206,3 +206,23 @@ model documento_conocimiento {
   ronda String? @db.Uuid
 }
 
+/// Evidencia de un intento de ejercicio investigado.
+/// `record` guarda el sobre completo de `@cybersim/scenario-contract`; las columnas
+/// desnormalizadas permiten el compare-and-swap sobre `sequence` y la consulta por
+/// actor seudónimo, sin almacenar identidad directa del estudiante.
+model intento_evidencia {
+  id_intento      String   @id @db.VarChar(64)
+  actor_pseudonym String   @db.VarChar(64)
+  case_id         String   @db.VarChar(64)
+  schema_version  Int
+  sequence        Int      @default(0)
+  status          String   @db.VarChar(32)
+  content_hash    String   @db.VarChar(80)
+  record          Json
+  created_at      DateTime @default(now()) @db.Timestamptz(6)
+  updated_at      DateTime @updatedAt @db.Timestamptz(6)
+
+  @@index([actor_pseudonym])
+}
+
+

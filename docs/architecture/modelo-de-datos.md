@@ -36,6 +36,7 @@ Cada perfil puede carecer de vínculo a identidad porque su FK es opcional. El e
 | `revision_escenario` | Número, estado, manifiesto JSON, SHA-256, versiones y semilla | Número/hash únicos por escenario; borrado en cascada desde identidad |
 | `retroalimentacion_estudiante` | ID, estudiante, slug, cuatro textos, número de intentos y fecha | Cascada al eliminar estudiante; histórico de generaciones |
 | `retroalimentacion_curso` | ID, curso, ID profesor desnormalizado, cinco textos y fecha | Cascada al eliminar curso; `id_profesor` sin FK directa |
+| `intento_evidencia` | ID del intento, actor seudónimo, caso, versión, secuencia, estado, hash y sobre JSON | Sin FK a la cuenta; índice por actor; compare-and-swap sobre `sequence` |
 
 La mayor parte de IDs educativos son enteros autoincrementales. Escenarios y revisiones usan UUID. Matrícula usa una fecha sin hora; feedback usa timestamp y progreso fecha/hora opcional. El slug se conserva en progreso para compatibilidad y la FK de revisión es nullable para intentos históricos.
 
@@ -49,6 +50,8 @@ Análisis de curso serializa secciones como JSON en columnas de texto. `resumen`
 
 La única unicidad de matrícula es su ID autoincremental. `hasAnyMatricula` antes de `createMatricula` no garantiza la regla de un curso por estudiante bajo concurrencia. Definir la restricción adecuada requiere decidir si la regla futura seguirá siendo un solo curso o un curso único por pareja. Los intentos repetidos, en cambio, son parte del modelo previsto; el riesgo es reenvío accidental sin idempotencia.
 
+`intento_evidencia.record` guarda el sobre completo de `@cybersim/scenario-contract`; las columnas desnormalizadas (`case_id`, `status`, `content_hash`, `sequence`) permiten consultar y hacer compare-and-swap sin leer el JSON. No hay FK hacia `usuario_auth`: la propiedad se resuelve con `actor_pseudonym`, derivado en el servidor. Esta tabla no sustituye `progreso`; son registros separados con semánticas distintas.
+
 ## Migraciones y cliente
 
 | Recurso | Uso |
@@ -58,10 +61,13 @@ La única unicidad de matrícula es su ID autoincremental. `hasAnyMatricula` ant
 | [Configuración de Prisma](../../apps/backend/prisma.config.ts) | CLI: `DIRECT_URL` con fallback `DATABASE_URL` |
 | [Conexión de ejecución](../../apps/backend/src/auth/infrastructure/db/prisma.ts) | Adaptador PostgreSQL sobre `DATABASE_URL` |
 | [Seed](../../apps/backend/prisma/seed.ts) | Cuentas confirmadas, un curso, matrículas e intento local |
+| [Evidencia de intentos](../../apps/backend/prisma/migrations/20261028120000_attempt_evidence/migration.sql) | Crea `intento_evidencia` con índice por actor seudónimo; aditiva |
 
 El cliente se genera en `apps/backend/src/generated/prisma` y el build lo copia a `dist/generated/prisma` con [un script](../../apps/backend/scripts/copy-prisma-client.mjs). Ambas rutas son artefactos ignorados.
 
 Para una base nueva aplicar migraciones con `migrate:deploy`, ejecutar el seed de instalación y después `db:sync-scenarios` para persistir los manifiestos publicados completos; la preparación local de Docker realiza esa secuencia. Para cambios de desarrollo crear una migración con `db:migrate`. `db:push` sincroniza sin crear historial y es una alternativa para bases desechables. El seed usa credenciales conocidas de prueba; no ejecutarlo sobre datos reales.
+
+La migración `20261028120000_attempt_evidence` está escrita y **no se aplicó** en este entorno. No altera tablas existentes y no forma parte de la preparación automática hasta que se autorice su despliegue.
 
 ## Fuera de PostgreSQL
 

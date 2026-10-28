@@ -340,3 +340,28 @@
 	outline: 2px solid #38bdf8;
 	outline-offset: 1px;
 }
+
+.controlGrid {
+	display: grid;
+	grid-template-columns: repeat(auto-fit, minmax(12rem, 1fr));
+	gap: 0.75rem 1rem;
+	margin-bottom: 1rem;
+}
+
+.select {
+	display: block;
+	width: 100%;
+	margin-top: 0.3rem;
+	padding: 0.45rem 0.5rem;
+	border: 1px solid rgba(148, 163, 184, 0.35);
+	border-radius: 0.5rem;
+	background: rgba(2, 6, 23, 0.7);
+	color: #e2e8f0;
+	font: inherit;
+	font-size: 0.85rem;
+}
+
+.select:focus-visible {
+	outline: 2px solid #38bdf8;
+	outline-offset: 1px;
+}

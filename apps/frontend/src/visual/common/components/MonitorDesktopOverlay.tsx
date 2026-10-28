@@ -1,7 +1,9 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
+import { useNavigate } from 'react-router'
 import Dispositivos from '../../features/hardening-de-dispositivos/pages/Dispositivos'
 import { useScreenTransition } from '../contexts/ScreenTransitionContext'
+
 import styles from '../styles/MonitorDesktopOverlay.module.css'
 
 /**
@@ -11,6 +13,7 @@ import styles from '../styles/MonitorDesktopOverlay.module.css'
  */
 const MonitorDesktopOverlay: React.FC = () => {
 	const { desktopMode, monitorRect, exitDesktopMode } = useScreenTransition()
+	const navigate = useNavigate()
 
 	// Escape key to exit desktop mode
 	useEffect(() => {
@@ -35,6 +38,16 @@ const MonitorDesktopOverlay: React.FC = () => {
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.1, ease: 'easeOut' }}
 				>
+					<button
+						className={styles.launcher}
+						onClick={() => {
+							exitDesktopMode()
+							navigate('/ejercicios')
+						}}
+						title="Abrir el apartado de ejercicios"
+					>
+						Ejercicios
+					</button>
 					<button
 						className={styles.closeButton}
 						onClick={exitDesktopMode}

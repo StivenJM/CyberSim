@@ -1,21 +1,24 @@
 import {
+	adapterFor,
 	EXERCISE_INDEX,
 	type ExerciseReport,
 	runExercise,
 	workspaceViews,
 } from '@cybersim/exercises'
 import { getInvestigatedCase } from '@cybersim/scenario-contract'
-import { type KeyboardEvent, useRef, useState } from 'react'
+import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 
 import styles from '../styles/Ejercicios.module.css'
 
+type RunMode = 'initial' | 'reference' | 'current'
+
 type RunState =
 	| { readonly status: 'idle' }
-	| { readonly status: 'running'; readonly mode: 'initial' | 'reference' }
+	| { readonly status: 'running'; readonly mode: RunMode }
 	| {
 			readonly status: 'done'
-			readonly mode: 'initial' | 'reference'
+			readonly mode: RunMode
 			readonly report: ExerciseReport
 	  }
 	| { readonly status: 'unavailable'; readonly reason: string }
@@ -30,7 +33,21 @@ export default function VistaEjercicio() {
 	const [claim, setClaim] = useState('')
 	const [active, setActive] = useState('expediente')
 	const [run, setRun] = useState<RunState>({ status: 'idle' })
+	const [bench, setBench] = useState<unknown>(() =>
+		caseId ? adapterFor(caseId)?.initialState() : undefined,
+	)
+	const [benchError, setBenchError] = useState<string | null>(null)
 	const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
+	const adapter = caseId ? adapterFor(caseId) : undefined
+
+	useEffect(() => {
+		setBench(adapter?.initialState())
+		setBenchError(null)
+		setRun({ status: 'idle' })
+		setActive('expediente')
+		setSealed(false)
+		setClaim('')
+	}, [adapter])
 
 	const views = caseId
 		? workspaceViews(caseId, { diagnosisSealed: sealed })
@@ -62,6 +79,42 @@ export default function VistaEjercicio() {
 				status: 'error',
 				reason: error instanceof Error ? error.message : 'Fallo técnico',
 			})
+		}
+	}
+
+	const verifyCurrent = async () => {
+		if (!adapter) return
+		setRun({ status: 'running', mode: 'current' })
+		const result = await adapter.verify(bench)
+		setRun(
+			result.kind === 'ok'
+				? { status: 'done', mode: 'current', report: result.report }
+				: { status: 'unavailable', reason: result.reason },
+		)
+	}
+
+	const applyControl = (
+		control: NonNullable<typeof adapter>['controls'][number],
+		value: string,
+	) => {
+		const result = control.apply(bench, value)
+		if (result.ok) {
+			setBench(result.state)
+			setBenchError(null)
+		} else {
+			setBenchError(result.error ?? 'Control rechazado')
+		}
+	}
+
+	const runBenchAction = async (
+		action: NonNullable<typeof adapter>['actions'][number],
+	) => {
+		const result = await action.apply(bench)
+		if (result.ok) {
+			setBench(result.state)
+			setBenchError(null)
+		} else {
+			setBenchError(result.error ?? 'Acción rechazada')
 		}
 	}
 
@@ -208,6 +261,14 @@ export default function VistaEjercicio() {
 								<button
 									type="button"
 									className={styles.button}
+									onClick={() => void verifyCurrent()}
+									disabled={run.status === 'running'}
+								>
+									Verificar banco actual
+								</button>
+								<button
+									type="button"
+									className={styles.button}
 									onClick={() => void execute('initial')}
 									disabled={run.status === 'running'}
 								>
@@ -243,36 +304,94 @@ export default function VistaEjercicio() {
 
 					{activeView.id !== 'expediente' &&
 					activeView.id !== 'comprobaciones' ? (
-						<div className={styles.grid}>
-							<section aria-labelledby="operaciones-title">
-								<h2 id="operaciones-title" className={styles.panelTitle}>
-									Operaciones declaradas
-								</h2>
-								<ul className={styles.materialList}>
-									{definition.operations.map((operation) => (
-										<li key={operation}>
-											<code>{operation}</code>
-										</li>
-									))}
-								</ul>
-							</section>
-							<section aria-labelledby="controles-title">
-								<h2 id="controles-title" className={styles.panelTitle}>
-									Controles del modelo
-								</h2>
-								<ul className={styles.materialList}>
-									{definition.controls.map((control) => (
-										<li key={control}>
-											<code>{control}</code>
-										</li>
-									))}
-								</ul>
-								<p className={styles.hint}>
-									El banco interactivo de esta vista se conecta al modelo del
-									caso en la entrega de UI correspondiente; aquí se muestra el
-									repertorio cerrado que el manifiesto admite.
+						<div>
+							{adapter && adapter.controls.length > 0 ? (
+								<section aria-labelledby="controles-title">
+									<h2 id="controles-title" className={styles.panelTitle}>
+										Controles del modelo
+									</h2>
+									<div className={styles.controlGrid}>
+										{adapter.controls.map((control) => (
+											<label key={control.id} className={styles.label}>
+												{control.label}
+												<select
+													className={styles.select}
+													value={control.current(bench)}
+													onChange={(event) =>
+														applyControl(control, event.target.value)
+													}
+												>
+													{control.options.map((option) => (
+														<option key={option.value} value={option.value}>
+															{option.label}
+														</option>
+													))}
+												</select>
+											</label>
+										))}
+									</div>
+								</section>
+							) : null}
+
+							{adapter && adapter.actions.length > 0 ? (
+								<section aria-labelledby="acciones-title">
+									<h2 id="acciones-title" className={styles.panelTitle}>
+										Acciones del banco
+									</h2>
+									<div className={styles.actions}>
+										{adapter.actions.map((action) => (
+											<button
+												key={action.id}
+												type="button"
+												className={styles.button}
+												onClick={() => void runBenchAction(action)}
+											>
+												{action.label}
+											</button>
+										))}
+									</div>
+								</section>
+							) : null}
+
+							{benchError ? (
+								<p className={styles.notice} role="alert">
+									{benchError}
 								</p>
-							</section>
+							) : null}
+
+							<div className={styles.actions}>
+								<button
+									type="button"
+									className={styles.button}
+									onClick={() => void verifyCurrent()}
+								>
+									Verificar estado actual
+								</button>
+								<button
+									type="button"
+									className={styles.button}
+									onClick={() => {
+										setBench(adapter?.initialState())
+										setBenchError(null)
+										setRun({ status: 'idle' })
+									}}
+								>
+									Reiniciar banco
+								</button>
+							</div>
+
+							<div aria-live="polite">
+								{run.status === 'done' ? (
+									<ReportTable report={run.report} mode={run.mode} />
+								) : null}
+								{run.status === 'unavailable' ? (
+									<p className={styles.notice}>{run.reason}</p>
+								) : null}
+							</div>
+
+							<p className={styles.hint}>
+								Operaciones declaradas: {definition.operations.join(' · ')}
+							</p>
 						</div>
 					) : null}
 				</div>
@@ -286,7 +405,7 @@ function ReportTable({
 	mode,
 }: {
 	readonly report: ExerciseReport
-	readonly mode: 'initial' | 'reference'
+	readonly mode: RunMode
 }) {
 	return (
 		<>
@@ -304,7 +423,11 @@ function ReportTable({
 						.join(' · ') || 'sin contraste'}
 				</span>
 				<span className={styles.chipNeutral}>
-					{mode === 'initial' ? 'Estado inicial' : 'Solución de referencia'}
+					{mode === 'initial'
+						? 'Estado inicial'
+						: mode === 'reference'
+							? 'Solución de referencia'
+							: 'Banco actual'}
 				</span>
 			</div>
 			{report.residualExposure ? (

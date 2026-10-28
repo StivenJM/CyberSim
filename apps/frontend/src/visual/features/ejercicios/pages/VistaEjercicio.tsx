@@ -69,24 +69,17 @@ export default function VistaEjercicio() {
 		event: KeyboardEvent<HTMLButtonElement>,
 		index: number,
 	) => {
-		const enabled = views
-			.map((view, position) => ({ view, position }))
-			.filter((entry) => entry.view.available)
-			.map((entry) => entry.position)
-		if (enabled.length === 0) return
-		const current = enabled.indexOf(index)
+		if (views.length === 0) return
 		let next: number | undefined
-		if (event.key === 'ArrowRight')
-			next = enabled[(current + 1) % enabled.length]
-		if (event.key === 'ArrowLeft') {
-			next = enabled[(current - 1 + enabled.length) % enabled.length]
-		}
-		if (event.key === 'Home') next = enabled[0]
-		if (event.key === 'End') next = enabled[enabled.length - 1]
+		if (event.key === 'ArrowRight') next = (index + 1) % views.length
+		if (event.key === 'ArrowLeft')
+			next = (index - 1 + views.length) % views.length
+		if (event.key === 'Home') next = 0
+		if (event.key === 'End') next = views.length - 1
 		if (next === undefined) return
 		event.preventDefault()
 		tabRefs.current[next]?.focus()
-		setActive(views[next].id)
+		if (views[next].available) setActive(views[next].id)
 	}
 
 	return (

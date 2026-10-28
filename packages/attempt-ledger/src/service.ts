@@ -78,9 +78,12 @@ export class AttemptService {
 
 		const inserted = await this.store.insert(record)
 		if (!inserted.ok) {
-			return rejected('invalid-state', [
-				inserted.detail ?? `attempt "${record.attemptId}" is already stored`,
-			])
+			return rejected(
+				inserted.code === 'revision-conflict'
+					? 'revision-conflict'
+					: 'persistence-failure',
+				[inserted.detail ?? `attempt "${record.attemptId}" is already stored`],
+			)
 		}
 		return { status: 'applied', record }
 	}

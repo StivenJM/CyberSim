@@ -84,9 +84,19 @@ function parseCommand(body: unknown): LedgerCommand {
 		throw badRequest('INVALID_COMMAND')
 	}
 	if (value.kind === 'deliver') {
-		const battery = value.teacherBattery as { tests?: unknown } | undefined
-		if (battery && Array.isArray(battery.tests) && battery.tests.length > 0) {
-			throw new ServiceError('TEACHER_BATTERY_SERVER_ONLY', 422)
+		if ('tests' in value) throw badRequest('INVALID_COMMAND')
+		const battery = value.teacherBattery
+		if (battery !== undefined) {
+			if (!battery || typeof battery !== 'object' || Array.isArray(battery)) {
+				throw badRequest('INVALID_COMMAND')
+			}
+			const tests = (battery as { tests?: unknown }).tests
+			if (tests !== undefined && !Array.isArray(tests)) {
+				throw badRequest('INVALID_COMMAND')
+			}
+			if (Array.isArray(tests) && tests.length > 0) {
+				throw new ServiceError('TEACHER_BATTERY_SERVER_ONLY', 422)
+			}
 		}
 		return {
 			...(value as unknown as LedgerCommand),

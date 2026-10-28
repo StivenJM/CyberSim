@@ -1,6 +1,7 @@
 import type { Server } from 'node:http'
 import {
 	AttemptService,
+	type AttemptStore,
 	InMemoryAttemptStore,
 	type LedgerCommand,
 } from '@cybersim/attempt-ledger'
@@ -201,6 +202,60 @@ describe('attempt HTTP surface', () => {
 
 		const foreign = await send({ ...command, operationId: 'op-3' }, '8')
 		expect(foreign.status).toBe(403)
+	})
+
+	it('returns 503 when a create cannot be persisted', async () => {
+		const failing: AttemptStore = {
+			async load() {
+				return undefined
+			},
+			async insert() {
+				return {
+					ok: false,
+					code: 'persistence-failure',
+					detail: 'database down',
+				}
+			},
+			async save() {
+				return {
+					ok: false,
+					code: 'persistence-failure',
+					detail: 'database down',
+				}
+			},
+		}
+		const harness = await start({ service: new AttemptService(failing) })
+		const response = await create(harness.base, '7')
+
+		expect(response.status).toBe(503)
+		expect(response.body.code).toBe('persistence-failure')
+	})
+
+	it('rejects malformed deliver payloads instead of normalising them', async () => {
+		const harness = await start()
+		await create(harness.base, '7')
+		const send = (body: unknown) =>
+			fetch(`${harness.base}/attempt-1/commands`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json', 'x-test-actor': '7' },
+				body: JSON.stringify(body),
+			})
+		const base = {
+			kind: 'deliver',
+			operationId: 'deliver-x',
+			expectedRevision: 0,
+			evidenceHash: `sha256:${'b'.repeat(64)}`,
+		}
+
+		expect((await send({ ...base, tests: [] })).status).toBe(400)
+		expect(
+			(
+				await send({
+					...base,
+					teacherBattery: { batteryId: 'x', tests: 'forged' },
+				})
+			).status,
+		).toBe(400)
 	})
 
 	it('refuses a client-supplied teacher battery', async () => {

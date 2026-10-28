@@ -151,6 +151,20 @@ pnpm test:e2e --grep @slow
 
 El segundo comando incluye el smoke WebGL. Para consultar el reporte HTML usa `pnpm --filter @cybersim/frontend exec playwright show-report playwright-report/e2e` después de una ejecución con el reporter HTML predeterminado, o revisa trazas y errores en los artefactos de la ejecución. Los reportes E2E e integración usan carpetas hermanas para que una ejecución no borre las evidencias de la otra.
 
+### Recorridos de los ejercicios investigados
+
+La suite `tests/e2e/ejercicios.spec.ts` cubre los cinco casos del conjunto 2.0: catálogo, A0, D1 obligatorio,
+banco por caso y las rutas de referencia, incluida la verificación SQL dentro del Worker SQLite/WASM. No
+necesita Express ni PostgreSQL: Vite sirve la aplicación y las peticiones HTTP se interceptan.
+
+```powershell
+pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --reporter=list
+if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
+```
+
+Son 11 recorridos; la suite E2E completa son 24. **No** forman parte de `pnpm test:integration`: esa suite
+usa el stack Docker y el reset de datos, y no debe lanzarse desde este procedimiento.
+
 ## 5. Asegurar el build y revisar sus artefactos
 
 `pnpm build` ejecuta ambos workspaces. El frontend pasa TypeScript y genera su bundle con Vite. El backend genera Prisma, compila TypeScript y copia el cliente generado para la ejecución.

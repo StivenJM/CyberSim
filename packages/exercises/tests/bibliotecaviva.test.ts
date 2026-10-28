@@ -125,21 +125,28 @@ describe('bibliotecaViva exercise', () => {
 		expect(report.Q).toBe(true)
 	})
 
-	it('fails Q for title_only, orm_raw, request identity and client validation', () => {
-		for (const config of [
-			{ ...REFERENCE, constructor: 'title_only' as const },
-			{ ...REFERENCE, constructor: 'orm_raw' as const },
+	it.each([
+		['title_only', { ...REFERENCE, constructor: 'title_only' as const }],
+		['orm_raw', { ...REFERENCE, constructor: 'orm_raw' as const }],
+		[
+			'identidad por request',
 			{ ...REFERENCE, actorSource: 'request' as const },
+		],
+		[
+			'validación solo cliente',
 			{ ...REFERENCE, validation: 'client_only' as const },
-			{ ...REFERENCE, dbRole: 'read_write' as const },
+		],
+		['rol de escritura', { ...REFERENCE, dbRole: 'read_write' as const }],
+		[
+			'error crudo con escritura',
 			{
 				...REFERENCE,
 				errorPolicy: 'raw' as const,
 				dbRole: 'read_write' as const,
 			},
-		]) {
-			expect(verifyBibliotecaViva(config, () => createPort()).Q).toBe(false)
-		}
+		],
+	])('fails Q for %s', (_name, config) => {
+		expect(verifyBibliotecaViva(config, () => createPort()).Q).toBe(false)
 	})
 
 	it('fails the legitimate function with a disabled account', () => {

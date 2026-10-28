@@ -283,6 +283,55 @@ describe('attempt HTTP surface', () => {
 		)
 	})
 
+	it('refuses a client battery on an otherwise deliverable attempt', async () => {
+		const harness = await start()
+		await create(harness.base, '7')
+		const send = (body: unknown) =>
+			fetch(`${harness.base}/attempt-1/commands`, {
+				method: 'POST',
+				headers: { 'content-type': 'application/json', 'x-test-actor': '7' },
+				body: JSON.stringify(body),
+			})
+		expect(
+			(
+				await send({
+					kind: 'save-diagnosis',
+					operationId: 'd1',
+					expectedRevision: 0,
+					frontierId: 'f1',
+					citedArtifactIds: ['a1'],
+					claim: 'leak via env',
+				})
+			).status,
+		).toBe(200)
+		expect(
+			(
+				await send({
+					kind: 'save-revision',
+					operationId: 'r1',
+					expectedRevision: 0,
+					diffHash: `sha256:${'a'.repeat(64)}`,
+				})
+			).status,
+		).toBe(200)
+
+		const refused = await send({
+			kind: 'deliver',
+			operationId: 'v1',
+			expectedRevision: 1,
+			evidenceHash: `sha256:${'b'.repeat(64)}`,
+			teacherBattery: {
+				batteryId: 'forged',
+				tests: [{ testId: 'C1', source: 'teacher', outcome: 'pass' }],
+			},
+		})
+
+		expect(refused.status).toBe(422)
+		expect(((await refused.json()) as { code: string }).code).toBe(
+			'TEACHER_BATTERY_SERVER_ONLY',
+		)
+	})
+
 	it('rejects a malformed command before touching the ledger', async () => {
 		const harness = await start()
 		await create(harness.base, '7')

@@ -72,6 +72,13 @@ export interface ExerciseAdapter {
 	readonly verify: (state: unknown) => Promise<AdapterVerification>
 }
 
+export interface AdapterDependencies {
+	/** Browser (or test) verifier for the SQL case, which needs a real engine. */
+	readonly verifySql?: (
+		config: BibliotecaVivaState['config'],
+	) => Promise<AdapterVerification>
+}
+
 function options(values: readonly string[]): readonly ControlOption[] {
 	return values.map((value) => ({ value, label: value }))
 }
@@ -440,6 +447,18 @@ const ADAPTERS: Readonly<Record<string, ExerciseAdapter>> = {
 	},
 }
 
-export function adapterFor(caseId: string): ExerciseAdapter | undefined {
-	return ADAPTERS[caseId]
+export function adapterFor(
+	caseId: string,
+	dependencies: AdapterDependencies = {},
+): ExerciseAdapter | undefined {
+	const base = ADAPTERS[caseId]
+	if (!base) return undefined
+	const verifySql = dependencies.verifySql
+	if (caseId === 'cwe-89-bibliotecaviva' && verifySql) {
+		return {
+			...base,
+			verify: async (state) => verifySql((state as BibliotecaVivaState).config),
+		}
+	}
+	return base
 }

@@ -10,6 +10,7 @@ import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 
 import styles from '../styles/Ejercicios.module.css'
+import { verifyBibliotecaVivaInWorker } from '../worker/sqliteClient'
 
 type RunMode = 'initial' | 'reference' | 'current'
 
@@ -38,7 +39,9 @@ export default function VistaEjercicio() {
 	)
 	const [benchError, setBenchError] = useState<string | null>(null)
 	const tabRefs = useRef<Array<HTMLButtonElement | null>>([])
-	const adapter = caseId ? adapterFor(caseId) : undefined
+	const adapter = caseId
+		? adapterFor(caseId, { verifySql: verifyBibliotecaVivaInWorker })
+		: undefined
 
 	useEffect(() => {
 		setBench(adapter?.initialState())
@@ -47,7 +50,7 @@ export default function VistaEjercicio() {
 		setActive('expediente')
 		setSealed(false)
 		setClaim('')
-	}, [adapter])
+	}, [caseId])
 
 	const views = caseId
 		? workspaceViews(caseId, { diagnosisSealed: sealed })

@@ -162,6 +162,12 @@ pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.
 if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
 ```
 
+Para inspeccionar un recorrido concreto con la interfaz interactiva, sin reset de datos:
+
+```powershell
+pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --ui
+```
+
 Son 11 recorridos; la suite E2E completa son 24. **No** forman parte de `pnpm test:integration`: esa suite
 usa el stack Docker y el reset de datos, y no debe lanzarse desde este procedimiento.
 

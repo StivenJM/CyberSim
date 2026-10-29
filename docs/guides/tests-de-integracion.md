@@ -236,6 +236,16 @@ pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.
 if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
 ```
 
+Para inspeccionar un recorrido concreto con la interfaz interactiva de Playwright:
+
+```powershell
+pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --ui
+```
+
+La UI reutiliza el servidor de Vite que ya est├í en marcha y no ejecuta el reset de datos. Es una herramienta
+local: necesita un entorno con navegador y no se usa en CI. Desde ah├¡ puedes ejecutar un solo recorrido,
+leer cada paso y abrir la traza; el reporte HTML queda en `playwright-report/e2e`.
+
 Requisitos: Chromium de Playwright instalado. Vite arranca solo en `http://localhost:5173`; no hacen falta
 Express, PostgreSQL, n8n ni credenciales. Son 11 recorridos que cubren el cat├ílogo, el expediente A0, el
 bloqueo de las vistas hasta sellar D1, la verificaci├│n del estado inicial de los cinco casos y las rutas de

@@ -227,34 +227,29 @@ Ese comando inicia una nueva ejecución aislada y permite avanzar o detener las 
 
 ## Recorridos de los ejercicios investigados
 
-Los cinco ejercicios del conjunto 2.0 **no forman parte** de esta suite. Sus recorridos son E2E con mocks:
-viven en [tests/e2e/ejercicios.spec.ts](../../apps/frontend/tests/e2e/ejercicios.spec.ts), no tocan el stack
-Docker y no ejecutan el reset de datos.
+Los cinco casos del conjunto 2.0 **forman parte de esta suite** en el proyecto `core`. Usan el stack real
+(Vite, Express y PostgreSQL), inician sesión con una cuenta sembrada y ejecutan el reset protegido; no
+necesitan proveedores externos.
 
 ```powershell
-pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --reporter=list
+pnpm test:integration:core --headless --grep "ejercicios|persistencia del intento"
 if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
 ```
 
-Para inspeccionar un recorrido concreto con la interfaz interactiva de Playwright:
+Son 13 recorridos: el catálogo, el expediente A0, el bloqueo de las vistas hasta sellar D1, la verificación
+del estado inicial de los cinco casos, las rutas de referencia (recuperación de claves, Worker SQLite/WASM,
+política e inventario, matriz de autorización y restauración staged) y la persistencia del intento (crear,
+diagnosticar, revisar, entregar y negar la lectura a otro estudiante).
+
+Para depurarlos con la interfaz interactiva, el orquestador levanta el stack y abre Playwright:
 
 ```powershell
-pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --ui
+pnpm test:integration:core --grep "ejercicios|persistencia del intento" --ui
 ```
 
-La UI reutiliza el servidor de Vite que ya est├í en marcha y no ejecuta el reset de datos. Es una herramienta
-local: necesita un entorno con navegador y no se usa en CI. Desde ah├¡ puedes ejecutar un solo recorrido,
-leer cada paso y abrir la traza; el reporte HTML queda en `playwright-report/e2e`.
-
-Requisitos: Chromium de Playwright instalado. Vite arranca solo en `http://localhost:5173`; no hacen falta
-Express, PostgreSQL, n8n ni credenciales. Son 11 recorridos que cubren el cat├ílogo, el expediente A0, el
-bloqueo de las vistas hasta sellar D1, la verificaci├│n del estado inicial de los cinco casos y las rutas de
-referencia (recuperaci├│n de claves, Worker SQLite/WASM, pol├¡tica e inventario, matriz de autorizaci├│n y
-restauraci├│n staged). La suite E2E completa son 24 recorridos.
-
-Si el puerto 5173 est├í ocupado, Playwright puede reutilizar un servidor existente fuera de CI; libera el
-puerto si ese servidor no corresponde al c├│digo que est├ís probando. El detalle por capa est├í en la
-[gu├¡a de calidad](pruebas-y-calidad.md) y en el [estado de implementaci├│n](../project/ejercicios/implementacion.md).
+`--headless` evita abrir ventanas. El reporte queda en `playwright-report/integration`. El detalle por capa
+está en la [guía de calidad](pruebas-y-calidad.md) y en el
+[estado de implementación](../project/ejercicios/implementacion.md).
 
 ## Separación de CI y calidad habitual
 

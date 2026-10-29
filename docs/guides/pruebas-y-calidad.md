@@ -153,23 +153,19 @@ El segundo comando incluye el smoke WebGL. Para consultar el reporte HTML usa `p
 
 ### Recorridos de los ejercicios investigados
 
-La suite `tests/e2e/ejercicios.spec.ts` cubre los cinco casos del conjunto 2.0: catálogo, A0, D1 obligatorio,
-banco por caso y las rutas de referencia, incluida la verificación SQL dentro del Worker SQLite/WASM. No
-necesita Express ni PostgreSQL: Vite sirve la aplicación y las peticiones HTTP se interceptan.
+Los cinco casos del conjunto 2.0 se verifican en la **suite de integración real**, no en la E2E con mocks:
+`tests/integration/ejercicios.spec.ts` usa Vite, Express y PostgreSQL, inicia sesión con una cuenta sembrada y
+ejecuta el reset protegido. Requiere Docker Desktop y el procedimiento de
+[tests de integración](tests-de-integracion.md).
 
 ```powershell
-pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --reporter=list
+pnpm test:integration:core --headless --grep "ejercicios|persistencia del intento"
 if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
 ```
 
-Para inspeccionar un recorrido concreto con la interfaz interactiva, sin reset de datos:
-
-```powershell
-pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --ui
-```
-
-Son 11 recorridos; la suite E2E completa son 24. **No** forman parte de `pnpm test:integration`: esa suite
-usa el stack Docker y el reset de datos, y no debe lanzarse desde este procedimiento.
+Son 13 recorridos: el catálogo, los cinco casos con A0 y D1, sus rutas de referencia, el Worker SQLite/WASM y
+la persistencia del intento con verificación de propiedad. No forman parte de `pnpm test:e2e`, que conserva
+los recorridos con mocks.
 
 ## 5. Asegurar el build y revisar sus artefactos
 

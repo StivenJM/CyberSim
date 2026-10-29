@@ -225,6 +225,27 @@ pnpm test:integration:core --debug --grep HU016
 
 Ese comando inicia una nueva ejecución aislada y permite avanzar o detener las acciones en el navegador real. Para una HU que requiera IA, usa `pnpm test:integration --skip-email --debug --grep HU020`. Un canvas transparente en el visor no demuestra que el test fallase por WebGL: selecciona la acción roja y revisa **Errors**, **Call**, **Console** y **Network** para identificar el fallo efectivo.
 
+## Recorridos de los ejercicios investigados
+
+Los cinco ejercicios del conjunto 2.0 **no forman parte** de esta suite. Sus recorridos son E2E con mocks:
+viven en [tests/e2e/ejercicios.spec.ts](../../apps/frontend/tests/e2e/ejercicios.spec.ts), no tocan el stack
+Docker y no ejecutan el reset de datos.
+
+```powershell
+pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --reporter=list
+if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
+```
+
+Requisitos: Chromium de Playwright instalado. Vite arranca solo en `http://localhost:5173`; no hacen falta
+Express, PostgreSQL, n8n ni credenciales. Son 11 recorridos que cubren el cat├ílogo, el expediente A0, el
+bloqueo de las vistas hasta sellar D1, la verificaci├│n del estado inicial de los cinco casos y las rutas de
+referencia (recuperaci├│n de claves, Worker SQLite/WASM, pol├¡tica e inventario, matriz de autorizaci├│n y
+restauraci├│n staged). La suite E2E completa son 24 recorridos.
+
+Si el puerto 5173 est├í ocupado, Playwright puede reutilizar un servidor existente fuera de CI; libera el
+puerto si ese servidor no corresponde al c├│digo que est├ís probando. El detalle por capa est├í en la
+[gu├¡a de calidad](pruebas-y-calidad.md) y en el [estado de implementaci├│n](../project/ejercicios/implementacion.md).
+
 ## Separación de CI y calidad habitual
 
 No añadas esta suite al workflow GitHub ni a `pnpm test` o `pnpm test:e2e`. Tanto el runner como la configuración y los helpers de reset rechazan `CI`, `GITHUB_ACTIONS` o `GITHUB_RUN_ID` presentes, antes de iniciar el reset. Vitest excluye expresamente `tests/integration/**` y Playwright habitual sigue limitado a `tests/e2e`. El typecheck sí verifica estáticamente los nuevos tests sin ejecutarlos ni conectarse a servicios.

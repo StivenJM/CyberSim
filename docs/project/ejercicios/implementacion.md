@@ -63,19 +63,19 @@ color para indicar el resultado.
 pnpm --filter @cybersim/exercises test
 pnpm --filter @cybersim/attempt-ledger test
 pnpm --filter @cybersim/frontend exec vitest --run tests/sqljsPort.test.ts
-pnpm --filter @cybersim/frontend exec playwright test tests/e2e/ejercicios.spec.ts --reporter=list
+pnpm test:integration:core --headless --grep "ejercicios|persistencia del intento"
 ```
 
 - `@cybersim/exercises`: 84 pruebas del dominio y de los verificadores B/Q/C.
 - `@cybersim/attempt-ledger`: 30 del ciclo de intento y del informe.
 - `sqljsPort.test.ts`: la batería SQL completa sobre `sql.js` sin navegador.
-- `ejercicios.spec.ts`: 11 recorridos en Chromium. Cubren el catálogo, A0, D1 obligatorio, la verificación
-  del estado inicial de los cinco casos y las rutas de referencia (recuperación de claves, Worker SQL,
-  política e inventario, matriz de autorización y restauración staged).
+- `tests/integration/ejercicios.spec.ts`: 13 recorridos sobre el stack real (Vite, Express y PostgreSQL) con
+  login y reset protegido. Cubren catálogo, A0, D1 obligatorio, la verificación inicial de los cinco casos,
+  las rutas de referencia (recuperación de claves, Worker SQL, política e inventario, matriz de autorización y
+  restauración staged) y la persistencia del intento con verificación de propiedad.
 
-Los recorridos E2E requieren Chromium instalado (`playwright install chromium`); Vite arranca solo y no hacen
-falta backend ni base de datos. La suite E2E completa son 24 recorridos. No se ejecutan con
-`pnpm test:integration`, que usa el stack Docker y el reset de datos.
+La suite de integración requiere Docker Desktop y aplica `migrate reset` antes de cada recorrido; no usa
+proveedores externos con `--core`. La suite E2E con mocks se mantiene separada.
 
 ## Límites declarados
 

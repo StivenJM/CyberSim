@@ -24,8 +24,10 @@ for (let i = 0; i < testArgs.length; i++) {
 		i++
 		continue
 	}
+	// Filtro posicional de Playwright: una ruta dentro de tests/.
+	if (/^tests\/[\w./-]+$/.test(testArgs[i])) continue
 	throw new Error(
-		'Opciones: --core, --skip-email, --headless, --headed, --debug, --ui, --list, --grep <expresión>.',
+		'Opciones: --core, --skip-email, --headless, --headed, --debug, --ui, --list, --grep <expresión> o una ruta tests/....',
 	)
 }
 const root = fileURLToPath(new URL('../../', import.meta.url))
@@ -110,7 +112,7 @@ if (testArgs.includes('--list')) {
 			'test',
 			'--config',
 			'playwright.integration.config.ts',
-			...(core ? ['--project', 'core'] : []),
+			...(core ? ['--project=core'] : []),
 			...testArgs,
 		],
 		{
@@ -549,7 +551,7 @@ try {
 			'test',
 			'--config',
 			'playwright.integration.config.ts',
-			...(core ? ['--project', 'core'] : []),
+			...(core ? ['--project=core'] : []),
 			...testArgs,
 		],
 		{ cwd: frontend, env, stdio: 'inherit' },
@@ -565,3 +567,4 @@ try {
 	await diagnostics().catch(() => console.warn('Diagnóstico no disponible.'))
 	await cleanup()
 }
+

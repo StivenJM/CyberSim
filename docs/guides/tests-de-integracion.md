@@ -232,7 +232,7 @@ Los cinco casos del conjunto 2.0 **forman parte de esta suite** en el proyecto `
 necesitan proveedores externos.
 
 ```powershell
-pnpm test:integration:core --headless --grep "ejercicios|persistencia del intento"
+pnpm test:integration:exercises
 if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
 ```
 
@@ -244,7 +244,7 @@ diagnosticar, revisar, entregar y negar la lectura a otro estudiante).
 Para depurarlos con la interfaz interactiva, el orquestador levanta el stack y abre Playwright:
 
 ```powershell
-pnpm test:integration:core --grep "ejercicios|persistencia del intento" --ui
+pnpm test:integration:exercises:ui
 ```
 
 `--headless` evita abrir ventanas. El reporte queda en `playwright-report/integration`. El detalle por capa

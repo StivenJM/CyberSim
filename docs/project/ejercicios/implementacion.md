@@ -63,7 +63,7 @@ color para indicar el resultado.
 pnpm --filter @cybersim/exercises test
 pnpm --filter @cybersim/attempt-ledger test
 pnpm --filter @cybersim/frontend exec vitest --run tests/sqljsPort.test.ts
-pnpm test:integration:core --headless --grep "ejercicios|persistencia del intento"
+pnpm test:integration:exercises
 ```
 
 - `@cybersim/exercises`: 84 pruebas del dominio y de los verificadores B/Q/C.

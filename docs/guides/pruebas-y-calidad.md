@@ -159,7 +159,7 @@ ejecuta el reset protegido. Requiere Docker Desktop y el procedimiento de
 [tests de integración](tests-de-integracion.md).
 
 ```powershell
-pnpm test:integration:core --headless --grep "ejercicios|persistencia del intento"
+pnpm test:integration:exercises
 if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
 ```
 

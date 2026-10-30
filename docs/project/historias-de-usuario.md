@@ -17,7 +17,7 @@ Los criterios son resultados comprobables, no números de tareas. Las referencia
 | [HU007](#hu007) | Gestionar invitaciones | Docente | Existente; protección pendiente |
 | [HU008](#hu008) | Unirse a un curso | Estudiante | Existente; unicidad concurrente pendiente |
 | [HU009](#hu009) | Retirar una matrícula | Estudiante/docente | Existente; autorización pendiente |
-| [HU010](#hu010) | Elegir y desbloquear escenarios | Estudiante | Existente en UI |
+| [HU010](#hu010) | Elegir escenarios | Estudiante | Existente en UI |
 | [HU011](#hu011) | Explorar oficina y dispositivos | Estudiante | Existente en simulación local |
 | [HU012](#hu012) | Resolver fases y objetivos | Estudiante | Existente; depende de coherencia de eventos |
 | [HU013](#hu013) | Configurar dispositivos y apps | Estudiante | Existente; presupuesto no aplicado plenamente |
@@ -146,15 +146,15 @@ Soporte: operaciones existentes; ID docente declarado en body no prueba identida
 
 ## HU010
 
-**Elegir y desbloquear escenarios.** Como estudiante, quiero ver los niveles, su estado y el siguiente reto disponible para avanzar ordenadamente en la práctica.
+**Elegir escenarios.** Como estudiante, quiero ver los niveles, su estado y el siguiente reto sugerido para practicar en el orden que prefiera.
 
 Criterios de aceptación:
 
 - El mapa muestra los escenarios activos con título, categoría y estado del historial.
-- El primer nivel está disponible; los siguientes se desbloquean al completar todos los anteriores del orden establecido.
+- Todos los niveles publicados están disponibles desde el inicio; el progreso previo solo cambia la etiqueta del nodo (Empezar, Continuar o Repetir).
 - Seleccionar un nivel habilitado carga su definición y abre el laboratorio.
 
-Soporte: recorrido UI existente, sin regla de desbloqueo equivalente en API. RF-16–RF-18. Evidencia: [selección](../../apps/frontend/src/visual/features/escenarios-simulados/components/LevelSelectionMenuList.tsx) y [catálogo](../../apps/frontend/src/scenarios/catalog.ts).
+Soporte: recorrido UI existente; no hay regla de desbloqueo ni en la interfaz ni en la API. RF-16–RF-18. Evidencia: [selección](../../apps/frontend/src/visual/features/escenarios-simulados/components/LevelSelectionMenuList.tsx) y [catálogo](../../apps/frontend/src/scenarios/catalog.ts).
 
 ## HU011
 

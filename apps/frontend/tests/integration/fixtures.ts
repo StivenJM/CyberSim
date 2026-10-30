@@ -97,12 +97,13 @@ export async function createCourse(page: Page, name: string) {
 }
 export async function startTutorial(page: Page) {
 	await login(page)
+	// Cualquier nivel se puede iniciar en cualquier orden; el mapa solo sugiere uno.
 	await page
-		.getByRole('button', { name: 'Amenazas y Ataques Comunes — Bloqueado' })
+		.getByRole('button', { name: /^Amenazas y Ataques Comunes.*Disponible/ })
 		.click()
 	await expect(
-		page.getByRole('button', { name: 'Bloqueado', exact: true }),
-	).toBeDisabled()
+		page.getByRole('button', { name: /^(Empezar|Continuar|Repetir)$/ }),
+	).toBeEnabled()
 	await page
 		.getByRole('button', { name: /^Tutorial: Introducción a la Seguridad —/ })
 		.click()

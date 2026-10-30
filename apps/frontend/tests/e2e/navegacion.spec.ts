@@ -22,6 +22,30 @@ test.describe('Selección y progresión de niveles', () => {
 		await expect(page.getByText('Empezar').first()).toBeVisible()
 	})
 
+	test('cualquier nivel se puede iniciar sin completar los anteriores', async ({
+		page,
+	}) => {
+		await mockDatosVacios(page)
+		await sembrarSesion(page, { role: 'estudiante', confirmado: true })
+
+		await page.goto('/seleccion-niveles')
+
+		// Sin progreso previo ningún nodo queda bloqueado.
+		await expect(
+			page.getByRole('button', { name: /— Bloqueado$/ }),
+		).toHaveCount(0)
+
+		// El último nivel del mapa también se puede iniciar.
+		await page
+			.getByRole('button', { name: /— Disponible$/ })
+			.last()
+			.click()
+		await page
+			.getByRole('button', { name: /^(Empezar|Continuar|Repetir)$/ })
+			.click()
+		await expect(page).toHaveURL(/\/$/)
+	})
+
 	test('seleccionar un nivel entra al laboratorio', async ({ page }) => {
 		await mockDatosVacios(page)
 		await sembrarSesion(page, { role: 'estudiante', confirmado: true })

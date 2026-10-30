@@ -567,4 +567,3 @@ try {
 	await diagnostics().catch(() => console.warn('Diagnóstico no disponible.'))
 	await cleanup()
 }
-

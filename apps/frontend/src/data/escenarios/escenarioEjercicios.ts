@@ -41,7 +41,7 @@ const SEEDS: readonly ExerciseSeed[] = [
 		descripcion:
 			'Una clave retirada del código permite leer dos registros operativos. Reparar la custodia sin perder la copia histórica.',
 		zona: 'AndinaPay · Operaciones',
-		dispositivo: 'AP-IR-01',
+		dispositivo: 'PC Analista',
 		fases: [
 			'Familiarización',
 			'Diagnóstico D1',
@@ -116,7 +116,7 @@ const SEEDS: readonly ExerciseSeed[] = [
 ]
 
 const ANDINAPAY_OBJETIVOS = [
-	['Leer el aviso y localizar la clave histórica en AP-H1'],
+	['Leer el aviso y localizar la clave histórica en la versión H1'],
 	['Sellar el diagnóstico provisional con dos evidencias'],
 	['Migrar R01/R02 a recovery-v2 y retirar legacy-demo'],
 	['Verificar B/Q/C y enviar el informe'],
@@ -129,7 +129,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 5,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'08:30 — Aviso anónimo recibido en el canal de soporte. Hay un expediente nuevo en AP-IR-01; ábrelo desde el monitor.',
+			'08:30 — Aviso anónimo recibido en el canal de soporte. Hay un expediente nuevo en el PC del analista; ábrelo desde el monitor.',
 		fase: 1,
 		infoAdicional: {
 			accion: AccionesRealizables.CLICK,
@@ -239,30 +239,30 @@ function definitionOf(seed: ExerciseSeed): DefinicionEscenario {
 				},
 				{
 					id: 2,
-					mueble: Mueble.MESA,
-					posicion: { x: -3, y: 0, z: 0, rotacionY: 0 },
+					mueble: Mueble.LIBRE,
+					posicion: { x: -2.5, y: 0, z: 0, rotacionY: 0 },
 					dispositivos: [
 						dispositivoDeCaso(
 							seed.id * 100 + 1,
 							TipoDispositivo.SERVER,
-							'AP-DATA-01',
+							'Servidor de Datos',
 							'Base de datos de registros',
-							{ x: -3, y: 0, z: 0, rotacionY: 180 },
+							{ x: -2.5, y: 0, z: 0, rotacionY: 180 },
 							['LAB'],
 						),
 					],
 				},
 				{
 					id: 3,
-					mueble: Mueble.RACK,
-					posicion: { x: 0, y: 0, z: 2.5, rotacionY: 0 },
+					mueble: Mueble.LIBRE,
+					posicion: { x: 2.5, y: 0, z: 0, rotacionY: 0 },
 					dispositivos: [
 						dispositivoDeCaso(
 							seed.id * 100 + 2,
 							TipoDispositivo.SERVER,
-							'AP-KEYS-01',
+							'Servidor de Claves',
 							'Servicio de claves y custodia',
-							{ x: 0, y: 0, z: 2.5, rotacionY: 0 },
+							{ x: 2.5, y: 0, z: 0, rotacionY: 0 },
 							['LAB'],
 						),
 					],
@@ -275,7 +275,7 @@ function definitionOf(seed: ExerciseSeed): DefinicionEscenario {
 						dispositivoDeCaso(
 							seed.id * 100 + 3,
 							TipoDispositivo.ROUTER,
-							'AP-RTR-01',
+							'Router de la Oficina',
 							'Routing, Firewall',
 							{ x: 3, y: 0, z: 2.5, rotacionY: 0 },
 							['LAB', 'Internet'],
@@ -317,7 +317,7 @@ function definitionOf(seed: ExerciseSeed): DefinicionEscenario {
 			nombre,
 			descripcion: isAndinaPay
 				? ([
-						'Abre el expediente en AP-IR-01 y revisa el aviso, los logs y el inventario.',
+						'Abre el expediente en el PC del analista y revisa el aviso, los logs y el inventario.',
 						'Entrega un diagnóstico provisional con dos evidencias citadas y una predicción comprobable.',
 						'Prepara recovery-v2, migra R01/R02, publica y retira legacy-demo.',
 						'Ejecuta B/Q/C y envía el informe con los límites de la copia histórica.',

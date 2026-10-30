@@ -35,20 +35,21 @@ async function abrirCaso(page: import('@playwright/test').Page, id: string) {
 
 async function sellarDiagnostico(page: import('@playwright/test').Page) {
 	await page
-		.getByLabel('Afirmación provisional')
+		.getByLabel('1. ¿Qué encontraste?')
+		.or(page.getByLabel('Afirmación provisional'))
 		.fill('Diagnóstico de integración sobre el expediente real.')
-	if (await page.getByLabel('Alternativa rival').count()) {
+	if (await page.getByLabel('3. ¿Qué otra explicación descartas?').count()) {
 		await page
-			.getByLabel('Alternativa rival')
+			.getByLabel('3. ¿Qué otra explicación descartas?')
 			.fill('El identificador público no explica el descifrado.')
 		await page
-			.getByLabel('Prueba propuesta')
+			.getByLabel('4. ¿Qué prueba propondrías?')
 			.fill('Descifrar R01 con K1 y comprobar el fallo con otra clave.')
 		await page
-			.getByLabel('Alcance y no determinado')
+			.getByLabel('5. ¿Qué sigue sin saberse?')
 			.fill('Se demuestra la lectura; no se conoce el vector de fuga.')
 		await page
-			.getByRole('checkbox', { name: 'AP-H1', exact: true })
+			.getByRole('checkbox', { name: 'Versión H1 (histórica)', exact: true })
 			.click({ force: true })
 		await page
 			.getByRole('checkbox', { name: 'logs/application.log', exact: true })

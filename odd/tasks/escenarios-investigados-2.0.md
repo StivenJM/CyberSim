@@ -101,8 +101,9 @@ propias del caso (Expediente, Repositorio, Banco, Respuesta, Comprobaciones, Inf
 las aplicaciones del escritorio, con el mismo gestor de ventanas y sin reutilizar la pantalla de
 `/ejercicios`.
 
-S23. La topología de **Redes** representa el caso: `AP-IR-01` (analista), `AP-DATA-01` (registros),
-`AP-KEYS-01` (custodia) y `AP-RTR-01` (router LAB/Internet), con las redes `LAB` e `Internet`.
+S23. La topología de **Redes** representa el caso con nombres legibles: `PC Analista`
+(`AP-IR-01`), `Servidor de Datos` (`AP-DATA-01`), `Servidor de Claves` (`AP-KEYS-01`) y
+`Router de la Oficina` (`AP-RTR-01`), con las redes `LAB` e `Internet`.
 
 S24. El reloj y el panel de eventos guían la narrativa: avisos a t=5, 20, 40 y 60 que pausan el
 reloj, explican el siguiente paso y registran hitos del estudiante. Los eventos no fallan la
@@ -125,6 +126,11 @@ S28. El fragmento `SYN-001 / tok_demo_A` pertenece al plaintext de R01 y solo se
 `incident/notice.txt`. No es una credencial real: es una prueba de acceso del aviso y un oráculo
 para contrastar la clave candidata. Las notificaciones temporizadas solo anuncian el aviso o piden
 revisar materiales; no revelan la clave, los registros ni el resultado de las comprobaciones.
+
+S29. Los nombres visibles de los dispositivos son legibles; los identificadores técnicos
+`AP-IR-01`, `AP-DATA-01`, `AP-KEYS-01` y `AP-RTR-01` quedan solo como identidad del modelo en la
+ficha. Los dos servidores usan el modelo procedural `serverrack` y la vista de un solo entorno
+muestra los controles de acercar/alejar para poder ver la sala completa.
 
 ## Tasks
 
@@ -155,6 +161,7 @@ revisar materiales; no revelan la clave, los registros ni el resultado de las co
 | T23 | S25 | inline | hecho — sin botón flotante; menú Configurar y foco de cámara |
 | T24 | S26 | inline | hecho — intento/progreso conservados; integración 13/13 y unitarias verdes |
 | T25 | S27 | inline | hecho — intro narrativa, lector de materiales, D1 guiado y primer objetivo explícito |
+| T26 | S29 | inline | hecho — nombres legibles, servidores con modelo `serverrack` y controles de zoom |
 
 ## Log
 
@@ -279,3 +286,18 @@ la ventana Expediente; el lector explica qué son esos valores. Los avisos de t=
 se neutralizaron para guiar sin revelar la clave, los registros ni el resultado de las pruebas.
 Verificación manual: la notificación de t=5 ya no contiene SYN-001; el aviso conserva el fragmento
 y el lector lo explica. Typecheck y biome limpios.
+
+L20 (corrección literal del usuario):
+> Yo no veo esos dos servidores en la oficina
+
+L21 (corrección literal del usuario):
+> además veo que les pones nombres raros como AP-IR-01, pon nombres sencillos por ejemplo si solo es una computadora entonces "PC Empleado", o cosas así
+
+L22. Se corrigió la representación de los servidores y los nombres visibles. `TipoDispositivo.SERVER`
+no tenía modelo 3D y no se renderizaba; ahora usa `procedural:serverrack`, los dos servidores se
+colocan en el piso (`Mueble.LIBRE`) a los lados del analista y la vista de un solo entorno muestra
+los controles Acercar/Alejar para ver la sala. Los nombres visibles pasan a `PC Analista`,
+`Servidor de Datos`, `Servidor de Claves` y `Router de la Oficina`; los IDs `AP-IR-01`,
+`AP-DATA-01`, `AP-KEYS-01` y `AP-RTR-01` quedan solo como identidad técnica en la ficha. El evento
+de t=5 y la fase 1 usan "PC del analista". La integración de ejercicios vuelve a 13/13; typecheck y
+biome limpios.

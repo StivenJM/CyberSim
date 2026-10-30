@@ -52,14 +52,16 @@ const Escena3D: React.FC = () => {
 			aria-label="Vista 3D de la escena"
 			data-tour="escena-3d"
 		>
-			{zonasDisponibles.length > 1 && zonaActual !== null && (
+			{zonaActual !== null && (
 				<>
-					<ZoneToast
-						zoneName={zoneToastName}
-						show={showZoneToast}
-						onHide={hideZoneToast}
-					/>
-					<Controles3D />
+					{zonasDisponibles.length > 1 && (
+						<ZoneToast
+							zoneName={zoneToastName}
+							show={showZoneToast}
+							onHide={hideZoneToast}
+						/>
+					)}
+					<Controles3D showZoneControls={zonasDisponibles.length > 1} />
 				</>
 			)}
 			<Scene3DCanvas

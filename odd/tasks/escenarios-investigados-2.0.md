@@ -121,6 +121,11 @@ con su contenido real, no solo como nombre de archivo. D1 se presenta como cinco
 con ejemplos y evidencias agrupadas. El primer objetivo se confirma con un botón explícito después
 de leer el aviso y AP-H1; no se completa al abrir la ventana.
 
+S28. El fragmento `SYN-001 / tok_demo_A` pertenece al plaintext de R01 y solo se descubre al abrir
+`incident/notice.txt`. No es una credencial real: es una prueba de acceso del aviso y un oráculo
+para contrastar la clave candidata. Las notificaciones temporizadas solo anuncian el aviso o piden
+revisar materiales; no revelan la clave, los registros ni el resultado de las comprobaciones.
+
 ## Tasks
 
 | ID | Specs | Ruta | Estado |
@@ -260,3 +265,17 @@ Fase 2. Verificación manual observada: intro visible, aviso y AP-H1 legibles, b
 log único "Objetivo completado: Leer el aviso y localizar la clave histórica en AP-H1" y Partida
 en Fase 2 con "Sellar el diagnóstico provisional con dos evidencias". Typecheck y biome limpios;
 las suites de integración existentes siguen en 13/13.
+
+L18 (pregunta literal del usuario):
+> AndinaPay es una fintech ficticia. Un aviso anónimo trae un fragmento legible (SYN-001 / tok_demo_A) y un volcado cifrado.
+> para empezar por qué trae el fragmento legible SYN-001? eso que es? y luego por qué la notificación le avisa de eso directamente
+
+L19. Aclaración y corrección. `SYN-001` es el identificador sintético del documento de R01 y
+`tok_demo_A` su token de tarjeta; juntos son el plaintext exacto de R01, no una credencial real. El
+aviso los incluye como prueba de acceso y como oráculo para contrastar una clave candidata. Estaba
+mal que la notificación de t=5 repitiera el fragmento: ahora solo dice que llegó un aviso anónimo y
+que hay un expediente nuevo en AP-IR-01. El fragmento se descubre al abrir `incident/notice.txt` en
+la ventana Expediente; el lector explica qué son esos valores. Los avisos de t=20, 40 y 60 también
+se neutralizaron para guiar sin revelar la clave, los registros ni el resultado de las pruebas.
+Verificación manual: la notificación de t=5 ya no contiene SYN-001; el aviso conserva el fragmento
+y el lector lo explica. Typecheck y biome limpios.

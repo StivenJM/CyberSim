@@ -2,6 +2,7 @@ import { useEffect, useRef } from 'react'
 import MonitorDesktopOverlay from '../../../common/components/MonitorDesktopOverlay'
 import { useEscenario } from '../../../common/contexts'
 import { useScreenTransition } from '../../../common/contexts/ScreenTransitionContext'
+import AndinaPayFeedbackListener from '../../ejercicios/components/AndinaPayFeedbackListener'
 import Escena3D from '../components/Escena3D'
 import TarjetaEntidadSeleccionada from '../components/TarjetaEntidadSeleccionada'
 import TarjetaZonaActual from '../components/TarjetaZonaActual'
@@ -10,7 +11,8 @@ import { useZonaKeyboardNav } from '../hooks/useZonaKeyboardNav'
 import styles from '../styles/VistaOficina.module.css'
 
 function VistaOficina() {
-	const { dispositivoSeleccionado, setDispositivoSeleccionado } = useEscenario()
+	const { dispositivoSeleccionado, setDispositivoSeleccionado, escenario } =
+		useEscenario()
 	const {
 		desktopMode,
 		pendingZoom,
@@ -54,6 +56,9 @@ function VistaOficina() {
 				<TarjetaEntidadSeleccionada visible={!!dispositivoSeleccionado} />
 			)}
 			{!desktopMode && <TarjetaZonaActual visible={true} />}
+			{escenario?.exercise?.caseId === 'cwe-321-andinapay' ? (
+				<AndinaPayFeedbackListener />
+			) : null}
 			<MonitorDesktopOverlay />
 		</div>
 	)

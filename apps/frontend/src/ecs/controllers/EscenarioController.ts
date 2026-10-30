@@ -294,9 +294,13 @@ export class EscenarioController {
 		)
 	}
 
-	public registrarLogDeCaso(mensaje: string, pausarTiempo = false): void {
+	public registrarLogDeCaso(
+		mensaje: string,
+		pausarTiempo = false,
+		tipo: TipoLogGeneral = TipoLogGeneral.INFORMACION,
+	): void {
 		this.agregarLogGeneralEscenario({
-			tipo: TipoLogGeneral.INFORMACION,
+			tipo,
 			mensaje,
 			pausarTiempo,
 		})

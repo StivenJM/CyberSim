@@ -122,6 +122,12 @@ const ANDINAPAY_OBJETIVOS = [
 	['Verificar B/Q/C y enviar el informe'],
 ] as const
 
+const ANDINAPAY_AVISO_INFO = {
+	accion: AccionesRealizables.CLICK,
+	objeto: ObjetosManejables.CONFIG_FIREWALL,
+	val: {},
+}
+
 const ANDINAPAY_EVENTOS = [
 	{
 		nombreEvento: 'Aviso recibido',
@@ -131,53 +137,57 @@ const ANDINAPAY_EVENTOS = [
 		descripcion:
 			'08:30 — Aviso anónimo recibido en el canal de soporte. Hay un expediente nuevo en el PC del analista; ábrelo desde el monitor.',
 		fase: 1,
-		infoAdicional: {
-			accion: AccionesRealizables.CLICK,
-			objeto: ObjetosManejables.CONFIG_FIREWALL,
-			val: {},
-		},
+		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},
 	{
-		nombreEvento: 'Volcado parcial',
+		nombreEvento: 'Revisar historial',
+		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
+		tiempoNotificacion: 10,
+		tiempoEnOcurrir: 999999,
+		descripcion:
+			'Busca la clave que quedó en la versión H1 del repositorio y compárala con la versión actual.',
+		fase: 1,
+		infoAdicional: ANDINAPAY_AVISO_INFO,
+	},
+	{
+		nombreEvento: 'Probar clave',
+		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
+		tiempoNotificacion: 15,
+		tiempoEnOcurrir: 999999,
+		descripcion:
+			'Prueba la clave candidata en el Banco criptográfico y compara el resultado con el fragmento del aviso.',
+		fase: 2,
+		infoAdicional: ANDINAPAY_AVISO_INFO,
+	},
+	{
+		nombreEvento: 'Escribir D1',
 		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
 		tiempoNotificacion: 20,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'El volcado adjunto contiene registros operativos. Revisa el índice, el inventario y los logs antes de concluir.',
+			'Escribe D1: qué encontraste, dos evidencias, una explicación rival, una prueba y lo que no sabes.',
 		fase: 2,
-		infoAdicional: {
-			accion: AccionesRealizables.CLICK,
-			objeto: ObjetosManejables.CONFIG_FIREWALL,
-			val: {},
-		},
+		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},
 	{
-		nombreEvento: 'Uso de clave retirada',
+		nombreEvento: 'Preparar recuperación',
 		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
-		tiempoNotificacion: 40,
+		tiempoNotificacion: 25,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'El servicio de claves reporta actividad reciente. Comprueba qué clave usa la aplicación y cuál quedó en el historial.',
+			'Prepara la recuperación en Respuesta de claves: K2, custodia restringida, recifrado y publicación.',
 		fase: 3,
-		infoAdicional: {
-			accion: AccionesRealizables.CLICK,
-			objeto: ObjetosManejables.CONFIG_FIREWALL,
-			val: {},
-		},
+		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},
 	{
-		nombreEvento: 'Cierre del expediente',
+		nombreEvento: 'Verificar e informar',
 		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
-		tiempoNotificacion: 60,
+		tiempoNotificacion: 30,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'Antes de cerrar, documenta qué datos siguen expuestos después de la recuperación y qué no puedes demostrar.',
+			'Ejecuta B/Q/C y envía el informe; documenta qué sigue expuesto y qué no puedes demostrar.',
 		fase: 4,
-		infoAdicional: {
-			accion: AccionesRealizables.CLICK,
-			objeto: ObjetosManejables.CONFIG_FIREWALL,
-			val: {},
-		},
+		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},
 ]
 

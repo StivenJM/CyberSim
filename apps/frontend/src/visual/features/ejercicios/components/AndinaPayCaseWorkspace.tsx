@@ -30,6 +30,7 @@ import {
 import { useNavigate } from 'react-router'
 
 import { ProgresoController } from '../../../../ecs/controllers/ProgresoController'
+import type { TipoLogGeneral } from '../../../../shared/types/EventosEnums'
 import { useAndinaPayAttempt } from '../hooks/useAndinaPayAttempt'
 import styles from '../styles/Ejercicios.module.css'
 
@@ -92,13 +93,21 @@ function currentStudentKey(): string {
 	}
 }
 
-function storageKey(): string {
+export function andinaPayStorageKey(): string {
 	return `cybersim:andinapay:${currentStudentKey()}:case`
+}
+
+export function andinaPayFase1Key(): string {
+	return `cybersim:andinapay:${currentStudentKey()}:fase1`
+}
+
+export function readAndinaPayState(): AndinaPayState | null {
+	return loadStored()?.state ?? null
 }
 
 function loadStored(): StoredExercise | null {
 	try {
-		const raw = localStorage.getItem(storageKey())
+		const raw = localStorage.getItem(andinaPayStorageKey())
 		if (!raw) return null
 		const parsed = JSON.parse(raw) as Partial<StoredExercise>
 		if (
@@ -136,7 +145,11 @@ function envelopeLabel(envelope: (typeof ANDINAPAY_ENVELOPES)[number]): string {
 
 export interface AndinaPayBridge {
 	readonly onObjective?: (faseId: number, descripcion: string) => void
-	readonly onLog?: (mensaje: string, pausarTiempo?: boolean) => void
+	readonly onLog?: (
+		mensaje: string,
+		pausarTiempo?: boolean,
+		tipo?: TipoLogGeneral,
+	) => void
 }
 
 interface AndinaPayContextValue {
@@ -210,7 +223,7 @@ export function AndinaPayProvider({
 			startedAt: startedAt.current,
 			reportFields,
 		}
-		localStorage.setItem(storageKey(), JSON.stringify(stored))
+		localStorage.setItem(andinaPayStorageKey(), JSON.stringify(stored))
 	}, [state, reportFields])
 
 	const apply = useCallback(
@@ -274,6 +287,7 @@ export function AndinaPayProvider({
 	const completeFase1 = useCallback(() => {
 		if (fase1Completada.current) return
 		fase1Completada.current = true
+		localStorage.setItem(andinaPayFase1Key(), '1')
 		bridge?.onObjective?.(
 			1,
 			'Leer el aviso y localizar la clave histórica en la versión H1',

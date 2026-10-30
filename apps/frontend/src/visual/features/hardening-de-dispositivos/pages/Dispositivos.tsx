@@ -14,6 +14,16 @@ import NetScanVizIcon from '../../../common/icons/NetScanVizIcon'
 import RedesIcon from '../../../common/icons/RedesIcon'
 import ShieldCheckIcon from '../../../common/icons/ShieldCheckIcon'
 import VPNAppIcon from '../../../common/icons/VPNAppIcon'
+import {
+	AndinaPayBancoWindow,
+	AndinaPayClavesWindow,
+	AndinaPayComprobacionesWindow,
+	AndinaPayExpedienteWindow,
+	AndinaPayInformeWindow,
+	AndinaPayProvider,
+	AndinaPayRepositorioWindow,
+} from '../../ejercicios/components/AndinaPayCaseWorkspace'
+import { useECSSceneContext } from '../../escenarios-simulados/context/ECSSceneContext'
 import ModalVPNCliente from '../../simulacion-redes/components/ModalVPNCliente'
 import ModalApps from '../components/ModalApps'
 import ModalConsola from '../components/ModalConsola'
@@ -75,6 +85,12 @@ type VentanaId =
 	| 'socialSearcher'
 	| 'phishMatic'
 	| 'consola'
+	| 'andinapayExpediente'
+	| 'andinapayRepositorio'
+	| 'andinapayBanco'
+	| 'andinapayClaves'
+	| 'andinapayComprobaciones'
+	| 'andinapayInforme'
 
 interface VentanaConfig {
 	id: VentanaId
@@ -89,7 +105,9 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
 		setDispositivoSeleccionado,
 		dispositivoSeleccionado,
 		entidadSeleccionadaId,
+		escenario,
 	} = useEscenario()
+	const { escenarioController } = useECSSceneContext()
 	const { dispositivos } = useDispositivos()
 	const appsDispositivo = useAppsDispositivo(entidadSeleccionadaId ?? undefined)
 	const appInstalada = (nombre: string) =>
@@ -190,6 +208,65 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
 			posicionInicial: { x: 150, y: 35 },
 		},
 	]
+
+	const isAndinaPayCase = escenario?.exercise?.caseId === 'cwe-321-andinapay'
+	const isAnalystDevice = dispositivoSeleccionado?.nombre === 'AP-IR-01'
+
+	if (isAndinaPayCase && isAnalystDevice) {
+		ventanasConfig.push(
+			{
+				id: 'andinapayExpediente',
+				titulo: 'Expediente AndinaPay',
+				icono: <FileExplorerIcon size={14} />,
+				contenido: <AndinaPayExpedienteWindow />,
+				posicionInicial: { x: 50, y: 30 },
+			},
+			{
+				id: 'andinapayRepositorio',
+				titulo: 'Repositorio',
+				icono: <AppStoreIcon size={14} />,
+				contenido: <AndinaPayRepositorioWindow />,
+				posicionInicial: { x: 80, y: 50 },
+			},
+			{
+				id: 'andinapayBanco',
+				titulo: 'Banco criptográfico',
+				icono: <ShieldCheckIcon size={14} />,
+				contenido: <AndinaPayBancoWindow />,
+				posicionInicial: { x: 110, y: 70 },
+			},
+			{
+				id: 'andinapayClaves',
+				titulo: 'Respuesta de claves',
+				icono: <ConfiguracionIcon size={14} />,
+				contenido: <AndinaPayClavesWindow />,
+				posicionInicial: { x: 140, y: 40 },
+			},
+			{
+				id: 'andinapayComprobaciones',
+				titulo: 'Comprobaciones',
+				icono: <NetScanVizIcon size={14} />,
+				contenido: <AndinaPayComprobacionesWindow />,
+				posicionInicial: { x: 170, y: 60 },
+			},
+			{
+				id: 'andinapayInforme',
+				titulo: 'Informe',
+				icono: <ConsolaIcon size={14} />,
+				contenido: <AndinaPayInformeWindow />,
+				posicionInicial: { x: 200, y: 80 },
+			},
+		)
+	}
+
+	const andinaBridge = isAndinaPayCase
+		? {
+				onObjective: (faseId: number, descripcion: string) =>
+					escenarioController?.completarObjetivoDeCaso(faseId, descripcion),
+				onLog: (mensaje: string, pausarTiempo?: boolean) =>
+					escenarioController?.registrarLogDeCaso(mensaje, pausarTiempo),
+			}
+		: undefined
 
 	const enfocarVentana = (id: VentanaId) => {
 		setOrdenZ((prev) => [...prev.filter((v) => v !== id), id])
@@ -305,7 +382,7 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
         }
     };*/
 
-	const desktopContent = (
+	const desktopContentBase = (
 		<OSThemeProvider os={osCategory}>
 			<DispositivoAppsProvider value={appsDispositivo}>
 				<div className={styles.contenedor}>
@@ -444,6 +521,72 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
 									</div>
 									<span className={styles.iconoAppNombre}>Consola</span>
 								</button>
+								{isAndinaPayCase && isAnalystDevice ? (
+									<>
+										<button
+											className={`${styles.iconoApp} ${iconoSeleccionado === 'andinapayExpediente' ? styles.iconoAppSeleccionado : ''}`}
+											onClick={(e) =>
+												handleClickIcono(e, 'andinapayExpediente')
+											}
+										>
+											<div className={styles.iconoAppImagen}>
+												<FileExplorerIcon size={48} />
+											</div>
+											<span className={styles.iconoAppNombre}>Expediente</span>
+										</button>
+										<button
+											className={`${styles.iconoApp} ${iconoSeleccionado === 'andinapayRepositorio' ? styles.iconoAppSeleccionado : ''}`}
+											onClick={(e) =>
+												handleClickIcono(e, 'andinapayRepositorio')
+											}
+										>
+											<div className={styles.iconoAppImagen}>
+												<AppStoreIcon size={48} />
+											</div>
+											<span className={styles.iconoAppNombre}>Repositorio</span>
+										</button>
+										<button
+											className={`${styles.iconoApp} ${iconoSeleccionado === 'andinapayBanco' ? styles.iconoAppSeleccionado : ''}`}
+											onClick={(e) => handleClickIcono(e, 'andinapayBanco')}
+										>
+											<div className={styles.iconoAppImagen}>
+												<ShieldCheckIcon size={48} />
+											</div>
+											<span className={styles.iconoAppNombre}>Banco</span>
+										</button>
+										<button
+											className={`${styles.iconoApp} ${iconoSeleccionado === 'andinapayClaves' ? styles.iconoAppSeleccionado : ''}`}
+											onClick={(e) => handleClickIcono(e, 'andinapayClaves')}
+										>
+											<div className={styles.iconoAppImagen}>
+												<ConfiguracionIcon size={48} />
+											</div>
+											<span className={styles.iconoAppNombre}>Claves</span>
+										</button>
+										<button
+											className={`${styles.iconoApp} ${iconoSeleccionado === 'andinapayComprobaciones' ? styles.iconoAppSeleccionado : ''}`}
+											onClick={(e) =>
+												handleClickIcono(e, 'andinapayComprobaciones')
+											}
+										>
+											<div className={styles.iconoAppImagen}>
+												<NetScanVizIcon size={48} />
+											</div>
+											<span className={styles.iconoAppNombre}>
+												Comprobaciones
+											</span>
+										</button>
+										<button
+											className={`${styles.iconoApp} ${iconoSeleccionado === 'andinapayInforme' ? styles.iconoAppSeleccionado : ''}`}
+											onClick={(e) => handleClickIcono(e, 'andinapayInforme')}
+										>
+											<div className={styles.iconoAppImagen}>
+												<ConsolaIcon size={48} />
+											</div>
+											<span className={styles.iconoAppNombre}>Informe</span>
+										</button>
+									</>
+								) : null}
 							</div>
 
 							{ventanasAbiertas.map((id) => {
@@ -563,6 +706,15 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
 			</DispositivoAppsProvider>
 		</OSThemeProvider>
 	)
+
+	const desktopContent =
+		isAndinaPayCase && isAnalystDevice ? (
+			<AndinaPayProvider bridge={andinaBridge}>
+				{desktopContentBase}
+			</AndinaPayProvider>
+		) : (
+			desktopContentBase
+		)
 
 	if (embedded) return desktopContent
 	return <PageTransition>{desktopContent}</PageTransition>

@@ -121,10 +121,7 @@ const ECSSceneRenderer: React.FC = () => {
 		if (deviceType === 'WORKSTATION') {
 			return [
 				{
-					label:
-						escenario?.exercise?.caseId === 'cwe-321-andinapay'
-							? 'Abrir expediente del caso'
-							: 'Configurar',
+					label: 'Configurar',
 					onClick: () => {
 						setMenuOpenForEntity(null)
 						handleZoomToDevice(position, rotacionY)

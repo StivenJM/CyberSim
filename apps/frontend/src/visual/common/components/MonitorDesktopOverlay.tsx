@@ -1,7 +1,6 @@
 import { AnimatePresence, motion } from 'framer-motion'
 import { useEffect } from 'react'
 import { useNavigate } from 'react-router'
-import AndinaPayCaseWorkspace from '../../features/ejercicios/components/AndinaPayCaseWorkspace'
 import Dispositivos from '../../features/hardening-de-dispositivos/pages/Dispositivos'
 import { useEscenarioActual } from '../contexts/EscenarioContext'
 import { useScreenTransition } from '../contexts/ScreenTransitionContext'
@@ -77,16 +76,7 @@ const MonitorDesktopOverlay: React.FC = () => {
 						Salir
 					</button>
 					<div className={styles.desktopContainer}>
-						{isAndinaPay ? (
-							<AndinaPayCaseWorkspace
-								scenarioSlug={escenario.slug}
-								scenarioRevision={escenario.revision}
-								scenarioContentHash={escenario.contentHash}
-								embedded
-							/>
-						) : (
-							<Dispositivos embedded />
-						)}
+						<Dispositivos embedded />
 					</div>
 				</motion.div>
 			)}

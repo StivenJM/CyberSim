@@ -116,7 +116,7 @@ const SEEDS: readonly ExerciseSeed[] = [
 ]
 
 const ANDINAPAY_OBJETIVOS = [
-	['Leer el aviso y localizar la clave histórica en la versión H1'],
+	['Leer el aviso y adjuntar la versión H1 al expediente'],
 	['Sellar el diagnóstico provisional con dos evidencias'],
 	['Migrar R01/R02 a recovery-v2 y retirar legacy-demo'],
 	['Verificar B/Q/C y enviar el informe'],
@@ -145,7 +145,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 10,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'Busca la clave que quedó en la versión H1 del repositorio y compárala con la versión actual.',
+			'Abre la versión H1 del repositorio, compárala con la versión actual y adjúntala al expediente.',
 		fase: 1,
 		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},

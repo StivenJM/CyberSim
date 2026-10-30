@@ -102,6 +102,26 @@ export function andinaPayFase1Key(): string {
 	return `cybersim:andinapay:${currentStudentKey()}:fase1`
 }
 
+export function andinaPayNoticeKey(): string {
+	return `cybersim:andinapay:${currentStudentKey()}:notice`
+}
+
+export function markAndinaPayNoticeRead(): void {
+	try {
+		localStorage.setItem(andinaPayNoticeKey(), '1')
+	} catch {
+		// Storage unavailable: the case stays playable without the hint.
+	}
+}
+
+export function isAndinaPayNoticeRead(): boolean {
+	try {
+		return localStorage.getItem(andinaPayNoticeKey()) === '1'
+	} catch {
+		return false
+	}
+}
+
 export function readAndinaPayState(): AndinaPayState | null {
 	return loadStored()?.state ?? null
 }
@@ -291,7 +311,7 @@ export function AndinaPayProvider({
 		localStorage.setItem(andinaPayFase1Key(), '1')
 		bridge?.onObjective?.(
 			1,
-			'Leer el aviso y localizar la clave histórica en la versión H1',
+			'Leer el aviso y adjuntar la versión H1 al expediente',
 		)
 	}, [bridge])
 
@@ -538,6 +558,7 @@ function AndinaPayTabs({
 						if (ok) setActive('repositorio')
 					}}
 					onEvidence={(reference) => void ctx.recordEvidence(reference)}
+					onLocateKey={ctx.completeFase1}
 				/>
 			) : null}
 
@@ -622,6 +643,7 @@ export function AndinaPayExpedienteWindow() {
 					await ctx.sealDiagnosis(input)
 				}}
 				onEvidence={(reference) => void ctx.recordEvidence(reference)}
+				onLocateKey={ctx.completeFase1}
 			/>
 		</WindowPanel>
 	)
@@ -779,6 +801,7 @@ function ExpedienteView({
 	busy,
 	onSeal,
 	onEvidence,
+	onLocateKey,
 }: {
 	readonly state: AndinaPayState
 	readonly claim: string
@@ -792,6 +815,7 @@ function ExpedienteView({
 		readonly scope: string
 	}) => Promise<void>
 	readonly onEvidence: (reference: string) => void
+	readonly onLocateKey?: () => void
 }) {
 	const [draft, setDraft] = useState({
 		claim: '',
@@ -802,6 +826,10 @@ function ExpedienteView({
 	const [cited, setCited] = useState<readonly string[]>([])
 	const [selected, setSelected] = useState('incident/notice.txt')
 	const content = artifactContent(selected)
+
+	useEffect(() => {
+		markAndinaPayNoticeRead()
+	}, [])
 
 	const openArtifact = (reference: string) => {
 		setSelected(reference)
@@ -877,7 +905,10 @@ function ExpedienteView({
 					<button
 						type="button"
 						className={styles.button}
-						onClick={() => onEvidence(selected)}
+						onClick={() => {
+							onEvidence(selected)
+							if (selected === 'AP-H1') onLocateKey?.()
+						}}
 					>
 						Citar esta evidencia
 					</button>
@@ -1153,7 +1184,7 @@ function RepositorioView({
 								if (revision === 'AP-H1') onLocateKey?.()
 							}}
 						>
-							+ Adjuntar {displayRef(revision)}
+							+ Adjuntar {displayRef(revision)} al expediente
 						</button>
 					</aside>
 

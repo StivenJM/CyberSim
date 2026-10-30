@@ -5,7 +5,11 @@ import {
 	TipoLogGeneral,
 } from '../../../../shared/types/EventosEnums'
 import { useECSSceneContext } from '../../escenarios-simulados/context/ECSSceneContext'
-import { andinaPayFase1Key, readAndinaPayState } from './AndinaPayCaseWorkspace'
+import {
+	andinaPayFase1Key,
+	isAndinaPayNoticeRead,
+	readAndinaPayState,
+} from './AndinaPayCaseWorkspace'
 
 /**
  * Feedback didáctico al reanudar el reloj.
@@ -23,6 +27,7 @@ export default function AndinaPayFeedbackListener() {
 			() => {
 				const state = readAndinaPayState()
 				const fase1 = localStorage.getItem(andinaPayFase1Key()) === '1'
+				const noticeRead = isAndinaPayNoticeRead()
 
 				if (state?.reportSubmitted) {
 					escenarioController.registrarLogDeCaso(
@@ -53,14 +58,22 @@ export default function AndinaPayFeedbackListener() {
 				}
 				if (fase1) {
 					escenarioController.registrarLogDeCaso(
-						'Bien: localizaste la clave histórica. Pruébala en el Banco criptográfico y completa D1.',
+						'Bien: la versión H1 quedó registrada en el expediente. Prueba la clave en el Banco criptográfico y sella D1.',
 						false,
 						TipoLogGeneral.COMPLETADO,
 					)
 					return
 				}
+				if (noticeRead) {
+					escenarioController.registrarLogDeCaso(
+						'Aún no: en Repositorio abre la versión H1 y pulsa «Adjuntar Versión H1 (histórica) al expediente».',
+						false,
+						TipoLogGeneral.ADVERTENCIA,
+					)
+					return
+				}
 				escenarioController.registrarLogDeCaso(
-					'Aún no: abre el aviso y la versión H1, y pulsa el botón de confirmación.',
+					'Aún no: abre el expediente en el PC Analista y lee el aviso; después adjunta la versión H1 desde el repositorio.',
 					false,
 					TipoLogGeneral.ADVERTENCIA,
 				)

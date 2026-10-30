@@ -148,8 +148,10 @@ S33. El repositorio se presenta como un editor tipo IDE: barra de título, explo
 carpeta, historial de versiones seleccionable (H3, H2, H1) con fecha y etiqueta, pestaña del archivo
 abierto, panel de código con números de línea, barra de estado y paneles de búsqueda y comparación.
 El historial funciona como un `git log`: al seleccionar una revisión se muestra el contenido de esa
-revisión. Adjuntar la revisión H1 al expediente completa la fase 1; no hay botón didáctico en
-Expediente.
+revisión. Adjuntar la revisión H1 al expediente o citarla desde los materiales completa la fase 1;
+no hay botón didáctico en Expediente. El feedback al reanudar indica el siguiente paso concreto:
+si el aviso ya se abrió pero falta H1, pide abrir Repositorio y pulsar «Adjuntar Versión H1
+(histórica) al expediente»; si H1 ya está registrada, pasa a Banco criptográfico y D1.
 
 ## Tasks
 
@@ -348,3 +350,14 @@ búsqueda literal con resultados clicables y comparación de revisiones. Adjunta
 completa la fase 1, reemplazando el botón didáctico anterior. Verificado en el contenedor: objetivo
 completado y feedback `Bien: localizaste la clave histórica...` al reanudar; 105 tests de frontend,
 typecheck y biome limpios.
+
+L27 (corrección literal del usuario):
+> no entiendo qué es lo que hay que hacer porque sí abrí el expediente, pero aún así me aparecen esos mensajes entonces al final está muy extraño
+
+L28. El feedback de reanudar seguía diciendo "pulsa el botón de confirmación", un botón que ya no
+existe, y no distinguía entre abrir el expediente y adjuntar H1. Ahora el mensaje depende del estado:
+si el aviso ya se abrió pero falta H1, pide abrir Repositorio y pulsar «Adjuntar Versión H1
+(histórica) al expediente»; si falta el aviso, pide abrir el expediente; si H1 ya está registrada,
+pasa a Banco criptográfico y D1. Además, citar la versión H1 desde los materiales del expediente
+también completa la fase 1, para que el camino más natural no requiera cambiar de ventana. El objetivo
+de la fase 1 y el aviso de t=10 ahora dicen explícitamente que hay que adjuntar H1.

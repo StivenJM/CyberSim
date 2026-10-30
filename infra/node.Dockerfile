@@ -13,16 +13,19 @@ COPY package.json pnpm-lock.yaml pnpm-workspace.yaml biome.json .gitignore ./
 COPY apps/backend/package.json apps/backend/package.json
 COPY apps/frontend/package.json apps/frontend/package.json
 COPY packages/scenario-contract/package.json packages/scenario-contract/package.json
+COPY packages/attempt-ledger/package.json packages/attempt-ledger/package.json
+COPY packages/exercises/package.json packages/exercises/package.json
 
 # The full toolchain is only used by explicit maintenance/test tools.
 FROM workspace-manifests AS dependencies
 RUN --mount=type=cache,id=cybersim-pnpm,target=/pnpm/store pnpm install --frozen-lockfile --store-dir /pnpm/store
 
 FROM workspace-manifests AS frontend-dependencies
-RUN --mount=type=cache,id=cybersim-pnpm,target=/pnpm/store pnpm --filter @cybersim/frontend install --frozen-lockfile --store-dir /pnpm/store
+RUN --mount=type=cache,id=cybersim-pnpm,target=/pnpm/store pnpm --filter "@cybersim/frontend..." install --frozen-lockfile --store-dir /pnpm/store
 
 FROM frontend-dependencies AS frontend-source
 COPY packages/scenario-contract packages/scenario-contract
+COPY packages/exercises packages/exercises
 COPY apps/frontend apps/frontend
 
 # Export is a build artifact consumed by preparation, not by either app image.
@@ -40,10 +43,11 @@ FROM frontend-source AS frontend-dev
 CMD ["pnpm","--filter","@cybersim/frontend","run","dev","--host","0.0.0.0","--port","5173","--strictPort"]
 
 FROM workspace-manifests AS backend-dependencies
-RUN --mount=type=cache,id=cybersim-pnpm,target=/pnpm/store pnpm --filter @cybersim/backend install --frozen-lockfile --store-dir /pnpm/store
+RUN --mount=type=cache,id=cybersim-pnpm,target=/pnpm/store pnpm --filter "@cybersim/backend..." install --frozen-lockfile --store-dir /pnpm/store
 
 FROM backend-dependencies AS backend-source
 COPY packages/scenario-contract packages/scenario-contract
+COPY packages/attempt-ledger packages/attempt-ledger
 COPY apps/backend apps/backend
 RUN pnpm --filter @cybersim/backend run db:generate
 # Runtime evidence hashes these inputs; no frontend source or export is needed.
@@ -58,6 +62,7 @@ CMD ["pnpm","--filter","@cybersim/backend","run","dev"]
 # never reach the runtime image.
 FROM backend-dependencies AS backend-build
 COPY packages/scenario-contract packages/scenario-contract
+COPY packages/attempt-ledger packages/attempt-ledger
 COPY apps/backend apps/backend
 RUN pnpm --filter @cybersim/backend run build
 RUN pnpm --filter @cybersim/backend --prod deploy /deploy
@@ -94,6 +99,7 @@ CMD ["node","dist/server.js"]
 
 FROM dependencies AS tools-dev
 COPY packages/scenario-contract packages/scenario-contract
+COPY packages/attempt-ledger packages/attempt-ledger
 COPY apps/backend apps/backend
 COPY apps/frontend apps/frontend
 COPY infra infra

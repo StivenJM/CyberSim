@@ -105,10 +105,9 @@ export default function LevelSelectionMenuList() {
 		setOpenTooltip(id)
 	}
 
+	// Cualquier escenario publicado se puede iniciar en cualquier orden. El
+	// progreso previo solo cambia la etiqueta del nodo, no el acceso.
 	const handleSelectLevel = (escenario: EscenarioPreview) => {
-		const index = allSlugs.indexOf(escenario.slug)
-		if (index < 0 || (!isUnlocked(index) && !isCompletado(escenario.slug)))
-			return
 		const escenarioCompleto = nivelController.cargarEscenario(
 			escenario.id,
 		) as Escenario
@@ -162,18 +161,13 @@ export default function LevelSelectionMenuList() {
 			escenarios: [...escenarios].sort((a, b) => a.id - b.id),
 		}))
 
-	// Flat ordered list of all scenario slugs to determine unlock state
+	// Flat ordered list of all scenario slugs to locate the suggested level
 	const allSlugs = groups.flatMap((g) => g.escenarios.map((e) => e.slug))
 
-	const isUnlocked = (flatIndex: number): boolean => {
-		if (flatIndex === 0) return true
-		return allSlugs.slice(0, flatIndex).every((slug) => isCompletado(slug))
-	}
-
-	// Nivel sugerido: primer nodo desbloqueado, no completado y sin intentos previos.
-	// Es el candidato natural para "Empezar".
+	// Nivel sugerido: primer nodo no completado y sin intentos previos. Es una
+	// guía para empezar, no un requisito: todos los niveles están desbloqueados.
 	const suggestedIdx = allSlugs.findIndex(
-		(slug, i) => isUnlocked(i) && !isCompletado(slug) && !hasIntentos(slug),
+		(slug) => !isCompletado(slug) && !hasIntentos(slug),
 	)
 
 	let globalIndex = 0
@@ -232,8 +226,6 @@ export default function LevelSelectionMenuList() {
 							const attempted = hasIntentos(esc.slug)
 							const offset = zigzagOffset(globalIndex)
 							const idx = globalIndex++
-							const unlocked = isUnlocked(idx)
-							const canPlay = unlocked || completado
 
 							const nodeState = completado
 								? 'done'
@@ -244,7 +236,6 @@ export default function LevelSelectionMenuList() {
 							const mt = nodeMarginTop(idx)
 
 							const isOpen = openTooltip === esc.id
-							const dimmed = !(unlocked || attempted || completado)
 							const isSuggested = idx === suggestedIdx
 
 							return (
@@ -277,11 +268,11 @@ export default function LevelSelectionMenuList() {
 										data-node
 										className={`${styles.node} ${styles[nodeState]}`}
 										initial={{ opacity: 0 }}
-										animate={{ opacity: dimmed && !isOpen ? 0.4 : 1 }}
+										animate={{ opacity: 1 }}
 										transition={{ duration: 0.25, delay: idx * 0.05 }}
 										role="button"
 										tabIndex={0}
-										aria-label={`${esc.titulo} — ${completado ? 'Completado' : !canPlay ? 'Bloqueado' : attempted ? 'En progreso' : 'Disponible'}`}
+										aria-label={`${esc.titulo} — ${completado ? 'Completado' : attempted ? 'En progreso' : 'Disponible'}`}
 										aria-expanded={isOpen}
 										onClick={(e) => {
 											e.stopPropagation()
@@ -321,20 +312,17 @@ export default function LevelSelectionMenuList() {
 												</span>
 												<p className={styles.tooltipDesc}>{esc.descripcion}</p>
 												<button
-													disabled={!canPlay}
 													className={`${styles.tooltipBtn} ${styles[`tooltipBtn--${nodeState}`]}`}
 													onClick={(e) => {
 														e.stopPropagation()
 														handleSelectLevel(esc)
 													}}
 												>
-													{!canPlay
-														? 'Bloqueado'
-														: completado
-															? 'Repetir'
-															: attempted
-																? 'Continuar'
-																: 'Empezar'}
+													{completado
+														? 'Repetir'
+														: attempted
+															? 'Continuar'
+															: 'Empezar'}
 												</button>
 											</motion.div>
 										)}

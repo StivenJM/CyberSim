@@ -14,7 +14,7 @@ Si se pierde la contraseña, utilizar `/recuperar-contrasenia` con una cuenta co
 
 ## Practicar un escenario
 
-1. Comenzar por el tutorial y seleccionar un nivel habilitado en el mapa.
+1. Seleccionar cualquier nivel del mapa; el tutorial es la introducción recomendada.
 2. Leer descripción, fases, objetivos y notificaciones de la simulación.
 3. Seleccionar dispositivos en la oficina 3D para examinar su escritorio, activos, apps o configuraciones.
 4. Usar la vista de redes para revisar topología, asignaciones, reglas de firewall y perfiles VPN que corresponden al reto.

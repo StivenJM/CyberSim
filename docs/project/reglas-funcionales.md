@@ -34,8 +34,8 @@ Los requisitos se organizan en [historias de usuario enumeradas](historias-de-us
 | ID | Regla actual | Límite o diferencia |
 |---|---|---|
 | RF-16 | Cinco escenarios activos del catálogo | Otros archivos permanecen deshabilitados |
-| RF-17 | El mapa desbloquea un nivel cuando todos los anteriores están completados | Es una regla de interfaz, sin comprobación equivalente en API |
-| RF-18 | Orden del mapa por categoría definida y por ID dentro de cada categoría | Cambiar categoría/ID puede alterar orden y desbloqueo |
+| RF-17 | Todos los niveles publicados se pueden iniciar en cualquier orden | El progreso previo solo cambia la etiqueta del nodo; la sugerencia «Empezar» es una guía, no un requisito |
+| RF-18 | Orden del mapa por categoría definida y por ID dentro de cada categoría | El orden solo afecta la presentación y el nivel sugerido, no el acceso |
 | RF-19 | La práctica se organiza por fases y objetivos | Nombres y orden de eventos deben ser coherentes para avanzar |
 | RF-20 | Fallar una fase o completar el escenario envía un intento | No hay guardado continuo de partida ni reanudación completa |
 | RF-21 | Cada envío de progreso crea un intento independiente | Un reenvío accidental también cuenta como intento |

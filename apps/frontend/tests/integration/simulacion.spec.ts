@@ -85,7 +85,7 @@ test('HU013 HU015 estudiante: configurar protección, instalar app y ejecutar co
 	).toBeVisible()
 })
 
-test('HU012 HU016 HU018 HU019 estudiante: completar tutorial, guardar éxito, desbloquear nivel y sumar ranking', async ({
+test('HU012 HU016 HU018 HU019 estudiante: completar tutorial, guardar éxito y sumar ranking', async ({
 	page,
 }) => {
 	await startTutorial(page)
@@ -146,7 +146,7 @@ test('HU014 HU017 estudiante: verificar firmas válida y alterada y conectar VPN
 	test.setTimeout(240000)
 	await login(page)
 	// Caso focalizado sobre la definición publicada, sin inventar un escenario ni
-	// progreso persistido. El desbloqueo se verifica en el recorrido anterior.
+	// progreso persistido. El recorrido desde el mapa se verifica en la prueba anterior.
 	await page.addInitScript((scenario) => {
 		Object.assign(window, { __E2E_ESCENARIO__: scenario })
 		localStorage.setItem('slug_escenario_actual', scenario.slug)

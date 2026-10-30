@@ -2,9 +2,76 @@
 	width: 100%;
 	max-width: var(--content-width);
 	margin: 0 auto;
-	padding: 24px;
+	padding: 24px 24px 24px 96px;
 	flex: 1;
 	overflow-y: auto;
+}
+
+.casoIntro {
+	margin-bottom: 1.5rem;
+	padding: 1.25rem 1.4rem;
+	border: 1px solid rgba(125, 211, 252, 0.28);
+	border-radius: 0.9rem;
+	background: rgba(15, 23, 42, 0.62);
+	color: #f4f6fb;
+}
+
+.casoEyebrow {
+	margin: 0 0 0.35rem;
+	font-size: 0.75rem;
+	letter-spacing: 0.14em;
+	text-transform: uppercase;
+	color: #7dd3fc;
+}
+
+.casoIntroTitle {
+	margin: 0 0 0.75rem;
+	font-size: clamp(1.4rem, 2.4vw, 2rem);
+}
+
+.casoIntroLead {
+	margin: 0 0 0.9rem;
+	max-width: 60rem;
+	line-height: 1.65;
+	color: #c7d2e4;
+}
+
+.casoSubtitle {
+	margin: 1rem 0 0.55rem;
+	font-size: 1rem;
+	color: #7dd3fc;
+}
+
+.casoSteps {
+	margin: 0 0 0.9rem;
+	padding-left: 1.3rem;
+	display: grid;
+	gap: 0.45rem;
+	line-height: 1.55;
+	color: #c7d2e4;
+}
+
+.casoNote {
+	margin: 0.5rem 0 0;
+	padding-top: 0.6rem;
+	border-top: 1px solid rgba(148, 163, 184, 0.18);
+	font-size: 0.84rem;
+	line-height: 1.55;
+	color: #94a3b8;
+}
+
+.casoNote code,
+.casoIntro code {
+	padding: 0.05rem 0.25rem;
+	border-radius: 0.25rem;
+	background: rgba(2, 6, 23, 0.6);
+	color: #bae6fd;
+}
+
+.fasesTitle {
+	margin: 0 0 0.75rem;
+	font-size: 1rem;
+	color: #7dd3fc;
 }
 
 .faseActual {

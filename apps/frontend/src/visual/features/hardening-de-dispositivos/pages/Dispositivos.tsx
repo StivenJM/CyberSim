@@ -263,8 +263,14 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
 		? {
 				onObjective: (faseId: number, descripcion: string) =>
 					escenarioController?.completarObjetivoDeCaso(faseId, descripcion),
-				onLog: (mensaje: string, pausarTiempo?: boolean) =>
-					escenarioController?.registrarLogDeCaso(mensaje, pausarTiempo),
+				onLog: (
+					mensaje: string,
+					pausarTiempo?: boolean,
+					tipo?: Parameters<
+						NonNullable<typeof escenarioController>['registrarLogDeCaso']
+					>[2],
+				) =>
+					escenarioController?.registrarLogDeCaso(mensaje, pausarTiempo, tipo),
 			}
 		: undefined
 

@@ -132,6 +132,14 @@ S29. Los nombres visibles de los dispositivos son legibles; los identificadores 
 ficha. Los dos servidores usan el modelo procedural `serverrack` y la vista de un solo entorno
 muestra los controles de acercar/alejar para poder ver la sala completa.
 
+S30. Las notificaciones del caso llegan cada 5 segundos: t=5, 10, 15, 20, 25 y 30. Cada una pausa
+el reloj y propone el siguiente paso. No se espera a t=20 para el segundo aviso.
+
+S31. Al pulsar **Reanudar**, el caso revisa el estado persistido y escribe un log de feedback:
+`Bien: ...` cuando el hito anterior está cumplido, o `Aún no: ...` cuando falta. El feedback es
+advisory y no destruye la partida; el siguiente aviso llega 5 segundos después. El listener vive en
+la oficina (`VistaOficina`) para que funcione incluso con el escritorio cerrado.
+
 ## Tasks
 
 | ID | Specs | Ruta | Estado |
@@ -162,6 +170,7 @@ muestra los controles de acercar/alejar para poder ver la sala completa.
 | T24 | S26 | inline | hecho — intento/progreso conservados; integración 13/13 y unitarias verdes |
 | T25 | S27 | inline | hecho — intro narrativa, lector de materiales, D1 guiado y primer objetivo explícito |
 | T26 | S29 | inline | hecho — nombres legibles, servidores con modelo `serverrack` y controles de zoom |
+| T27 | S30, S31 | inline | hecho — avisos cada 5 s y feedback `Bien`/`Aún no` al reanudar |
 
 ## Log
 
@@ -301,3 +310,15 @@ los controles Acercar/Alejar para ver la sala. Los nombres visibles pasan a `PC 
 `AP-DATA-01`, `AP-KEYS-01` y `AP-RTR-01` quedan solo como identidad técnica en la ficha. El evento
 de t=5 y la fase 1 usan "PC del analista". La integración de ejercicios vuelve a 13/13; typecheck y
 biome limpios.
+
+L23 (corrección literal del usuario):
+> Mira como funciona normalmente el flujo es que me aparece una notificación, entonces el tiempo se para, luego yo hago lo que me dijo que haga y ahí cuando yo termino pongo en resume el tiempo parado para que vuelva a continuar. Cuando le pongo resume entonces me dirá si está bien lo que hice o si está mal, tal como se hacía en los primeros ejercicios. Pero como está este ejercicio numero 6 después del resume no me dice nada de si hice bien la tarea o si no lo hice bien y directamente pone otra alerta en el segundo 20. Es decir no estoy recibiendo retroalimentación por un lado, por otro lado siento que es demasiado esperar 20 segundos, sería mejor si fuera de 5 en 5, es decir el primero a los 5 segundos, el segundo a los 10 segundos, y así ...
+
+L24. Se implementó el feedback al reanudar y la cadencia de 5 segundos. Los avisos del seed quedaron
+en t=5, 10, 15, 20, 25 y 30. `AndinaPayFeedbackListener`, montado en `VistaOficina`, escucha
+`TIEMPO_REANUDADO`, lee el estado persistido y el flag de fase 1, y escribe en Logs `Bien: ...` o
+`Aún no: ...` sin pausar ni destruir la partida. El siguiente aviso llega 5 segundos después. El
+feedback se probó con el escritorio cerrado: al reanudar sin hacer la tarea aparece "Aún no: abre el
+aviso y la versión H1..."; tras abrir el expediente y confirmar, al reanudar aparece "Bien:
+localizaste la clave histórica...". También se verificó la alerta de t=10 cinco segundos después del
+primer resume. Typecheck y biome limpios.

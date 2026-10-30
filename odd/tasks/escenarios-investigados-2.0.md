@@ -91,6 +91,29 @@ el slug `andinapay-clave-expuesta` para marcar el nodo y sumar ranking.
 S20. El estado del banco se conserva en `localStorage` por estudiante y caso, con reinicio explícito.
 No se requieren imágenes nuevas; cualquier asset opcional se lista al final de la entrega.
 
+S21. La sección **Partida** es la guía de inicio: muestra las cuatro fases con objetivos
+descriptivos (abrir el expediente, sellar D1, migrar R01/R02, verificar y enviar el informe) y
+avanza cuando el estudiante cumple cada hito. No se añade un botón flotante en la oficina.
+
+S22. El ejercicio se resuelve desde el escritorio existente de **Dispositivos**: seis ventanas
+propias del caso (Expediente, Repositorio, Banco, Respuesta, Comprobaciones, Informe) se suman a
+las aplicaciones del escritorio, con el mismo gestor de ventanas y sin reutilizar la pantalla de
+`/ejercicios`.
+
+S23. La topología de **Redes** representa el caso: `AP-IR-01` (analista), `AP-DATA-01` (registros),
+`AP-KEYS-01` (custodia) y `AP-RTR-01` (router LAB/Internet), con las redes `LAB` e `Internet`.
+
+S24. El reloj y el panel de eventos guían la narrativa: avisos a t=5, 20, 40 y 60 que pausan el
+reloj, explican el siguiente paso y registran hitos del estudiante. Los eventos no fallan la
+partida por no ejecutar una acción en un segundo exacto; el caso es de investigación.
+
+S25. El acceso al caso sigue el patrón de los escenarios antiguos: clic en `AP-IR-01` → menú
+**Configurar** → monitor → escritorio. La cámara enfoca la estación al entrar, sin botón nuevo.
+
+S26. El intento y el progreso se conservan: diagnóstico, pruebas, revisiones, entrega y explicación
+en `/api/attempts`; `/progreso` con `terminado: true` al enviar el informe. La suite de integración
+de los trece recorridos existentes debe seguir verde.
+
 ## Tasks
 
 | ID | Specs | Ruta | Estado |
@@ -113,6 +136,12 @@ No se requieren imágenes nuevas; cualquier asset opcional se lista al final de 
 | T16 | S18 | inline | hecho — K2, custodia, migración, retiro/restauración y prevención explícita |
 | T17 | S19 | inline | hecho — B/Q/C, artefacto, informe, intento y progreso del mapa |
 | T18 | S20 | inline | hecho — localStorage por estudiante, reinicio y verificación final |
+| T19 | S21 | inline | hecho — fases y objetivos de AndinaPay en Partida; avance por hitos |
+| T20 | S22 | inline | hecho — seis ventanas del caso dentro del escritorio de Dispositivos |
+| T21 | S23 | inline | hecho — AP-IR-01, AP-DATA-01, AP-KEYS-01 y AP-RTR-01 con LAB/Internet |
+| T22 | S24 | inline | hecho — avisos temporizados y logs de hitos con pausa del reloj |
+| T23 | S25 | inline | hecho — sin botón flotante; menú Configurar y foco de cámara |
+| T24 | S26 | inline | hecho — intento/progreso conservados; integración 13/13 y unitarias verdes |
 
 ## Log
 
@@ -193,3 +222,18 @@ tests; exercises 88 tests; typecheck y biome limpios. Prueba manual del flujo co
 → monitor → D1 → migración → B/Q/C → artefacto → informe → nodo "Completado" y ranking 1.000. El
 intento quedó `delivered` con 10 pruebas, 6 revisiones y 1 explicación. Si el backend tarda en
 arrancar, el alta del intento reintenta una vez y el caso sigue operativo en modo local.
+
+L14 (corrección literal del usuario):
+> De hecho mira algo que estás haciendo mal es que tienes un botón llamado expediente del caso. Realmente no es que sea necesites un nuevo botón porque todo eso podía ser explicado tranquilamente dentro de la sección de partida en el que tú no has puesto nada. En la sección de dispositivos en la segunda imagen, también tú has puesto directamente ese html que no quiero que pongas porque no es como un escenario real sino que estás dando detalles innecesarios y además no se siente como si fuera real como te digo, realmente en dispositivos debería ser como es con los ejercicios que ya habían antes, así que por favor, si vas a reutilizar el escenario que sea el mismo. Luego también en la parte de redes veo que está un poco incoherente con lo que se necesitaría mostrar en realidad, así que también haz un trabajo ahí. Recuerda, debe ser como un escenario real. Veo que incluso nunca se empieza el ejercicio porque con los ejercicios antiguos por lo menos había un marco de tiempo que coordinaba todo, pero aquí es raro porque no se sabe ni por donde empezar ya que nunca usas la sección de eventos marcado en la última imagen que realmente usan todos los escenarios antiguos. Entonces dicho esto parece que necesitas un cambio integral, con la base en lo que se ha definido en la documentación para este ejercicio. Pero no copies pantallas de lo que está en /ejercicios porque eso realmente está muy raro y posiblemente en el futuro le quite.
+
+L15. Cambio integral aplicado. Se eliminó el botón flotante y el workspace de `/ejercicios` dejó de
+inyectarse en el monitor: el escritorio de **Dispositivos** ahora suma seis ventanas del caso
+(Expediente, Repositorio, Banco, Respuesta, Comprobaciones e Informe) al gestor de ventanas que ya
+usan los escenarios antiguos. **Partida** muestra las cuatro fases con objetivos y avanza al abrir
+el expediente, sellar D1, publicar la recuperación y enviar el informe. **Redes** muestra
+`AP-IR-01`, `AP-DATA-01`, `AP-KEYS-01` y `AP-RTR-01` sobre `LAB`/`Internet`. El reloj se guía por
+avisos a t=5, 20, 40 y 60 que pausan y escriben en el panel de eventos; los hitos también dejan log.
+La suite de integración de ejercicios volvió a 13/13; las unitarias siguen verdes. La prueba del
+recorrido completo mapa → oficina → monitor → ventanas se hizo manualmente porque el helper de clic
+3D y el doble clic del escritorio resultaron frágiles en el runner de integración; el flujo visual
+observado fue: ventanas abiertas, D1 visible, objetivo de Fase 1 completado y Fase 2 en Partida.

@@ -26,6 +26,10 @@ export class SistemaFase extends Sistema {
 	// a este método, se marca como completado al siguiente de la lista. Ahí radica la
 	// importancia de tenerlos definidos en orden en el json.
 	private marcarObjetivoDeFaseCompletado(): void {
+		// Los casos investigados actualizan sus objetivos desde la aplicación del
+		// caso; no tienen una lista de eventos de fase que consumir aquí.
+		if (this.eventosEscenario.length === 0) return
+
 		let escenario: EscenarioComponent | undefined
 		for (const [, c] of this.ecsManager.getEntidades()) {
 			if (c.tiene(EscenarioComponent)) {

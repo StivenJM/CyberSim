@@ -18,7 +18,16 @@ import {
 	searchRevision,
 	verifyAndinaPay,
 } from '@cybersim/exercises'
-import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
+import {
+	createContext,
+	type ReactNode,
+	useCallback,
+	useContext,
+	useEffect,
+	useMemo,
+	useRef,
+	useState,
+} from 'react'
 import { useNavigate } from 'react-router'
 
 import { ProgresoController } from '../../../../ecs/controllers/ProgresoController'
@@ -126,19 +135,64 @@ function envelopeLabel(envelope: (typeof ANDINAPAY_ENVELOPES)[number]): string {
 	return `${envelope.recordId}/${envelope.keyId}/v${envelope.version}`
 }
 
-export default function AndinaPayCaseWorkspace({
+export interface AndinaPayBridge {
+	readonly onObjective?: (faseId: number, descripcion: string) => void
+	readonly onLog?: (mensaje: string, pausarTiempo?: boolean) => void
+}
+
+interface AndinaPayContextValue {
+	readonly state: AndinaPayState
+	readonly sealed: boolean
+	readonly busy: boolean
+	readonly error: string | null
+	readonly report: ExerciseReport | null
+	readonly reportFields: ReportFields
+	readonly setReportFields: (next: ReportFields) => void
+	readonly run: (command: AndinaPayCommand) => Promise<AndinaPayState | null>
+	readonly recordEvidence: (reference: string) => Promise<void>
+	readonly verify: () => Promise<void>
+	readonly sealDiagnosis: (input: {
+		readonly claim: string
+		readonly cited: readonly string[]
+		readonly rival: string
+		readonly proposedTest: string
+		readonly scope: string
+	}) => Promise<boolean>
+	readonly submitArtifact: () => Promise<void>
+	readonly submitReport: () => Promise<void>
+	readonly markExpedienteOpened: () => void
+	readonly reset: () => void
+}
+
+const AndinaPayContext = createContext<AndinaPayContextValue | undefined>(
+	undefined,
+)
+
+function useAndinaPay(): AndinaPayContextValue {
+	const context = useContext(AndinaPayContext)
+	if (!context) {
+		throw new Error('useAndinaPay debe usarse dentro de AndinaPayProvider')
+	}
+	return context
+}
+
+export function AndinaPayProvider({
+	children,
 	scenarioSlug = 'andinapay-clave-expuesta',
-	embedded = false,
+	bridge,
 	onCompleted,
-}: AndinaPayCaseWorkspaceProps) {
-	const navigate = useNavigate()
+}: {
+	readonly children: ReactNode
+	readonly scenarioSlug?: string
+	readonly bridge?: AndinaPayBridge
+	readonly onCompleted?: () => void
+}) {
 	const initial = useRef<StoredExercise | null>(null)
 	if (initial.current === null) initial.current = loadStored()
 
 	const [state, setState] = useState<AndinaPayState>(
 		() => initial.current?.state ?? createAndinaPayState(),
 	)
-	const [active, setActive] = useState<TabId>('expediente')
 	const [busy, setBusy] = useState(false)
 	const [error, setError] = useState<string | null>(null)
 	const [report, setReport] = useState<ExerciseReport | null>(null)
@@ -146,6 +200,7 @@ export default function AndinaPayCaseWorkspace({
 		initial.current?.reportFields ?? EMPTY_REPORT,
 	)
 	const startedAt = useRef(initial.current?.startedAt ?? Date.now())
+	const expedienteAbierto = useRef(false)
 	const attempt = useAndinaPayAttempt()
 
 	const sealed = state.sealedDiagnosis !== null
@@ -189,9 +244,18 @@ export default function AndinaPayCaseWorkspace({
 			const next = await apply(state, command)
 			if (next) await commit(next)
 			setBusy(false)
+			if (next && command.kind === 'commit_recovery') {
+				bridge?.onObjective?.(
+					3,
+					'Migrar R01/R02 a recovery-v2 y retirar legacy-demo',
+				)
+				bridge?.onLog?.(
+					'Recuperación publicada; legacy-demo retirada del servicio.',
+				)
+			}
 			return next
 		},
-		[apply, state, commit],
+		[apply, state, commit, bridge],
 	)
 
 	const recordEvidence = useCallback(
@@ -208,11 +272,75 @@ export default function AndinaPayCaseWorkspace({
 		setBusy(false)
 	}, [state])
 
+	const markExpedienteOpened = useCallback(() => {
+		if (expedienteAbierto.current) return
+		expedienteAbierto.current = true
+		bridge?.onObjective?.(
+			1,
+			'Revisar el aviso y abrir el expediente en AP-IR-01',
+		)
+		bridge?.onLog?.('Expediente abierto en AP-IR-01.')
+	}, [bridge])
+
+	const sealDiagnosis = useCallback(
+		async ({
+			claim,
+			cited,
+			rival,
+			proposedTest,
+			scope,
+		}: {
+			readonly claim: string
+			readonly cited: readonly string[]
+			readonly rival: string
+			readonly proposedTest: string
+			readonly scope: string
+		}) => {
+			setBusy(true)
+			let next = state
+			for (const reference of cited) {
+				const withEvidence = await apply(next, {
+					kind: 'record_evidence',
+					reference,
+				})
+				if (!withEvidence) {
+					setBusy(false)
+					return false
+				}
+				next = withEvidence
+			}
+			const text = [
+				`Afirmación: ${claim.trim()}`,
+				`Evidencias: ${cited.join(', ')}`,
+				`Alternativa rival: ${rival.trim()}`,
+				`Prueba propuesta: ${proposedTest.trim()}`,
+				`Alcance/no determinado: ${scope.trim()}`,
+			].join('\n')
+			const diagnosed = await apply(next, {
+				kind: 'submit_diagnosis',
+				text,
+			})
+			if (!diagnosed) {
+				setBusy(false)
+				return false
+			}
+			await attempt.saveDiagnosis(claim.trim(), cited)
+			await commit(diagnosed)
+			setBusy(false)
+			bridge?.onObjective?.(
+				2,
+				'Sellar el diagnóstico provisional con dos evidencias',
+			)
+			bridge?.onLog?.(
+				'Diagnóstico D1 sellado; vistas de intervención habilitadas.',
+			)
+			return true
+		},
+		[state, apply, attempt, commit, bridge],
+	)
+
 	const saveProgress = useCallback(async () => {
 		localStorage.setItem('slug_escenario_actual', scenarioSlug)
-		// El ejercicio puede ejecutarse desde el mapa o desde el apartado de
-		// ejercicios; la revisión publicada del seed no siempre existe en el
-		// catálogo de progreso. El cierre funcional solo necesita `terminado`.
 		localStorage.removeItem('revision_escenario_actual')
 		localStorage.removeItem('content_hash_escenario_actual')
 		const elapsed = Math.max(
@@ -233,6 +361,40 @@ export default function AndinaPayCaseWorkspace({
 		onCompleted?.()
 	}, [scenarioSlug, onCompleted])
 
+	const submitArtifact = useCallback(async () => {
+		setBusy(true)
+		const next = await apply(state, { kind: 'submit_artifact' })
+		if (!next) {
+			setBusy(false)
+			return
+		}
+		setState(next)
+		const verified = await verifyAndinaPay(next)
+		setReport(verified)
+		await attempt.deliver(next, verified)
+		bridge?.onLog?.('Artefacto entregado; controles y pruebas congelados.')
+		setBusy(false)
+	}, [state, apply, attempt, bridge])
+
+	const submitReport = useCallback(async () => {
+		setBusy(true)
+		const text = reportText(reportFields)
+		const next = await apply(state, {
+			kind: 'submit_report',
+			text,
+		})
+		if (!next) {
+			setBusy(false)
+			return
+		}
+		setState(next)
+		await attempt.recordExplanation(text)
+		bridge?.onObjective?.(4, 'Verificar B/Q/C y enviar el informe')
+		bridge?.onLog?.('Informe enviado; caso completado.', true)
+		await saveProgress()
+		setBusy(false)
+	}, [state, apply, attempt, reportFields, bridge, saveProgress])
+
 	const reset = useCallback(() => {
 		for (let index = localStorage.length - 1; index >= 0; index -= 1) {
 			const key = localStorage.key(index)
@@ -243,9 +405,61 @@ export default function AndinaPayCaseWorkspace({
 		window.location.reload()
 	}, [])
 
+	const value = useMemo<AndinaPayContextValue>(
+		() => ({
+			state,
+			sealed,
+			busy,
+			error,
+			report,
+			reportFields,
+			setReportFields,
+			run,
+			recordEvidence,
+			verify,
+			sealDiagnosis,
+			submitArtifact,
+			submitReport,
+			markExpedienteOpened,
+			reset,
+		}),
+		[
+			state,
+			sealed,
+			busy,
+			error,
+			report,
+			reportFields,
+			run,
+			recordEvidence,
+			verify,
+			sealDiagnosis,
+			submitArtifact,
+			submitReport,
+			markExpedienteOpened,
+			reset,
+		],
+	)
+
+	return (
+		<AndinaPayContext.Provider value={value}>
+			{children}
+		</AndinaPayContext.Provider>
+	)
+}
+
+function AndinaPayTabs({
+	embedded = false,
+	onMap,
+}: {
+	readonly embedded?: boolean
+	readonly onMap?: () => void
+}) {
+	const ctx = useAndinaPay()
+	const [active, setActive] = useState<TabId>('expediente')
 	const tabs = useMemo(
-		() => TABS.filter((tab) => tab.id === 'expediente' || sealed),
-		[sealed],
+		() => TABS.filter((tab) => tab.id === 'expediente' || ctx.sealed),
+		[ctx.sealed],
 	)
 
 	return (
@@ -266,15 +480,9 @@ export default function AndinaPayCaseWorkspace({
 					sigue sin saberse. La clave de una versión anterior no se corrige
 					cambiando el algoritmo.
 				</p>
-				<p className={styles.small}>
-					{attempt.attemptId
-						? `Intento registrado: ${attempt.attemptId.slice(0, 8)}…`
-						: 'Modo local: el intento se registrará cuando el backend esté disponible.'}
-					{attempt.error ? ` · ${attempt.error}` : ''}
-				</p>
 			</header>
 
-			{!sealed ? (
+			{!ctx.sealed ? (
 				<p className={styles.notice}>
 					Antes de abrir las vistas de intervención, entrega un diagnóstico
 					provisional con dos evidencias citadas y una predicción comprobable.
@@ -300,133 +508,186 @@ export default function AndinaPayCaseWorkspace({
 				))}
 			</div>
 
-			{error ? (
+			{ctx.error ? (
 				<p className={styles.notice} role="alert">
-					{error}
+					{ctx.error}
 				</p>
 			) : null}
 
 			{active === 'expediente' ? (
 				<ExpedienteView
-					state={state}
-					claim={state.sealedDiagnosis ?? ''}
-					sealed={sealed}
-					busy={busy}
-					onSeal={async ({ claim, cited, rival, proposedTest, scope }) => {
-						setBusy(true)
-						let next = state
-						for (const reference of cited) {
-							const withEvidence = await apply(next, {
-								kind: 'record_evidence',
-								reference,
-							})
-							if (!withEvidence) {
-								setBusy(false)
-								return
-							}
-							next = withEvidence
-						}
-						const text = [
-							`Afirmación: ${claim.trim()}`,
-							`Evidencias: ${cited.join(', ')}`,
-							`Alternativa rival: ${rival.trim()}`,
-							`Prueba propuesta: ${proposedTest.trim()}`,
-							`Alcance/no determinado: ${scope.trim()}`,
-						].join('\n')
-						const diagnosed = await apply(next, {
-							kind: 'submit_diagnosis',
-							text,
-						})
-						if (!diagnosed) {
-							setBusy(false)
-							return
-						}
-						await attempt.saveDiagnosis(claim.trim(), cited)
-						await commit(diagnosed)
-						setBusy(false)
-						setActive('repositorio')
+					state={ctx.state}
+					claim={ctx.state.sealedDiagnosis ?? ''}
+					sealed={ctx.sealed}
+					busy={ctx.busy}
+					onOpen={ctx.markExpedienteOpened}
+					onSeal={async (input) => {
+						const ok = await ctx.sealDiagnosis(input)
+						if (ok) setActive('repositorio')
 					}}
-					onEvidence={(reference) => void recordEvidence(reference)}
+					onEvidence={(reference) => void ctx.recordEvidence(reference)}
 				/>
 			) : null}
 
 			{active === 'repositorio' ? (
 				<RepositorioView
-					onEvidence={(reference) => void recordEvidence(reference)}
+					onEvidence={(reference) => void ctx.recordEvidence(reference)}
 				/>
 			) : null}
 
 			{active === 'banco' ? (
-				<BancoView onEvidence={(reference) => void recordEvidence(reference)} />
+				<BancoView
+					onEvidence={(reference) => void ctx.recordEvidence(reference)}
+				/>
 			) : null}
 
 			{active === 'claves' ? (
 				<ClavesView
-					state={state}
-					busy={busy}
-					onCommand={(command) => void run(command)}
+					state={ctx.state}
+					busy={ctx.busy}
+					onCommand={(command) => void ctx.run(command)}
 				/>
 			) : null}
 
 			{active === 'comprobaciones' ? (
 				<ComprobacionesView
-					state={state}
-					report={report}
-					busy={busy}
-					onVerify={() => void verify()}
-					onCheck={(checkId) => void run({ kind: 'run_check', checkId })}
+					state={ctx.state}
+					report={ctx.report}
+					busy={ctx.busy}
+					onVerify={() => void ctx.verify()}
+					onCheck={(checkId) => void ctx.run({ kind: 'run_check', checkId })}
 				/>
 			) : null}
 
 			{active === 'informe' ? (
 				<InformeView
-					state={state}
-					reportFields={reportFields}
-					setReportFields={setReportFields}
-					busy={busy}
-					onArtifact={async () => {
-						setBusy(true)
-						const next = await apply(state, { kind: 'submit_artifact' })
-						if (!next) {
-							setBusy(false)
-							return
-						}
-						setState(next)
-						const verified = await verifyAndinaPay(next)
-						setReport(verified)
-						await attempt.deliver(next, verified)
-						setBusy(false)
-					}}
-					onReport={async () => {
-						setBusy(true)
-						const text = reportText(reportFields)
-						const next = await apply(state, {
-							kind: 'submit_report',
-							text,
-						})
-						if (!next) {
-							setBusy(false)
-							return
-						}
-						setState(next)
-						await attempt.recordExplanation(text)
-						await saveProgress()
-						setBusy(false)
-					}}
-					onReset={reset}
-					onMap={() => navigate('/seleccion-niveles')}
-					onVerify={() => void verify()}
+					state={ctx.state}
+					reportFields={ctx.reportFields}
+					setReportFields={ctx.setReportFields}
+					busy={ctx.busy}
+					onArtifact={ctx.submitArtifact}
+					onReport={ctx.submitReport}
+					onReset={ctx.reset}
+					onMap={onMap}
+					onVerify={() => void ctx.verify()}
 				/>
 			) : null}
 		</section>
 	)
 }
 
+export default function AndinaPayCaseWorkspace({
+	scenarioSlug = 'andinapay-clave-expuesta',
+	embedded = false,
+	onCompleted,
+}: AndinaPayCaseWorkspaceProps) {
+	const navigate = useNavigate()
+	return (
+		<AndinaPayProvider scenarioSlug={scenarioSlug} onCompleted={onCompleted}>
+			<AndinaPayTabs
+				embedded={embedded}
+				onMap={() => navigate('/seleccion-niveles')}
+			/>
+		</AndinaPayProvider>
+	)
+}
+
+function WindowPanel({ children }: { readonly children: ReactNode }) {
+	return <div className={styles.windowPanel}>{children}</div>
+}
+
+export function AndinaPayExpedienteWindow() {
+	const ctx = useAndinaPay()
+	return (
+		<WindowPanel>
+			<ExpedienteView
+				state={ctx.state}
+				claim={ctx.state.sealedDiagnosis ?? ''}
+				sealed={ctx.sealed}
+				busy={ctx.busy}
+				onOpen={ctx.markExpedienteOpened}
+				onSeal={async (input) => {
+					await ctx.sealDiagnosis(input)
+				}}
+				onEvidence={(reference) => void ctx.recordEvidence(reference)}
+			/>
+		</WindowPanel>
+	)
+}
+
+export function AndinaPayRepositorioWindow() {
+	const ctx = useAndinaPay()
+	return (
+		<WindowPanel>
+			<RepositorioView
+				onEvidence={(reference) => void ctx.recordEvidence(reference)}
+			/>
+		</WindowPanel>
+	)
+}
+
+export function AndinaPayBancoWindow() {
+	const ctx = useAndinaPay()
+	return (
+		<WindowPanel>
+			<BancoView
+				onEvidence={(reference) => void ctx.recordEvidence(reference)}
+			/>
+		</WindowPanel>
+	)
+}
+
+export function AndinaPayClavesWindow() {
+	const ctx = useAndinaPay()
+	return (
+		<WindowPanel>
+			<ClavesView
+				state={ctx.state}
+				busy={ctx.busy}
+				onCommand={(command) => void ctx.run(command)}
+			/>
+		</WindowPanel>
+	)
+}
+
+export function AndinaPayComprobacionesWindow() {
+	const ctx = useAndinaPay()
+	return (
+		<WindowPanel>
+			<ComprobacionesView
+				state={ctx.state}
+				report={ctx.report}
+				busy={ctx.busy}
+				onVerify={() => void ctx.verify()}
+				onCheck={(checkId) => void ctx.run({ kind: 'run_check', checkId })}
+			/>
+		</WindowPanel>
+	)
+}
+
+export function AndinaPayInformeWindow() {
+	const ctx = useAndinaPay()
+	return (
+		<WindowPanel>
+			<InformeView
+				state={ctx.state}
+				reportFields={ctx.reportFields}
+				setReportFields={ctx.setReportFields}
+				busy={ctx.busy}
+				onArtifact={ctx.submitArtifact}
+				onReport={ctx.submitReport}
+				onReset={ctx.reset}
+				onVerify={() => void ctx.verify()}
+			/>
+		</WindowPanel>
+	)
+}
 function ExpedienteView({
 	state,
 	claim,
 	sealed,
 	busy,
+	onOpen,
 	onSeal,
 	onEvidence,
 }: {
@@ -434,6 +695,7 @@ function ExpedienteView({
 	readonly claim: string
 	readonly sealed: boolean
 	readonly busy: boolean
+	readonly onOpen?: () => void
 	readonly onSeal: (input: {
 		readonly claim: string
 		readonly cited: readonly string[]
@@ -450,6 +712,10 @@ function ExpedienteView({
 		scope: '',
 	})
 	const [cited, setCited] = useState<readonly string[]>([])
+
+	useEffect(() => {
+		onOpen?.()
+	}, [onOpen])
 
 	const toggle = (reference: string) => {
 		setCited((current) =>
@@ -1296,7 +1562,7 @@ function InformeView({
 	readonly onArtifact: () => Promise<void>
 	readonly onReport: () => Promise<void>
 	readonly onReset: () => void
-	readonly onMap: () => void
+	readonly onMap?: () => void
 	readonly onVerify: () => void
 }) {
 	const complete = Object.values(reportFields).every((value) => value.trim())
@@ -1423,9 +1689,11 @@ function InformeView({
 					vector de fuga no se conoce. El nodo del mapa se marcará como
 					completado al guardar el progreso.
 					<div className={styles.actions}>
-						<button type="button" className={styles.button} onClick={onMap}>
-							Volver al mapa
-						</button>
+						{onMap ? (
+							<button type="button" className={styles.button} onClick={onMap}>
+								Volver al mapa
+							</button>
+						) : null}
 						<button type="button" className={styles.button} onClick={onReset}>
 							Reiniciar caso
 						</button>

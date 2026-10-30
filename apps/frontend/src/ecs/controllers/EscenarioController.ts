@@ -294,6 +294,52 @@ export class EscenarioController {
 		)
 	}
 
+	public registrarLogDeCaso(mensaje: string, pausarTiempo = false): void {
+		this.agregarLogGeneralEscenario({
+			tipo: TipoLogGeneral.INFORMACION,
+			mensaje,
+			pausarTiempo,
+		})
+	}
+
+	/**
+	 * Los casos investigados no usan la lista secuencial de eventos del ECS:
+	 * su aplicación marca el objetivo cuando el estudiante lo cumple.
+	 */
+	public completarObjetivoDeCaso(faseId: number, descripcion: string): void {
+		let escenario: EscenarioComponent | undefined
+		for (const [, container] of this.ecsManager.getEntidades()) {
+			if (container.tiene(EscenarioComponent)) {
+				escenario = container.get(EscenarioComponent)
+				break
+			}
+		}
+		const fase = escenario?.fases.find((entry) => entry.id === faseId)
+		const objetivo = fase?.objetivos.find(
+			(entry) => entry.descripcion === descripcion,
+		)
+		if (!fase || !objetivo) return
+
+		objetivo.completado = true
+		if (fase.objetivos.every((entry) => entry.completado)) {
+			fase.completada = true
+			const siguiente = escenario?.fases.find(
+				(entry) => entry.id === faseId + 1,
+			)
+			if (siguiente) {
+				fase.faseActual = false
+				siguiente.faseActual = true
+			}
+		}
+
+		this.ecsManager.emit(EventosInternos.OBJETIVO_COMPLETADO)
+		this.agregarLogGeneralEscenario({
+			tipo: TipoLogGeneral.COMPLETADO,
+			mensaje: `Objetivo completado: ${descripcion}`,
+			pausarTiempo: false,
+		})
+	}
+
 	public cargarEventosEnSistema(): void {
 		if (!this.sistemaTiempo) {
 			console.error('SistemaTiempo no existe aún')
@@ -305,9 +351,12 @@ export class EscenarioController {
 		}
 		const eventos = this.getEventos()
 		this.sistemaTiempo.eventosEscenario = eventos
-		this.sistemaFase.eventosEscenario = eventos.sort(
-			(a, b) => a.tiempoNotificacion - b.tiempoNotificacion,
-		)
+		// Los casos investigados guían su narrativa con eventos de tiempo, pero
+		// sus objetivos los actualiza la aplicación del caso; no deben pasar por
+		// la lista secuencial de fases del ECS.
+		this.sistemaFase.eventosEscenario = this.escenario.exercise
+			? []
+			: eventos.sort((a, b) => a.tiempoNotificacion - b.tiempoNotificacion)
 	}
 
 	public ejecutarTiempo(): void {

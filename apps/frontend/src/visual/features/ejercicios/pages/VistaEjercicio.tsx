@@ -9,6 +9,7 @@ import { getInvestigatedCase } from '@cybersim/scenario-contract'
 import { type KeyboardEvent, useEffect, useRef, useState } from 'react'
 import { Link, useParams } from 'react-router'
 
+import AndinaPayCaseWorkspace from '../components/AndinaPayCaseWorkspace'
 import styles from '../styles/Ejercicios.module.css'
 import { verifyBibliotecaVivaInWorker } from '../worker/sqliteClient'
 
@@ -56,6 +57,10 @@ export default function VistaEjercicio() {
 		? workspaceViews(caseId, { diagnosisSealed: sealed })
 		: []
 	const activeView = views.find((view) => view.id === active) ?? views[0]
+
+	if (caseId === 'cwe-321-andinapay') {
+		return <AndinaPayCaseWorkspace />
+	}
 
 	if (!exercise || !definition) {
 		return (

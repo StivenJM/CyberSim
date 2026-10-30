@@ -7,12 +7,20 @@ import {
 	envelopeFor,
 } from '../src/andinapay/fixtures.js'
 import {
+	ANDINAPAY_EVIDENCE,
 	type AndinaPayState,
 	applyAndinaPay,
 	createAndinaPayState,
 	readRecord,
 	verifyAndinaPay,
 } from '../src/andinapay/model.js'
+import {
+	ANDINAPAY_ARTIFACTS,
+	ANDINAPAY_PROPOSED_CHANGE,
+	ANDINAPAY_REVISIONS,
+	diffRevisions,
+	searchRevision,
+} from '../src/andinapay/repository.js'
 
 async function recovered(): Promise<AndinaPayState> {
 	let state = createAndinaPayState()
@@ -93,6 +101,60 @@ describe('andinaPay fixtures', () => {
 				ANDINAPAY_KEYS['legacy-demo'],
 			),
 		).toMatchObject({ ok: false, code: 'INVALID_ENVELOPE' })
+	})
+})
+
+describe('andinaPay repository fixtures', () => {
+	it('finds KEY_HEX only in AP-H1 and never in HEAD', () => {
+		expect(searchRevision('AP-H1', 'KEY_HEX')).toHaveLength(1)
+		expect(searchRevision('AP-H2', 'KEY_HEX')).toEqual([])
+		expect(searchRevision('AP-H3', 'KEY_HEX')).toEqual([])
+		expect(searchRevision('AP-H3', 'legacy-demo')[0]?.text).toContain('KEY_ID')
+	})
+
+	it('shows the removal of the literal between AP-H1 and AP-H2', () => {
+		const diff = diffRevisions('AP-H1', 'AP-H2')
+		const crypto = diff.find((entry) => entry.path === 'src/crypto-config.ts')
+		expect(crypto?.removed.join('\n')).toContain('KEY_HEX')
+		expect(crypto?.added.join('\n')).toContain('KEY_SOURCE')
+	})
+
+	it('keeps the A0 artifacts and the candidate change available', () => {
+		const paths = ANDINAPAY_ARTIFACTS.map((artifact) => artifact.path)
+		expect(paths).toEqual(
+			expect.arrayContaining([
+				'keys/inventory.csv',
+				'data/partial-v1.json',
+				'logs/application.log',
+				'recovery/policy.txt',
+			]),
+		)
+		expect(ANDINAPAY_REVISIONS.map((revision) => revision.id)).toEqual([
+			'AP-H1',
+			'AP-H2',
+			'AP-H3',
+		])
+		expect(ANDINAPAY_PROPOSED_CHANGE.lines.join('\n')).toContain('KEY_HEX')
+	})
+
+	it('lets the student cite repository artifacts and every envelope', () => {
+		expect(ANDINAPAY_EVIDENCE).toEqual(
+			expect.arrayContaining([
+				'AP-H1',
+				'AP-H2',
+				'AP-H3',
+				'logs/application.log',
+				'keys/inventory.csv',
+				'data/partial-v1.json',
+				'R01/K1/v1',
+				'R02/K1/v1',
+				'R03/KI/v1',
+				'R04/K1/v1',
+				'R01/K2/v2',
+				'R02/K2/v2',
+				'R04/K2/v2',
+			]),
+		)
 	})
 })
 

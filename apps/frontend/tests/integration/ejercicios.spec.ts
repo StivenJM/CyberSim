@@ -37,15 +37,36 @@ async function sellarDiagnostico(page: import('@playwright/test').Page) {
 	await page
 		.getByLabel('Afirmación provisional')
 		.fill('Diagnóstico de integración sobre el expediente real.')
+	if (await page.getByLabel('Alternativa rival').count()) {
+		await page
+			.getByLabel('Alternativa rival')
+			.fill('El identificador público no explica el descifrado.')
+		await page
+			.getByLabel('Prueba propuesta')
+			.fill('Descifrar R01 con K1 y comprobar el fallo con otra clave.')
+		await page
+			.getByLabel('Alcance y no determinado')
+			.fill('Se demuestra la lectura; no se conoce el vector de fuga.')
+		await page
+			.getByRole('checkbox', { name: 'AP-H1', exact: true })
+			.click({ force: true })
+		await page
+			.getByRole('checkbox', { name: 'logs/application.log', exact: true })
+			.click({ force: true })
+	}
 	await page.getByRole('button', { name: 'Sellar diagnóstico D1' }).click()
+	// El botón cambia de etiqueta (UI genérica) o desaparece (Expediente D1
+	// completo); en ambos casos el sellado ya ocurrió.
 	await expect(
-		page.getByRole('button', { name: 'Diagnóstico sellado' }),
-	).toBeVisible()
+		page.getByRole('button', { name: 'Sellar diagnóstico D1' }),
+	).toHaveCount(0)
 }
 
 async function verificarBancoActual(page: import('@playwright/test').Page) {
 	await page.getByRole('tab', { name: /Comprobaciones/ }).click()
-	await page.getByRole('button', { name: 'Verificar banco actual' }).click()
+	await page
+		.getByRole('button', { name: /Verificar (banco|estado) actual/ })
+		.click()
 	await expect(page.getByRole('table')).toBeVisible({ timeout: 30_000 })
 }
 
@@ -79,17 +100,24 @@ test.describe('ejercicios investigados con el stack real', () => {
 				page.getByRole('heading', { name: 'Materiales A0' }),
 			).toBeVisible()
 
+			const isAndinaPay = entry.id === 'cwe-321-andinapay'
 			const comprobaciones = page.getByRole('tab', {
 				name: /Comprobaciones/,
 			})
-			await expect(comprobaciones).toHaveAttribute('aria-disabled', 'true')
-			await comprobaciones.click({ force: true })
-			await expect(
-				page.getByRole('heading', { name: 'Materiales A0' }),
-			).toBeVisible()
+			if (isAndinaPay) {
+				await expect(comprobaciones).toHaveCount(0)
+			} else {
+				await expect(comprobaciones).toHaveAttribute('aria-disabled', 'true')
+				await comprobaciones.click({ force: true })
+				await expect(
+					page.getByRole('heading', { name: 'Materiales A0' }),
+				).toBeVisible()
+			}
 
 			await sellarDiagnostico(page)
-			await expect(comprobaciones).toHaveAttribute('aria-disabled', 'false')
+			if (!isAndinaPay) {
+				await expect(comprobaciones).toHaveAttribute('aria-disabled', 'false')
+			}
 
 			await verificarBancoActual(page)
 			await expect(page.getByText('Protección Q: falla')).toBeVisible()
@@ -109,19 +137,49 @@ test.describe('ejercicios investigados con el stack real', () => {
 
 		for (const label of [
 			'Preparar K2 para migración',
-			'Fijar fuente de clave restringida',
+			'Fijar fuente de clave',
 			'Recifrar R01 y R02 en staged',
 			'Publicar recuperación',
-			'Configurar prevención',
 		]) {
 			await page.getByRole('button', { name: label }).click()
 		}
+		await page.selectOption('#prevention-scope', 'history-and-new-diff')
+		await page.selectOption('#prevention-policy', 'review-required')
+		await page.getByRole('button', { name: 'Configurar prevención' }).click()
 
+		await page.getByRole('tab', { name: /Comprobaciones/ }).click()
 		await page.getByRole('button', { name: 'Verificar estado actual' }).click()
 		await expect(page.getByText('Función legítima B: pasa')).toBeVisible({
 			timeout: 30_000,
 		})
 		await expect(page.getByText('Protección Q: pasa')).toBeVisible()
+
+		await page.getByRole('tab', { name: /Informe/ }).click()
+		await page
+			.getByLabel('Qué ocurrió según los materiales')
+			.fill('La clave legacy-demo de AP-H1 cifró R01 y R02.')
+		await page
+			.getByLabel('Qué datos se demostraron recuperables')
+			.fill('R01 y R02 contienen SYN-001/tok_demo_A y SYN-002/tok_demo_B.')
+		await page
+			.getByLabel('Causa y corrección')
+			.fill('Se migró R01/R02 a recovery-v2 y se retiró legacy-demo.')
+		await page
+			.getByLabel('Continuidad verificada')
+			.fill('B1 y B2 pasan con la aplicación y el escritor actuales.')
+		await page
+			.getByLabel('Límites y próximos pasos')
+			.fill(
+				'La copia histórica sigue legible con K1; el vector de fuga no se conoce.',
+			)
+		await page.getByRole('button', { name: 'Entregar artefacto' }).click()
+		await expect(page.getByText('Artefacto entregado')).toBeVisible({
+			timeout: 30_000,
+		})
+		await page.getByRole('button', { name: 'Enviar informe' }).click()
+		await expect(page.getByText('Caso completado')).toBeVisible({
+			timeout: 30_000,
+		})
 	})
 
 	test('bibliotecaviva: Worker SQLite/WASM con la ruta de referencia', async ({

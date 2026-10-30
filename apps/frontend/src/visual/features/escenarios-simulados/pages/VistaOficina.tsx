@@ -1,4 +1,4 @@
-import { useEffect, useRef } from 'react'
+import { useEffect, useMemo, useRef } from 'react'
 import MonitorDesktopOverlay from '../../../common/components/MonitorDesktopOverlay'
 import { useEscenario } from '../../../common/contexts'
 import { useScreenTransition } from '../../../common/contexts/ScreenTransitionContext'
@@ -10,7 +10,8 @@ import { useZonaKeyboardNav } from '../hooks/useZonaKeyboardNav'
 import styles from '../styles/VistaOficina.module.css'
 
 function VistaOficina() {
-	const { dispositivoSeleccionado, setDispositivoSeleccionado } = useEscenario()
+	const { dispositivoSeleccionado, setDispositivoSeleccionado, escenario } =
+		useEscenario()
 	const {
 		desktopMode,
 		pendingZoom,
@@ -18,7 +19,22 @@ function VistaOficina() {
 		startZoom,
 		exitDesktopMode,
 	} = useScreenTransition()
-	const { zonaActual, siguienteZona, anteriorZona } = useECSSceneContext()
+	const { zonaActual, siguienteZona, anteriorZona, processEntities } =
+		useECSSceneContext()
+	const isAndinaPayCase = escenario?.exercise?.caseId === 'cwe-321-andinapay'
+	const workstation = useMemo(() => {
+		if (!isAndinaPayCase) return undefined
+		try {
+			return processEntities().find(
+				(entity) =>
+					String(entity.objetoConTipo?.tipo ?? '').toUpperCase() ===
+					'WORKSTATION',
+			)
+		} catch {
+			// El ECS aún no ha montado la jerarquía en el primer render.
+			return undefined
+		}
+	}, [isAndinaPayCase, processEntities])
 	const zonaAnteriorRef = useRef(zonaActual)
 
 	// ArrowLeft / ArrowRight navegan entre zonas; deshabilitado dentro del overlay de monitor.
@@ -54,6 +70,17 @@ function VistaOficina() {
 				<TarjetaEntidadSeleccionada visible={!!dispositivoSeleccionado} />
 			)}
 			{!desktopMode && <TarjetaZonaActual visible={true} />}
+			{!desktopMode && workstation?.position ? (
+				<button
+					type="button"
+					className={styles.casoButton}
+					onClick={() =>
+						startZoom(workstation.position, workstation.rotacionY ?? 0)
+					}
+				>
+					Abrir expediente del caso
+				</button>
+			) : null}
 			<MonitorDesktopOverlay />
 		</div>
 	)

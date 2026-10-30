@@ -140,6 +140,17 @@ S31. Al pulsar **Reanudar**, el caso revisa el estado persistido y escribe un lo
 advisory y no destruye la partida; el siguiente aviso llega 5 segundos después. El listener vive en
 la oficina (`VistaOficina`) para que funcione incluso con el escritorio cerrado.
 
+S32. La explicación del ejercicio (objetivo, cómo se juega, glosario y qué debe demostrar) vive en
+**Partida**, antes de las fases. La ventana Expediente muestra solo el caso como realidad: aviso
+recibido, materiales y diagnóstico D1, sin pasos didácticos ni explicaciones del ejercicio.
+
+S33. El repositorio se presenta como un editor tipo IDE: barra de título, explorador de archivos por
+carpeta, historial de versiones seleccionable (H3, H2, H1) con fecha y etiqueta, pestaña del archivo
+abierto, panel de código con números de línea, barra de estado y paneles de búsqueda y comparación.
+El historial funciona como un `git log`: al seleccionar una revisión se muestra el contenido de esa
+revisión. Adjuntar la revisión H1 al expediente completa la fase 1; no hay botón didáctico en
+Expediente.
+
 ## Tasks
 
 | ID | Specs | Ruta | Estado |
@@ -171,6 +182,7 @@ la oficina (`VistaOficina`) para que funcione incluso con el escritorio cerrado.
 | T25 | S27 | inline | hecho — intro narrativa, lector de materiales, D1 guiado y primer objetivo explícito |
 | T26 | S29 | inline | hecho — nombres legibles, servidores con modelo `serverrack` y controles de zoom |
 | T27 | S30, S31 | inline | hecho — avisos cada 5 s y feedback `Bien`/`Aún no` al reanudar |
+| T28 | S32, S33 | inline | hecho — explicación movida a Partida, Expediente realista y repositorio tipo IDE |
 
 ## Log
 
@@ -322,3 +334,17 @@ feedback se probó con el escritorio cerrado: al reanudar sin hacer la tarea apa
 aviso y la versión H1..."; tras abrir el expediente y confirmar, al reanudar aparece "Bien:
 localizaste la clave histórica...". También se verificó la alerta de t=10 cinco segundos después del
 primer resume. Typecheck y biome limpios.
+
+L25 (corrección literal del usuario):
+> Mira lo que le has puesto en expediente realmente eso no iría en una situación de verdad, eso está mal, deberías poner lo que te marqué, es decir la explicación del ejercicio en la parte donde dice partida al inicio antes de iniciar las fases porque ahí es donde se pone, en la parte del escenario real en cambio se debe poner como si fuera la realidad.
+> Veo que abajo como que intentas poner editor de texto con historial de versiones, la cosa es que no parece como si fuera uno, quiero que más o menos te inspires en como son los que existen actualmente por ejemplo vscode para el editor y por ahí acomodarle algo de las versiones de esta manera sería más sencillo entender para el estudiante
+
+L26. La explicación didáctica salió de Expediente y vive en Partida (`VistaFasesPartida`), encima de
+las fases, con objetivo, cómo se juega, glosario y qué debe demostrar. Expediente quedó como caso
+real: cabecera de aviso recibido, materiales A0, lector y formulario D1, sin pistas de juego. El
+repositorio se rehízo como editor tipo IDE: ventana con barra de título, explorador por carpetas,
+historial H3/H2/H1 con fecha y etiqueta, pestaña con la revisión, números de línea, barra de estado,
+búsqueda literal con resultados clicables y comparación de revisiones. Adjuntar H1 al expediente
+completa la fase 1, reemplazando el botón didáctico anterior. Verificado en el contenedor: objetivo
+completado y feedback `Bien: localizaste la clave histórica...` al reanudar; 105 tests de frontend,
+typecheck y biome limpios.

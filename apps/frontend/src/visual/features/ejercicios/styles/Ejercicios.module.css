@@ -310,6 +310,12 @@
 	color: #7dd3fc;
 }
 
+.incidentHeader {
+	display: grid;
+	gap: 0.3rem;
+	margin-bottom: 1rem;
+}
+
 .grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
@@ -649,4 +655,388 @@
 	display: block;
 	margin-bottom: 0.25rem;
 	color: #7dd3fc;
+}
+
+/* --- Repositorio: editor tipo IDE --------------------------------------- */
+
+.ide {
+	border: 1px solid #3c3c3c;
+	border-radius: 0.6rem;
+	overflow: hidden;
+	background: #1e1e1e;
+	color: #cccccc;
+	box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
+}
+
+.ideTitlebar {
+	display: flex;
+	align-items: center;
+	gap: 0.75rem;
+	padding: 0.45rem 0.75rem;
+	background: #323233;
+	border-bottom: 1px solid #3c3c3c;
+}
+
+.ideDots {
+	display: inline-flex;
+	gap: 0.35rem;
+	flex: none;
+}
+
+.ideDots span {
+	width: 9px;
+	height: 9px;
+	border-radius: 50%;
+	background: #4b4b4b;
+}
+
+.ideDots span:nth-child(1) {
+	background: #ff5f57;
+}
+
+.ideDots span:nth-child(2) {
+	background: #febc2e;
+}
+
+.ideDots span:nth-child(3) {
+	background: #28c840;
+}
+
+.ideTitle {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.72rem;
+	color: #9d9d9d;
+}
+
+.ideBody {
+	display: grid;
+	grid-template-columns: minmax(13rem, 16rem) minmax(0, 1fr);
+	min-height: 21rem;
+}
+
+.ideSidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 0.35rem;
+	padding: 0.6rem;
+	background: #252526;
+	border-right: 1px solid #3c3c3c;
+}
+
+.ideSidebarTitle {
+	margin: 0.35rem 0 0;
+	font-size: 0.64rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #bbbbbb;
+}
+
+.ideRepo {
+	margin: 0;
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: #e8e8e8;
+}
+
+.ideTree,
+.ideTreeFiles,
+.ideHistory,
+.ideResults {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.ideTree,
+.ideHistory,
+.ideResults {
+	display: grid;
+	gap: 0.12rem;
+}
+
+.ideTreeFiles {
+	display: grid;
+	gap: 0.1rem;
+	padding-left: 0.5rem;
+}
+
+.ideFolder {
+	margin: 0.15rem 0;
+	font-size: 0.68rem;
+	color: #9d9d9d;
+}
+
+.ideFile {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	width: 100%;
+	padding: 0.22rem 0.35rem;
+	border: 1px solid transparent;
+	border-radius: 0.3rem;
+	background: transparent;
+	color: #cccccc;
+	font: inherit;
+	font-size: 0.74rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.ideFile:hover,
+.ideFile:focus-visible {
+	background: #2a2d2e;
+	outline: none;
+}
+
+.ideFileActive {
+	background: #37373d;
+	color: #ffffff;
+}
+
+.ideFileIcon {
+	flex: none;
+	padding: 0.02rem 0.2rem;
+	border-radius: 0.15rem;
+	background: #3c3c3c;
+	color: #9cdcfe;
+	font-size: 0.56rem;
+	font-weight: 700;
+	letter-spacing: 0.02em;
+}
+
+.ideFileIcon[data-ext="ts"] {
+	color: #519aba;
+}
+
+.ideFileIcon[data-ext="txt"] {
+	color: #9d9d9d;
+}
+
+.ideCommit {
+	display: flex;
+	gap: 0.45rem;
+	width: 100%;
+	padding: 0.3rem 0.35rem;
+	border: 1px solid transparent;
+	border-radius: 0.35rem;
+	background: transparent;
+	color: #cccccc;
+	font: inherit;
+	font-size: 0.7rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.ideCommit:hover,
+.ideCommit:focus-visible {
+	background: #2a2d2e;
+	outline: none;
+}
+
+.ideCommitActive {
+	background: #1f3a4d;
+	border-color: #0e639c;
+}
+
+.ideCommitDot {
+	flex: none;
+	width: 7px;
+	height: 7px;
+	margin-top: 0.3rem;
+	border-radius: 50%;
+	background: #6b7280;
+}
+
+.ideCommitActive .ideCommitDot {
+	background: #4fc1ff;
+}
+
+.ideCommitBody {
+	display: grid;
+	gap: 0.1rem;
+	min-width: 0;
+}
+
+.ideCommitHead {
+	display: flex;
+	gap: 0.3rem;
+	align-items: baseline;
+	min-width: 0;
+}
+
+.ideCommitHead code {
+	flex: none;
+	color: #4fc1ff;
+	font-size: 0.66rem;
+}
+
+.ideCommitHead span {
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.ideCommitMeta {
+	color: #8b8b8b;
+	font-size: 0.64rem;
+}
+
+.ideEvidence {
+	margin-top: auto;
+	padding: 0.4rem 0.5rem;
+	border: 1px solid #0e639c;
+	border-radius: 0.35rem;
+	background: #0e639c;
+	color: #ffffff;
+	font: inherit;
+	font-size: 0.7rem;
+	cursor: pointer;
+}
+
+.ideEvidence:hover,
+.ideEvidence:focus-visible {
+	background: #1177bb;
+	outline: none;
+}
+
+.ideMain {
+	display: flex;
+	flex-direction: column;
+	min-width: 0;
+	background: #1e1e1e;
+}
+
+.ideTabs {
+	display: flex;
+	background: #252526;
+	border-bottom: 1px solid #3c3c3c;
+}
+
+.ideTabActive {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.4rem 0.7rem;
+	border-right: 1px solid #3c3c3c;
+	background: #1e1e1e;
+	color: #e8e8e8;
+	font-size: 0.72rem;
+}
+
+.ideTabBadge {
+	padding: 0.02rem 0.25rem;
+	border-radius: 0.2rem;
+	background: #0e639c;
+	color: #ffffff;
+	font-size: 0.6rem;
+}
+
+.ideBreadcrumb {
+	margin: 0;
+	padding: 0.35rem 0.75rem;
+	border-bottom: 1px solid #2b2b2b;
+	color: #8b8b8b;
+	font-size: 0.68rem;
+}
+
+.ideBreadcrumb span {
+	margin: 0 0.2rem;
+}
+
+.ideCode {
+	flex: 1;
+	max-height: 19rem;
+	margin: 0;
+	padding: 0.6rem 0.4rem;
+	overflow: auto;
+	background: #1e1e1e;
+	color: #d4d4d4;
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+	font-size: 0.76rem;
+	line-height: 1.6;
+}
+
+.ideStatusbar {
+	display: flex;
+	flex-wrap: wrap;
+	gap: 0.9rem;
+	padding: 0.25rem 0.6rem;
+	background: #007acc;
+	color: #ffffff;
+	font-size: 0.64rem;
+}
+
+.idePanel {
+	margin-top: 0.9rem;
+	padding: 0.7rem 0.8rem;
+	border: 1px solid rgba(148, 163, 184, 0.22);
+	border-radius: 0.6rem;
+	background: rgba(2, 6, 23, 0.35);
+}
+
+.idePanelTitle {
+	margin: 0 0 0.5rem;
+	font-size: 0.72rem;
+	letter-spacing: 0.06em;
+	text-transform: uppercase;
+	color: #7dd3fc;
+}
+
+.ideResults {
+	max-height: 12rem;
+	overflow: auto;
+}
+
+.ideResult {
+	display: flex;
+	flex-direction: column;
+	gap: 0.1rem;
+	width: 100%;
+	padding: 0.3rem 0.4rem;
+	border: 1px solid transparent;
+	border-radius: 0.3rem;
+	background: transparent;
+	color: #c7d2e4;
+	font: inherit;
+	font-size: 0.74rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.ideResult:hover,
+.ideResult:focus-visible {
+	background: rgba(56, 189, 248, 0.1);
+	outline: none;
+}
+
+.ideResultPath {
+	color: #4fc1ff;
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+	font-size: 0.68rem;
+}
+
+.ideDiff {
+	display: grid;
+	gap: 0.5rem;
+	margin-top: 0.7rem;
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+	font-size: 0.72rem;
+}
+
+@media (max-width: 760px) {
+	.ideBody {
+		grid-template-columns: 1fr;
+	}
+
+	.ideSidebar {
+		border-right: none;
+		border-bottom: 1px solid #3c3c3c;
+	}
+
+	.ideEvidence {
+		margin-top: 0.5rem;
+	}
 }

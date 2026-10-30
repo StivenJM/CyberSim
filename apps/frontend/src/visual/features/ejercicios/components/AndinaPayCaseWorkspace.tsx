@@ -13,6 +13,7 @@ import {
 	decryptEnvelope,
 	diffRevisions,
 	type ExerciseReport,
+	type RepositoryFile,
 	revisionById,
 	searchRevision,
 	verifyAndinaPay,
@@ -532,7 +533,6 @@ function AndinaPayTabs({
 					claim={ctx.state.sealedDiagnosis ?? ''}
 					sealed={ctx.sealed}
 					busy={ctx.busy}
-					onStartInvestigation={ctx.completeFase1}
 					onSeal={async (input) => {
 						const ok = await ctx.sealDiagnosis(input)
 						if (ok) setActive('repositorio')
@@ -544,6 +544,7 @@ function AndinaPayTabs({
 			{active === 'repositorio' ? (
 				<RepositorioView
 					onEvidence={(reference) => void ctx.recordEvidence(reference)}
+					onLocateKey={ctx.completeFase1}
 				/>
 			) : null}
 
@@ -617,7 +618,6 @@ export function AndinaPayExpedienteWindow() {
 				claim={ctx.state.sealedDiagnosis ?? ''}
 				sealed={ctx.sealed}
 				busy={ctx.busy}
-				onStartInvestigation={ctx.completeFase1}
 				onSeal={async (input) => {
 					await ctx.sealDiagnosis(input)
 				}}
@@ -633,6 +633,7 @@ export function AndinaPayRepositorioWindow() {
 		<WindowPanel>
 			<RepositorioView
 				onEvidence={(reference) => void ctx.recordEvidence(reference)}
+				onLocateKey={ctx.completeFase1}
 			/>
 		</WindowPanel>
 	)
@@ -707,6 +708,19 @@ function displayRef(reference: string): string {
 	}
 }
 
+function revisionTag(reference: string): string {
+	switch (reference) {
+		case 'AP-H1':
+			return 'histórica'
+		case 'AP-H2':
+			return 'literal retirado'
+		case 'AP-H3':
+			return 'actual'
+		default:
+			return reference
+	}
+}
+
 const EVIDENCE_GROUPS: readonly {
 	readonly label: string
 	readonly refs: readonly string[]
@@ -763,7 +777,6 @@ function ExpedienteView({
 	claim,
 	sealed,
 	busy,
-	onStartInvestigation,
 	onSeal,
 	onEvidence,
 }: {
@@ -771,7 +784,6 @@ function ExpedienteView({
 	readonly claim: string
 	readonly sealed: boolean
 	readonly busy: boolean
-	readonly onStartInvestigation?: () => void
 	readonly onSeal: (input: {
 		readonly claim: string
 		readonly cited: readonly string[]
@@ -805,49 +817,14 @@ function ExpedienteView({
 
 	return (
 		<div className={styles.panel}>
-			<section className={styles.caseIntro}>
-				<p className={styles.eyebrow}>Caso AndinaPay · CWE-321</p>
-				<h2 className={styles.panelTitle}>
-					Una clave antigua permite leer dos registros
-				</h2>
-				<p className={styles.lead}>
-					Eres analista de respuesta de AndinaPay. Un aviso anónimo adjunta un
-					fragmento legible y un volcado cifrado. Tu trabajo no es romper AES:
-					es comprobar si una clave que quedó en el historial del repositorio
-					explica el fragmento y los registros del volcado, migrarlos a una
-					clave nueva sin romper la aplicación y explicar qué sigue expuesto.
+			<header className={styles.incidentHeader}>
+				<p className={styles.eyebrow}>Aviso recibido · 08:30</p>
+				<h2 className={styles.panelTitle}>Expediente de datos</h2>
+				<p className={styles.small}>
+					Origen: canal de soporte · no autenticado. Revisa los materiales y
+					registra el hallazgo en el repositorio.
 				</p>
-				<ol className={styles.caseSteps}>
-					<li>
-						<strong>Lee el aviso</strong> y localiza el fragmento y el adjunto.
-					</li>
-					<li>
-						<strong>Busca la clave</strong> en el historial: abre la versión H1
-						y compara con la actual.
-					</li>
-					<li>
-						<strong>Confirma el hallazgo</strong> con el botón inferior.
-					</li>
-					<li>
-						<strong>Prueba la clave</strong> en la ventana{' '}
-						<em>Banco criptográfico</em> y revisa los registros.
-					</li>
-					<li>
-						<strong>Completa D1</strong> y sigue con la recuperación en{' '}
-						<em>Respuesta de claves</em>.
-					</li>
-				</ol>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={sealed}
-					onClick={() => onStartInvestigation?.()}
-				>
-					{sealed
-						? 'Investigación iniciada'
-						: 'He leído el aviso y localizado la clave en la versión H1'}
-				</button>
-			</section>
+			</header>
 
 			<div className={styles.grid}>
 				<section aria-labelledby="a0-title">
@@ -887,10 +864,6 @@ function ExpedienteView({
 						))}
 					</ul>
 					<p className={styles.small}>
-						Haz clic en un material para leerlo. D1 solo pide dos evidencias; no
-						necesitas citar todo.
-					</p>
-					<p className={styles.small}>
 						Evidencias citadas: {state.evidence.length}
 						{state.evidence.length ? ` · ${state.evidence.join(' · ')}` : ''}
 					</p>
@@ -908,15 +881,6 @@ function ExpedienteView({
 					>
 						Citar esta evidencia
 					</button>
-					<p className={styles.small}>
-						{selected === 'incident/notice.txt'
-							? 'El aviso incluye SYN-001 / tok_demo_A como prueba de acceso: son el número de documento y el token sintéticos del registro R01. El origen no está autenticado.'
-							: selected === 'AP-H1'
-								? 'La versión H1 contiene la literal KEY_HEX que ya no está en la versión actual. Esa es la clave candidata.'
-								: selected === 'data/partial-v1.json'
-									? 'El volcado contiene R01 y R02 cifrados con legacy-demo.'
-									: 'Registra la referencia si la usarás como evidencia de D1.'}
-					</p>
 				</section>
 			</div>
 
@@ -1051,8 +1015,10 @@ function ExpedienteView({
 }
 function RepositorioView({
 	onEvidence,
+	onLocateKey,
 }: {
 	readonly onEvidence: (reference: string) => void
+	readonly onLocateKey?: () => void
 }) {
 	const [revision, setRevision] = useState<AndinaPayRevisionId>('AP-H1')
 	const [selectedPath, setSelectedPath] = useState('src/crypto-config.ts')
@@ -1067,167 +1033,274 @@ function RepositorioView({
 	const selected =
 		current?.files.find((file) => file.path === selectedPath) ??
 		current?.files[0]
+	const shortId = revision.replace('AP-', '')
 	const matches = useMemo(
 		() => searchRevision(revision, query),
 		[revision, query],
 	)
+	const folders = useMemo(() => {
+		const groups = new Map<string, RepositoryFile[]>()
+		for (const file of current?.files ?? []) {
+			const folder = file.path.split('/').slice(0, -1).join('/')
+			const bucket = groups.get(folder)
+			if (bucket) {
+				bucket.push(file)
+			} else {
+				groups.set(folder, [file])
+			}
+		}
+		return [...groups.entries()]
+	}, [current])
 
 	return (
 		<div className={styles.panel}>
-			<p className={styles.panelLead}>
-				Tres revisiones lineales. La literal de la clave desaparece de HEAD,
-				pero la aplicación sigue resolviendo el mismo identificador: la ausencia
-				actual no prueba que la clave se haya rotado.
-			</p>
-
-			<div className={styles.inline} style={{ marginBottom: '0.75rem' }}>
-				<label className={styles.label} htmlFor="repo-revision">
-					Revisión
-				</label>
-				<select
-					id="repo-revision"
-					className={styles.select}
-					style={{ width: 'auto' }}
-					value={revision}
-					onChange={(event) => {
-						const next = event.target.value as AndinaPayRevisionId
-						setRevision(next)
-						setSelectedPath(revisionById(next)?.files[0]?.path ?? '')
-					}}
-				>
-					{ANDINAPAY_REVISIONS.map((entry) => (
-						<option key={entry.id} value={entry.id}>
-							{displayRef(entry.id)} · {entry.date} · {entry.message}
-						</option>
-					))}
-				</select>
-				<button
-					type="button"
-					className={styles.button}
-					onClick={() => onEvidence(revision)}
-				>
-					Añadir referencia de {displayRef(revision)}
-				</button>
-			</div>
-
-			<div className={styles.split}>
-				<ul className={styles.fileList} aria-label="Archivos de la revisión">
-					{current?.files.map((file) => (
-						<li key={file.path}>
-							<button
-								type="button"
-								className={
-									file.path === selected?.path
-										? `${styles.fileButton} ${styles.fileButtonActive}`
-										: styles.fileButton
-								}
-								onClick={() => setSelectedPath(file.path)}
-							>
-								{file.path}
-							</button>
-						</li>
-					))}
-				</ul>
-				<pre className={styles.codeBlock}>
-					{selected?.lines.map((line, index) => (
-						// biome-ignore lint/suspicious/noArrayIndexKey: repository lines are positional and static per revision.
-						<div key={`${selected.path}-${index}`} className={styles.codeLine}>
-							<span className={styles.lineNumber}>{index + 1}</span>
-							<span>{line}</span>
-						</div>
-					))}
-				</pre>
-			</div>
-
-			<div className={styles.searchRow} style={{ marginTop: '1rem' }}>
-				<input
-					className={styles.searchInput}
-					placeholder="Búsqueda literal (por ejemplo KEY_HEX)"
-					value={query}
-					onChange={(event) => setQuery(event.target.value)}
-					aria-label="Búsqueda literal en el repositorio"
-				/>
-				<span className={styles.badge}>
-					{matches.length} coincidencia{matches.length === 1 ? '' : 's'}
-				</span>
-			</div>
-			{matches.length ? (
-				<ul className={styles.materialList}>
-					{matches.map((match) => (
-						<li key={`${match.path}-${match.line}`}>
-							<code>
-								{match.path}:{match.line}
-							</code>{' '}
-							{highlight(match.text, query)}
-						</li>
-					))}
-				</ul>
-			) : null}
-
-			<div className={styles.inline} style={{ marginTop: '1rem' }}>
-				<label className={styles.label} htmlFor="diff-from">
-					Desde
-				</label>
-				<select
-					id="diff-from"
-					className={styles.select}
-					style={{ width: 'auto' }}
-					value={diffFrom}
-					onChange={(event) =>
-						setDiffFrom(event.target.value as AndinaPayRevisionId)
-					}
-				>
-					{ANDINAPAY_REVISIONS.map((entry) => (
-						<option key={entry.id} value={entry.id}>
-							{displayRef(entry.id)}
-						</option>
-					))}
-				</select>
-				<label className={styles.label} htmlFor="diff-to">
-					Hasta
-				</label>
-				<select
-					id="diff-to"
-					className={styles.select}
-					style={{ width: 'auto' }}
-					value={diffTo}
-					onChange={(event) =>
-						setDiffTo(event.target.value as AndinaPayRevisionId)
-					}
-				>
-					{ANDINAPAY_REVISIONS.map((entry) => (
-						<option key={entry.id} value={entry.id}>
-							{displayRef(entry.id)}
-						</option>
-					))}
-				</select>
-				<button
-					type="button"
-					className={styles.button}
-					onClick={() => setDiff(diffRevisions(diffFrom, diffTo))}
-				>
-					Ver diferencias
-				</button>
-			</div>
-			{diff.length ? (
-				<div style={{ marginTop: '0.75rem' }}>
-					{diff.map((entry) => (
-						<div key={entry.path} className={styles.statusCard}>
-							<strong>{entry.path}</strong>
-							{entry.removed.map((line) => (
-								<div key={`removed-${line}`} className={styles.fail}>
-									− {line}
-								</div>
-							))}
-							{entry.added.map((line) => (
-								<div key={`added-${line}`} className={styles.pass}>
-									+ {line}
-								</div>
-							))}
-						</div>
-					))}
+			<div className={styles.ide}>
+				<div className={styles.ideTitlebar}>
+					<span className={styles.ideDots} aria-hidden="true">
+						<span />
+						<span />
+						<span />
+					</span>
+					<span className={styles.ideTitle}>
+						andinapay — {selected?.path ?? 'repositorio'} —{' '}
+						{displayRef(revision)}
+					</span>
 				</div>
-			) : null}
+
+				<div className={styles.ideBody}>
+					<aside className={styles.ideSidebar}>
+						<p className={styles.ideSidebarTitle}>Explorador</p>
+						<p className={styles.ideRepo}>andinapay</p>
+						<ul className={styles.ideTree}>
+							{folders.map(([folder, entries]) => (
+								<li key={folder || 'root'}>
+									{folder ? (
+										<p className={styles.ideFolder}>{folder}/</p>
+									) : null}
+									<ul className={styles.ideTreeFiles}>
+										{entries.map((file) => {
+											const name = file.path.split('/').pop() ?? file.path
+											const extension = name.includes('.')
+												? (name.split('.').pop() ?? '')
+												: ''
+											return (
+												<li key={file.path}>
+													<button
+														type="button"
+														className={
+															file.path === selected?.path
+																? `${styles.ideFile} ${styles.ideFileActive}`
+																: styles.ideFile
+														}
+														aria-current={
+															file.path === selected?.path ? 'true' : undefined
+														}
+														onClick={() => setSelectedPath(file.path)}
+													>
+														<span
+															className={styles.ideFileIcon}
+															data-ext={extension}
+															aria-hidden="true"
+														>
+															{extension.slice(0, 2).toUpperCase()}
+														</span>
+														{name}
+													</button>
+												</li>
+											)
+										})}
+									</ul>
+								</li>
+							))}
+						</ul>
+
+						<p className={styles.ideSidebarTitle}>Historial</p>
+						<ol className={styles.ideHistory}>
+							{[...ANDINAPAY_REVISIONS].reverse().map((entry) => (
+								<li key={entry.id}>
+									<button
+										type="button"
+										className={
+											entry.id === revision
+												? `${styles.ideCommit} ${styles.ideCommitActive}`
+												: styles.ideCommit
+										}
+										onClick={() => {
+											setRevision(entry.id)
+											setSelectedPath(entry.files[0]?.path ?? '')
+										}}
+									>
+										<span className={styles.ideCommitDot} aria-hidden="true" />
+										<span className={styles.ideCommitBody}>
+											<span className={styles.ideCommitHead}>
+												<code>{entry.id.replace('AP-', '')}</code>
+												<span>{entry.message}</span>
+											</span>
+											<span className={styles.ideCommitMeta}>
+												{entry.date} · {revisionTag(entry.id)}
+											</span>
+										</span>
+									</button>
+								</li>
+							))}
+						</ol>
+
+						<button
+							type="button"
+							className={styles.ideEvidence}
+							onClick={() => {
+								onEvidence(revision)
+								if (revision === 'AP-H1') onLocateKey?.()
+							}}
+						>
+							+ Adjuntar {displayRef(revision)}
+						</button>
+					</aside>
+
+					<div className={styles.ideMain}>
+						<div className={styles.ideTabs}>
+							<span className={styles.ideTabActive}>
+								{selected
+									? (selected.path.split('/').pop() ?? selected.path)
+									: 'Sin archivo'}
+								<span className={styles.ideTabBadge}>{shortId}</span>
+							</span>
+						</div>
+						<p className={styles.ideBreadcrumb}>
+							andinapay <span aria-hidden="true">›</span>{' '}
+							{selected?.path.split('/').join(' › ')}
+						</p>
+						<section
+							className={styles.ideCode}
+							aria-label={`Contenido de ${selected?.path ?? 'la revisión'}`}
+						>
+							{selected?.lines.map((line, index) => (
+								<div
+									// biome-ignore lint/suspicious/noArrayIndexKey: repository lines are positional and static per revision.
+									key={`${selected.path}-${index}`}
+									className={styles.codeLine}
+								>
+									<span className={styles.lineNumber}>{index + 1}</span>
+									<span>{query.trim() ? highlight(line, query) : line}</span>
+								</div>
+							))}
+						</section>
+						<div className={styles.ideStatusbar}>
+							<span>main</span>
+							<span>
+								{shortId} · {current?.date}
+							</span>
+							<span>{selected?.lines.length ?? 0} líneas</span>
+							<span>
+								{selected?.path.endsWith('.ts') ? 'TypeScript' : 'Plain Text'} ·
+								UTF-8
+							</span>
+						</div>
+					</div>
+				</div>
+			</div>
+
+			<section className={styles.idePanel}>
+				<p className={styles.idePanelTitle}>Buscar en el historial</p>
+				<div className={styles.searchRow}>
+					<input
+						className={styles.searchInput}
+						placeholder="Búsqueda literal (por ejemplo KEY_HEX)"
+						value={query}
+						onChange={(event) => setQuery(event.target.value)}
+						aria-label="Búsqueda literal en el repositorio"
+					/>
+					<span className={styles.badge}>
+						{matches.length} coincidencia{matches.length === 1 ? '' : 's'}
+					</span>
+				</div>
+				{matches.length ? (
+					<ul className={styles.ideResults}>
+						{matches.map((match) => (
+							<li key={`${match.path}-${match.line}`}>
+								<button
+									type="button"
+									className={styles.ideResult}
+									onClick={() => setSelectedPath(match.path)}
+								>
+									<span className={styles.ideResultPath}>
+										{match.path}:{match.line}
+									</span>
+									<code>{highlight(match.text, query)}</code>
+								</button>
+							</li>
+						))}
+					</ul>
+				) : null}
+			</section>
+
+			<section className={styles.idePanel}>
+				<p className={styles.idePanelTitle}>Comparar revisiones</p>
+				<div className={styles.inline}>
+					<label className={styles.label} htmlFor="diff-from">
+						Desde
+					</label>
+					<select
+						id="diff-from"
+						className={styles.select}
+						style={{ width: 'auto' }}
+						value={diffFrom}
+						onChange={(event) =>
+							setDiffFrom(event.target.value as AndinaPayRevisionId)
+						}
+					>
+						{ANDINAPAY_REVISIONS.map((entry) => (
+							<option key={entry.id} value={entry.id}>
+								{displayRef(entry.id)}
+							</option>
+						))}
+					</select>
+					<label className={styles.label} htmlFor="diff-to">
+						Hasta
+					</label>
+					<select
+						id="diff-to"
+						className={styles.select}
+						style={{ width: 'auto' }}
+						value={diffTo}
+						onChange={(event) =>
+							setDiffTo(event.target.value as AndinaPayRevisionId)
+						}
+					>
+						{ANDINAPAY_REVISIONS.map((entry) => (
+							<option key={entry.id} value={entry.id}>
+								{displayRef(entry.id)}
+							</option>
+						))}
+					</select>
+					<button
+						type="button"
+						className={styles.button}
+						onClick={() => setDiff(diffRevisions(diffFrom, diffTo))}
+					>
+						Ver diferencias
+					</button>
+				</div>
+				{diff.length ? (
+					<div className={styles.ideDiff}>
+						{diff.map((entry) => (
+							<div key={entry.path} className={styles.statusCard}>
+								<strong>{entry.path}</strong>
+								{entry.removed.map((line) => (
+									<div key={`removed-${line}`} className={styles.fail}>
+										− {line}
+									</div>
+								))}
+								{entry.added.map((line) => (
+									<div key={`added-${line}`} className={styles.pass}>
+										+ {line}
+									</div>
+								))}
+							</div>
+						))}
+					</div>
+				) : null}
+			</section>
 
 			<div className={styles.footerNotice}>
 				Cambio propuesto para revisión:{' '}

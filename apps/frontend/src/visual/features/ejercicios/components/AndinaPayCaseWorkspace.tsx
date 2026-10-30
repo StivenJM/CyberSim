@@ -276,7 +276,7 @@ export function AndinaPayProvider({
 		fase1Completada.current = true
 		bridge?.onObjective?.(
 			1,
-			'Leer el aviso y localizar la clave histórica en AP-H1',
+			'Leer el aviso y localizar la clave histórica en la versión H1',
 		)
 	}, [bridge])
 
@@ -680,6 +680,19 @@ export function AndinaPayInformeWindow() {
 		</WindowPanel>
 	)
 }
+function displayRef(reference: string): string {
+	switch (reference) {
+		case 'AP-H1':
+			return 'Versión H1 (histórica)'
+		case 'AP-H2':
+			return 'Versión H2 (literal retirado)'
+		case 'AP-H3':
+			return 'Versión H3 (actual)'
+		default:
+			return reference
+	}
+}
+
 const EVIDENCE_GROUPS: readonly {
 	readonly label: string
 	readonly refs: readonly string[]
@@ -795,8 +808,8 @@ function ExpedienteView({
 						<strong>Lee el aviso</strong> y localiza el fragmento y el adjunto.
 					</li>
 					<li>
-						<strong>Busca la clave</strong> en el historial: abre{' '}
-						<code>AP-H1</code> y compara con HEAD.
+						<strong>Busca la clave</strong> en el historial: abre la versión H1
+						y compara con la actual.
 					</li>
 					<li>
 						<strong>Confirma el hallazgo</strong> con el botón inferior.
@@ -818,7 +831,7 @@ function ExpedienteView({
 				>
 					{sealed
 						? 'Investigación iniciada'
-						: 'He leído el aviso y localizado la clave en AP-H1'}
+						: 'He leído el aviso y localizado la clave en la versión H1'}
 				</button>
 			</section>
 
@@ -854,7 +867,7 @@ function ExpedienteView({
 									}
 									onClick={() => openArtifact(revision)}
 								>
-									{revision}
+									{displayRef(revision)}
 								</button>
 							</li>
 						))}
@@ -871,7 +884,7 @@ function ExpedienteView({
 
 				<section aria-labelledby="reader-title">
 					<h2 id="reader-title" className={styles.panelTitle}>
-						{selected}
+						{displayRef(selected)}
 					</h2>
 					<pre className={styles.codeBlock}>{content}</pre>
 					<button
@@ -885,7 +898,7 @@ function ExpedienteView({
 						{selected === 'incident/notice.txt'
 							? 'El aviso incluye SYN-001 / tok_demo_A como prueba de acceso: son el número de documento y el token sintéticos del registro R01. El origen no está autenticado.'
 							: selected === 'AP-H1'
-								? 'AP-H1 contiene la literal KEY_HEX que ya no está en HEAD. Esa es la clave candidata.'
+								? 'La versión H1 contiene la literal KEY_HEX que ya no está en la versión actual. Esa es la clave candidata.'
 								: selected === 'data/partial-v1.json'
 									? 'El volcado contiene R01 y R02 cifrados con legacy-demo.'
 									: 'Registra la referencia si la usarás como evidencia de D1.'}
@@ -916,7 +929,7 @@ function ExpedienteView({
 							id="d1-claim"
 							className={styles.textarea}
 							rows={3}
-							placeholder="Ej.: La clave legacy-demo de AP-H1 cifra R01 y R02; AP-H3 eliminó el literal pero no rotó la clave."
+							placeholder="Ej.: La clave legacy-demo de la versión H1 cifra R01 y R02; la versión H3 eliminó el literal pero no rotó la clave."
 							value={draft.claim}
 							onChange={(event) =>
 								setDraft((current) => ({
@@ -938,7 +951,7 @@ function ExpedienteView({
 													checked={cited.includes(reference)}
 													onChange={() => toggle(reference)}
 												/>
-												{reference}
+												{displayRef(reference)}
 											</label>
 										))}
 									</div>
@@ -1070,7 +1083,7 @@ function RepositorioView({
 				>
 					{ANDINAPAY_REVISIONS.map((entry) => (
 						<option key={entry.id} value={entry.id}>
-							{entry.id} · {entry.date} · {entry.message}
+							{displayRef(entry.id)} · {entry.date} · {entry.message}
 						</option>
 					))}
 				</select>
@@ -1079,7 +1092,7 @@ function RepositorioView({
 					className={styles.button}
 					onClick={() => onEvidence(revision)}
 				>
-					Añadir referencia {revision}
+					Añadir referencia de {displayRef(revision)}
 				</button>
 			</div>
 
@@ -1152,7 +1165,7 @@ function RepositorioView({
 				>
 					{ANDINAPAY_REVISIONS.map((entry) => (
 						<option key={entry.id} value={entry.id}>
-							{entry.id}
+							{displayRef(entry.id)}
 						</option>
 					))}
 				</select>
@@ -1170,7 +1183,7 @@ function RepositorioView({
 				>
 					{ANDINAPAY_REVISIONS.map((entry) => (
 						<option key={entry.id} value={entry.id}>
-							{entry.id}
+							{displayRef(entry.id)}
 						</option>
 					))}
 				</select>

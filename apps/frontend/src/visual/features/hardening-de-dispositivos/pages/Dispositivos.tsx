@@ -210,7 +210,7 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
 	]
 
 	const isAndinaPayCase = escenario?.exercise?.caseId === 'cwe-321-andinapay'
-	const isAnalystDevice = dispositivoSeleccionado?.nombre === 'AP-IR-01'
+	const isAnalystDevice = dispositivoSeleccionado?.nombre === 'PC Analista'
 
 	if (isAndinaPayCase && isAnalystDevice) {
 		ventanasConfig.push(

@@ -21,6 +21,7 @@ export const MUEBLE_MODELS: Record<string, string> = {
  */
 export const DISPOSITIVO_MODELS: Record<string, string> = {
 	[TipoDispositivo.WORKSTATION]: 'procedural:workstation',
+	[TipoDispositivo.SERVER]: 'procedural:serverrack',
 	[TipoDispositivo.ROUTER]: 'procedural:router',
 	[TipoDispositivo.SWITCH]: 'procedural:switch',
 	[TipoDispositivo.VPN]: 'procedural:switch',
@@ -49,6 +50,7 @@ export const preloadAllModels = async () => {
  */
 export const DISPOSITIVO_HEIGHTS: Record<string, number> = {
 	[TipoDispositivo.WORKSTATION]: 0,
+	[TipoDispositivo.SERVER]: 0,
 	[TipoDispositivo.ROUTER]: 0,
 	[TipoDispositivo.SWITCH]: 0,
 	[TipoDispositivo.VPN]: 0,

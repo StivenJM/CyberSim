@@ -785,11 +785,10 @@ function ExpedienteView({
 				</h2>
 				<p className={styles.lead}>
 					Eres analista de respuesta de AndinaPay. Un aviso anónimo adjunta un
-					fragmento legible —<code>SYN-001 / tok_demo_A</code>— y un volcado
-					cifrado. Tu trabajo no es romper AES: es comprobar si una clave que
-					quedó en el historial del repositorio explica esos registros,
-					migrarlos a una clave nueva sin romper la aplicación y explicar qué
-					sigue expuesto.
+					fragmento legible y un volcado cifrado. Tu trabajo no es romper AES:
+					es comprobar si una clave que quedó en el historial del repositorio
+					explica el fragmento y los registros del volcado, migrarlos a una
+					clave nueva sin romper la aplicación y explicar qué sigue expuesto.
 				</p>
 				<ol className={styles.caseSteps}>
 					<li>
@@ -884,7 +883,7 @@ function ExpedienteView({
 					</button>
 					<p className={styles.small}>
 						{selected === 'incident/notice.txt'
-							? 'El aviso dice que el origen no está autenticado y que el fragmento adjunto es SYN-001 / tok_demo_A.'
+							? 'El aviso incluye SYN-001 / tok_demo_A como prueba de acceso: son el número de documento y el token sintéticos del registro R01. El origen no está autenticado.'
 							: selected === 'AP-H1'
 								? 'AP-H1 contiene la literal KEY_HEX que ya no está en HEAD. Esa es la clave candidata.'
 								: selected === 'data/partial-v1.json'

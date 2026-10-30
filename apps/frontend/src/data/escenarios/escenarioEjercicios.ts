@@ -129,7 +129,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 5,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'08:30 — Aviso anónimo recibido. Fragmento SYN-001 / tok_demo_A y partial-v1.json adjunto. Abre el expediente en AP-IR-01 desde el monitor.',
+			'08:30 — Aviso anónimo recibido en el canal de soporte. Hay un expediente nuevo en AP-IR-01; ábrelo desde el monitor.',
 		fase: 1,
 		infoAdicional: {
 			accion: AccionesRealizables.CLICK,
@@ -143,7 +143,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 20,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'El volcado parcial contiene R01 y R02 cifrados con legacy-demo; R03 usa archive-independent.',
+			'El volcado adjunto contiene registros operativos. Revisa el índice, el inventario y los logs antes de concluir.',
 		fase: 2,
 		infoAdicional: {
 			accion: AccionesRealizables.CLICK,
@@ -157,7 +157,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 40,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'El servicio de claves reporta que legacy-demo sigue activa para app-payments. La copia histórica no se corrige borrando el literal.',
+			'El servicio de claves reporta actividad reciente. Comprueba qué clave usa la aplicación y cuál quedó en el historial.',
 		fase: 3,
 		infoAdicional: {
 			accion: AccionesRealizables.CLICK,
@@ -171,7 +171,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 60,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'La copia histórica R01/v1 seguirá siendo legible con K1. Documenta la exposición residual y envía el informe.',
+			'Antes de cerrar, documenta qué datos siguen expuestos después de la recuperación y qué no puedes demostrar.',
 		fase: 4,
 		infoAdicional: {
 			accion: AccionesRealizables.CLICK,

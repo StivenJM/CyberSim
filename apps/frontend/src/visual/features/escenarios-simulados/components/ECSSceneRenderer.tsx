@@ -1,4 +1,4 @@
-import { useCallback, useEffect, useState } from 'react'
+import { useCallback, useEffect, useRef, useState } from 'react'
 import { useNavigate } from 'react-router'
 import { useEscenario, useModal } from '../../../common/contexts'
 import type { ECSEntityRef } from '../../../common/contexts/EscenarioContext'
@@ -16,7 +16,8 @@ const soportaZoomEnfoque = (tipo: unknown): boolean =>
 	TIPOS_CON_ZOOM_ENFOQUE.has(String(tipo ?? '').toLowerCase())
 
 const ECSSceneRenderer: React.FC = () => {
-	const { setDispositivoSeleccionado, entidadSeleccionadaId } = useEscenario()
+	const { setDispositivoSeleccionado, entidadSeleccionadaId, escenario } =
+		useEscenario()
 	const { processEntities, inspectDevice, clearInspect } = useECSSceneContext()
 	const { openModal } = useModal()
 	const { startZoom, isZooming, desktopMode } = useScreenTransition()
@@ -58,12 +59,29 @@ const ECSSceneRenderer: React.FC = () => {
 	}
 
 	const processedEntities = processEntities()
+	const focusedExercise = useRef(false)
+	const isAndinaPayCase = escenario?.exercise?.caseId === 'cwe-321-andinapay'
+
+	// El caso de ejercicio tiene una sola zona y una estación; enfocar la
+	// estación al entrar evita que la cámara general deje el equipo detrás del
+	// muro del edificio.
+	useEffect(() => {
+		if (focusedExercise.current || !isAndinaPayCase) return
+		const workstation = processedEntities.find(
+			(entity) =>
+				String(entity.objetoConTipo?.tipo ?? '').toUpperCase() ===
+				'WORKSTATION',
+		)
+		if (!workstation?.position) return
+		focusedExercise.current = true
+		inspectDevice(workstation.position)
+	}, [isAndinaPayCase, processedEntities, inspectDevice])
 
 	const handleBackgroundClick = () => {
 		setClickedEntityId(null)
 		setDispositivoSeleccionado(null)
 		setMenuOpenForEntity(null)
-		clearInspect()
+		if (!isAndinaPayCase) clearInspect()
 	}
 
 	// Dispositivo en zona no interactiva: solo abre el aviso de "no accesible",
@@ -103,7 +121,10 @@ const ECSSceneRenderer: React.FC = () => {
 		if (deviceType === 'WORKSTATION') {
 			return [
 				{
-					label: 'Configurar',
+					label:
+						escenario?.exercise?.caseId === 'cwe-321-andinapay'
+							? 'Abrir expediente del caso'
+							: 'Configurar',
 					onClick: () => {
 						setMenuOpenForEntity(null)
 						handleZoomToDevice(position, rotacionY)

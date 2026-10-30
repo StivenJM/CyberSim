@@ -140,7 +140,7 @@ function definitionOf(seed: ExerciseSeed): DefinicionEscenario {
 					{
 						id: seed.id * 10,
 						nombre: 'Estación de Análisis',
-						posicion: { x: 0, y: 0, z: 0, rotacionY: 0 },
+						posicion: { x: 2, y: 0, z: 0, rotacionY: 0 },
 						espacios: [
 							{
 								id: 1,

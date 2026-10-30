@@ -126,7 +126,14 @@ const KNOWN_EVIDENCE = new Set<string>([
 	'R01/K1/v1',
 	'R02/K1/v1',
 	'R03/KI/v1',
+	'R04/K1/v1',
+	'R01/K2/v2',
+	'R02/K2/v2',
+	'R04/K2/v2',
 ])
+
+/** Stable list of references the student may cite as evidence. */
+export const ANDINAPAY_EVIDENCE: readonly string[] = [...KNOWN_EVIDENCE]
 
 export async function readRecord(
 	state: AndinaPayState,

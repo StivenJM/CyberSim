@@ -64,6 +64,33 @@ como planificación documentada, no como trabajo de campo.
 S13. Reglas de entrega: no tachar una tarea por escribir un manifiesto ni por leer el plan; no
 inventar éxito; no ejecutar seed, migraciones, publicación, despliegue ni operaciones remotas.
 
+S14. El caso AndinaPay se inicia desde el nodo del mapa y se resuelve dentro de la oficina 3D:
+oficina → estación `AP-IR-01` → monitor → expediente del caso. `/ejercicios/cwe-321-andinapay`
+deja de ser el único acceso y no se elimina como respaldo de desarrollo.
+
+S15. El expediente ofrece las vistas del CWE-321: Expediente, Repositorio, Banco criptográfico,
+Respuesta de claves, Comprobaciones e Informe. El diagnóstico D1 sellado habilita todas menos
+Expediente, que permanece siempre disponible.
+
+S16. El Repositorio muestra AP-H1, AP-H2 y AP-H3 con sus archivos, permite ver diferencias y
+búsqueda literal; `KEY_HEX` aparece en AP-H1 y no en HEAD, y esa ausencia no se presenta como
+remediación.
+
+S17. El Banco criptográfico permite seleccionar uno de los siete envelopes y una clave candidata;
+devuelve el plaintext exacto o `AUTHENTICATION_FAILED` sin texto parcial.
+
+S18. Respuesta de claves permite preparar K2, elegir fuente restringida, recifrar R01/R02, publicar,
+retirar/restaurar K1 como contraprueba y configurar prevención con alcance y política explícitos.
+El éxito técnico es B && Q; C1 declara la exposición residual de la copia histórica.
+
+S19. El Informe recoge los cinco campos; `submit_artifact` congela la entrega y `submit_report`
+cierra el caso. Cuando el backend está disponible se registran diagnóstico, pruebas, revisión,
+entrega y explicación en `/api/attempts`; al cerrar se guarda `/progreso` con `terminado: true` y
+el slug `andinapay-clave-expuesta` para marcar el nodo y sumar ranking.
+
+S20. El estado del banco se conserva en `localStorage` por estudiante y caso, con reinicio explícito.
+No se requieren imágenes nuevas; cualquier asset opcional se lista al final de la entrega.
+
 ## Tasks
 
 | ID | Specs | Ruta | Estado |
@@ -80,6 +107,12 @@ inventar éxito; no ejecutar seed, migraciones, publicación, despliegue ni oper
 | T10 | S10 | inline | hecho — informe por dimensión sin promedio, 8 tests |
 | T11 | S11 | parcial | suites completas verdes; documentación de comportamiento actualizada |
 | T12 | S12, S13 | documentación | pendiente |
+| T13 | S14 | inline | hecho — mapa → oficina → AP-IR-01 → monitor; botón y menú "Abrir expediente del caso" |
+| T14 | S15, S16 | inline | hecho — Expediente con D1 completo y Repositorio con AP-H1/H2/H3, diff y búsqueda literal |
+| T15 | S17 | inline | hecho — siete envelopes, clave candidata y rechazo sin texto parcial |
+| T16 | S18 | inline | hecho — K2, custodia, migración, retiro/restauración y prevención explícita |
+| T17 | S19 | inline | hecho — B/Q/C, artefacto, informe, intento y progreso del mapa |
+| T18 | S20 | inline | hecho — localStorage por estudiante, reinicio y verificación final |
 
 ## Log
 
@@ -140,3 +173,23 @@ L10. Recheck limitado a los cuatro blockers: PASS en los cuatro, con 14/14 casos
 la base y S0 fallando Q6 mientras S1/S2 pasan. Suite completa: contract 19, ledger 30, exercises 63,
 backend 55 (+6 skipped), frontend 100; typecheck 5/5; lint y format limpios; build de frontend y backend
 correcto.
+
+L11 (solicitud literal del usuario):
+> Listo entonces eso es lo que tiene que estar listo, según el flujo que ya se ha establecido y que en la documentación incluso se indica el posible escenario, entonces ahora mismo quiero que ese escenario esté completamente listo, es más cuando termines si necesitas alguna imagen que sea absolutamente necesaria para este nuevo escenario entonces dejalo al final como pendiente para poder generarlo, deja la lista de los elementos que necesites. La cuestión es que yo quiero este ejercicio listo y funcional y no solo en /ejercicios/cwe-321-andinapay como está ahora ya que lo que está ahí no me sirve lo que realmente me sirve es que pueda ser el ejercicio real que seguiría el estudiante.
+
+L12. Estado inicial observado: el nodo del mapa carga el escenario semilla 101 y navega a `/`; la
+oficina 3D solo contiene `AP-IR-01`, sin eventos, ataques, acciones ni objetivos. El metadato
+`exercise` solo se valida en `catalog.ts` y ninguna vista 3D lo consume. El workspace real vive en
+`/ejercicios/cwe-321-andinapay`, es independiente del ECS y no persiste el intento ni marca el mapa.
+T3 queda por tanto parcial en su parte de escritorios por caso.
+
+L13. AndinaPay completo en el flujo del mapa. Se añadió `repository.ts` con AP-H1/H2/H3, artefactos
+A0, diff y búsqueda literal; el workspace cubre Expediente, Repositorio, Banco, Respuesta,
+Comprobaciones e Informe; la oficina enfoca AP-IR-01, expone "Abrir expediente del caso" y el monitor
+monta el workspace. El intento registra diagnóstico, diez pruebas, revisiones, entrega y explicación;
+el cierre guarda `/progreso` sin revisión/hash para evitar el desajuste con el catálogo y marca el nodo
+con 1.000 pts. Verificación observada: suite de integración `ejercicios.spec.ts` 13/13; frontend 105
+tests; exercises 88 tests; typecheck y biome limpios. Prueba manual del flujo completo: mapa → oficina
+→ monitor → D1 → migración → B/Q/C → artefacto → informe → nodo "Completado" y ranking 1.000. El
+intento quedó `delivered` con 10 pruebas, 6 revisiones y 1 explicación. Si el backend tarda en
+arrancar, el alta del intento reintenta una vez y el caso sigue operativo en modo local.

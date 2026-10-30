@@ -18,7 +18,9 @@ import type { TipoProtocolo } from './TrafficEnums'
 export type Escenario = Omit<DefinicionEscenario, 'presupuestoInicial'> & {
 	presupuestoInicial: number
 	redes: Entidad[]
-} & ScenarioRevisionMetadata
+} & ScenarioRevisionMetadata & {
+		readonly exercise?: InvestigatedCaseExtension
+	}
 
 export interface EscenarioPreview {
 	id: number
@@ -277,4 +279,7 @@ export interface DefinicionEscenario {
 	}[]
 }
 
-import type { ScenarioRevisionMetadata } from '@cybersim/scenario-contract'
+import type {
+	InvestigatedCaseExtension,
+	ScenarioRevisionMetadata,
+} from '@cybersim/scenario-contract'

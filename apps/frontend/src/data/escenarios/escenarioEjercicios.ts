@@ -145,7 +145,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 10,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'Abre la versión H1 del repositorio, compárala con la versión actual y adjúntala al expediente.',
+			'Abre la versión H1 (histórica), compárala con la versión actual y adjúntala al expediente.',
 		fase: 1,
 		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},

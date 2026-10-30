@@ -135,10 +135,12 @@ muestra los controles de acercar/alejar para poder ver la sala completa.
 S30. Las notificaciones del caso llegan cada 5 segundos: t=5, 10, 15, 20, 25 y 30. Cada una pausa
 el reloj y propone el siguiente paso. No se espera a t=20 para el segundo aviso.
 
-S31. Al pulsar **Reanudar**, el caso revisa el estado persistido y escribe un log de feedback:
-`Bien: ...` cuando el hito anterior está cumplido, o `Aún no: ...` cuando falta. El feedback es
-advisory y no destruye la partida; el siguiente aviso llega 5 segundos después. El listener vive en
-la oficina (`VistaOficina`) para que funcione incluso con el escritorio cerrado.
+S31. Mientras una notificación mantiene el reloj pausado, **Reanudar** permanece deshabilitado hasta
+que el estudiante completa el paso propuesto. El motivo se muestra en el tooltip y en el
+`aria-label` del botón. Al reanudar, el caso escribe `Bien: ...` con el hito completado. Así el
+siguiente aviso no llega antes de tiempo y la secuencia aviso → tarea → reanudar → feedback se
+mantiene coordinada. El listener vive en el layout del juego (`GameProvidersLayout`) para funcionar
+en Oficina, Partida, Redes y Dispositivos, incluso con el escritorio cerrado.
 
 S32. La explicación del ejercicio (objetivo, cómo se juega, glosario y qué debe demostrar) vive en
 **Partida**, antes de las fases. La ventana Expediente muestra solo el caso como realidad: aviso
@@ -148,10 +150,9 @@ S33. El repositorio se presenta como un editor tipo IDE: barra de título, explo
 carpeta, historial de versiones seleccionable (H3, H2, H1) con fecha y etiqueta, pestaña del archivo
 abierto, panel de código con números de línea, barra de estado y paneles de búsqueda y comparación.
 El historial funciona como un `git log`: al seleccionar una revisión se muestra el contenido de esa
-revisión. Adjuntar la revisión H1 al expediente o citarla desde los materiales completa la fase 1;
-no hay botón didáctico en Expediente. El feedback al reanudar indica el siguiente paso concreto:
-si el aviso ya se abrió pero falta H1, pide abrir Repositorio y pulsar «Adjuntar Versión H1
-(histórica) al expediente»; si H1 ya está registrada, pasa a Banco criptográfico y D1.
+revisión. En la ventana Expediente, al seleccionar `Versión H1 (histórica)` aparece el botón
+**Adjuntar Versión H1 al expediente**; el mismo botón existe en el repositorio. Cualquiera de los dos
+completa la fase 1; no hay botón didáctico en Expediente.
 
 ## Tasks
 
@@ -185,6 +186,7 @@ si el aviso ya se abrió pero falta H1, pide abrir Repositorio y pulsar «Adjunt
 | T26 | S29 | inline | hecho — nombres legibles, servidores con modelo `serverrack` y controles de zoom |
 | T27 | S30, S31 | inline | hecho — avisos cada 5 s y feedback `Bien`/`Aún no` al reanudar |
 | T28 | S32, S33 | inline | hecho — explicación movida a Partida, Expediente realista y repositorio tipo IDE |
+| T29 | S31, S33 | inline | hecho — botón de adjuntar H1 en Expediente y Reanudar bloqueado hasta completar el paso |
 
 ## Log
 
@@ -361,3 +363,22 @@ si el aviso ya se abrió pero falta H1, pide abrir Repositorio y pulsar «Adjunt
 pasa a Banco criptográfico y D1. Además, citar la versión H1 desde los materiales del expediente
 también completa la fase 1, para que el camino más natural no requiera cambiar de ventana. El objetivo
 de la fase 1 y el aviso de t=10 ahora dicen explícitamente que hay que adjuntar H1.
+
+L29 (corrección literal del usuario):
+> pero si ni siquiera hay el botón de "adjuntar versión H1" como dice la indicación que hay, además no debería hacer resume si todavía no hay el paso terminado porque ahí se descoordinan los pasos
+
+L30. Se corrigieron las dos causas. (1) El botón **Adjuntar Versión H1 al expediente** ahora aparece en
+la propia ventana Expediente al seleccionar la versión H1; también sigue en Repositorio. La indicación
+ya no manda a un botón inexistente. (2) Mientras el reloj está pausado por una notificación, el botón
+**Reanudar** se deshabilita hasta completar el paso de esa notificación; muestra el motivo en el
+tooltip y en el `aria-label` (`Reanudar bloqueado: Adjunta la versión H1 al expediente`). El bloqueo
+se aplica en `EscenarioController` con `bloquearReanudacion`/`desbloquearReanudacion`, lo refleja
+`useECSTime` y lo pinta el Sidebar; `AndinaPayFeedbackListener` calcula el paso pendiente según el
+tiempo y el estado persistido, y se montó en `GameProvidersLayout` para cubrir Oficina, Partida,
+Redes y Dispositivos. Al completar el hito, el bridge `onStepDone` libera el botón y al reanudar
+aparece `Bien: ...`; ya no se puede adelantar el siguiente aviso. Verificación manual: a t=5 el botón
+queda bloqueado con «Abre el expediente y lee el aviso»; al abrir Expediente se habilita y el log dice
+«Bien: leíste el aviso»; a t=10 vuelve a bloquearse con «Adjunta la versión H1 al expediente»; al
+adjuntarla se habilita y el log dice «Bien: la versión H1 quedó registrada...». 105 tests de
+frontend, typecheck y biome limpios. La suite de integración no se pudo ejecutar en esta sesión
+(`pnpm test:integration` devolvió `Shell.NotFoundError`); queda pendiente de reintento.

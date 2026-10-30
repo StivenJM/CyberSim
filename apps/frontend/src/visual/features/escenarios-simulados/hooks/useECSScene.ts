@@ -371,6 +371,7 @@ export function useECSScene() {
 		pause: timeState.pause,
 		resume: timeState.resume,
 		isPaused: timeState.isPaused,
+		bloqueoReanudacion: timeState.bloqueoReanudacion,
 		presupuesto,
 		toggleConfigWorkstation,
 		zonaActual: zoneState.zonaActual,

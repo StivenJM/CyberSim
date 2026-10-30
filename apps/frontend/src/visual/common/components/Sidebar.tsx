@@ -19,8 +19,14 @@ import NavigationLink from './Navigation'
 import Tooltip from './Tooltip'
 
 const Sidebar: React.FC = () => {
-	const { pause, resume, isPaused, tiempoTranscurrido, processEntities } =
-		useECSSceneContext()
+	const {
+		pause,
+		resume,
+		isPaused,
+		tiempoTranscurrido,
+		processEntities,
+		bloqueoReanudacion,
+	} = useECSSceneContext()
 	const { isChatOpen, toggleChat } = useChatContext()
 	const {
 		startZoom,
@@ -185,16 +191,35 @@ const Sidebar: React.FC = () => {
 							{formatearTiempo(tiempoTranscurrido)}
 						</div>
 
-						<Tooltip text={isPaused ? 'Reanudar' : 'Pausar'} position="right">
+						<Tooltip
+							text={
+								isPaused && bloqueoReanudacion
+									? `Completa el paso: ${bloqueoReanudacion}`
+									: isPaused
+										? 'Reanudar'
+										: 'Pausar'
+							}
+							position="right"
+						>
 							<button
 								className={styles.controlBtn}
+								disabled={isPaused && Boolean(bloqueoReanudacion)}
+								title={
+									isPaused && bloqueoReanudacion
+										? `Completa el paso: ${bloqueoReanudacion}`
+										: undefined
+								}
 								onClick={() => {
 									if (isPaused) resume()
 									else pause()
 								}}
 								data-tour="dock-pausa"
 								aria-label={
-									isPaused ? 'Reanudar animacion' : 'Pausar animacion'
+									isPaused && bloqueoReanudacion
+										? `Reanudar bloqueado: ${bloqueoReanudacion}`
+										: isPaused
+											? 'Reanudar animacion'
+											: 'Pausar animacion'
 								}
 							>
 								{isPaused ? (

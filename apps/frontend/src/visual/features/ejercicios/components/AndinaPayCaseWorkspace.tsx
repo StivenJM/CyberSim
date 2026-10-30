@@ -1,7 +1,6 @@
 import {
 	ANDINAPAY_ARTIFACTS,
 	ANDINAPAY_ENVELOPES,
-	ANDINAPAY_EVIDENCE,
 	ANDINAPAY_KEYS,
 	ANDINAPAY_PROPOSED_CHANGE,
 	ANDINAPAY_REVISIONS,
@@ -160,7 +159,7 @@ interface AndinaPayContextValue {
 	}) => Promise<boolean>
 	readonly submitArtifact: () => Promise<void>
 	readonly submitReport: () => Promise<void>
-	readonly markExpedienteOpened: () => void
+	readonly completeFase1: () => void
 	readonly reset: () => void
 }
 
@@ -200,7 +199,7 @@ export function AndinaPayProvider({
 		initial.current?.reportFields ?? EMPTY_REPORT,
 	)
 	const startedAt = useRef(initial.current?.startedAt ?? Date.now())
-	const expedienteAbierto = useRef(false)
+	const fase1Completada = useRef(false)
 	const attempt = useAndinaPayAttempt()
 
 	const sealed = state.sealedDiagnosis !== null
@@ -272,14 +271,13 @@ export function AndinaPayProvider({
 		setBusy(false)
 	}, [state])
 
-	const markExpedienteOpened = useCallback(() => {
-		if (expedienteAbierto.current) return
-		expedienteAbierto.current = true
+	const completeFase1 = useCallback(() => {
+		if (fase1Completada.current) return
+		fase1Completada.current = true
 		bridge?.onObjective?.(
 			1,
-			'Revisar el aviso y abrir el expediente en AP-IR-01',
+			'Leer el aviso y localizar la clave histórica en AP-H1',
 		)
-		bridge?.onLog?.('Expediente abierto en AP-IR-01.')
 	}, [bridge])
 
 	const sealDiagnosis = useCallback(
@@ -420,7 +418,7 @@ export function AndinaPayProvider({
 			sealDiagnosis,
 			submitArtifact,
 			submitReport,
-			markExpedienteOpened,
+			completeFase1,
 			reset,
 		}),
 		[
@@ -436,7 +434,7 @@ export function AndinaPayProvider({
 			sealDiagnosis,
 			submitArtifact,
 			submitReport,
-			markExpedienteOpened,
+			completeFase1,
 			reset,
 		],
 	)
@@ -520,7 +518,7 @@ function AndinaPayTabs({
 					claim={ctx.state.sealedDiagnosis ?? ''}
 					sealed={ctx.sealed}
 					busy={ctx.busy}
-					onOpen={ctx.markExpedienteOpened}
+					onStartInvestigation={ctx.completeFase1}
 					onSeal={async (input) => {
 						const ok = await ctx.sealDiagnosis(input)
 						if (ok) setActive('repositorio')
@@ -605,7 +603,7 @@ export function AndinaPayExpedienteWindow() {
 				claim={ctx.state.sealedDiagnosis ?? ''}
 				sealed={ctx.sealed}
 				busy={ctx.busy}
-				onOpen={ctx.markExpedienteOpened}
+				onStartInvestigation={ctx.completeFase1}
 				onSeal={async (input) => {
 					await ctx.sealDiagnosis(input)
 				}}
@@ -682,12 +680,63 @@ export function AndinaPayInformeWindow() {
 		</WindowPanel>
 	)
 }
+const EVIDENCE_GROUPS: readonly {
+	readonly label: string
+	readonly refs: readonly string[]
+}[] = [
+	{ label: 'Repositorio', refs: ['AP-H1', 'AP-H2', 'AP-H3'] },
+	{
+		label: 'Datos y logs',
+		refs: [
+			'logs/application.log',
+			'keys/inventory.csv',
+			'data/current-index.csv',
+			'data/partial-v1.json',
+		],
+	},
+	{
+		label: 'Aviso y custodia',
+		refs: ['incident/notice.txt', 'recovery/policy.txt'],
+	},
+	{
+		label: 'Envelopes',
+		refs: [
+			'R01/K1/v1',
+			'R02/K1/v1',
+			'R03/KI/v1',
+			'R04/K1/v1',
+			'R01/K2/v2',
+			'R02/K2/v2',
+			'R04/K2/v2',
+		],
+	},
+]
+
+function artifactContent(reference: string): string {
+	const artifact = ANDINAPAY_ARTIFACTS.find((entry) => entry.path === reference)
+	if (artifact) return artifact.lines.join('\n')
+	if (reference === 'AP-H1' || reference === 'AP-H2' || reference === 'AP-H3') {
+		const revision = revisionById(reference)
+		if (revision) {
+			return revision.files
+				.map(
+					(file) =>
+						`${file.path}\n${file.lines
+							.map((line, index) => `${index + 1}  ${line}`)
+							.join('\n')}`,
+				)
+				.join('\n\n')
+		}
+	}
+	return 'Selecciona un material de la lista para leerlo.'
+}
+
 function ExpedienteView({
 	state,
 	claim,
 	sealed,
 	busy,
-	onOpen,
+	onStartInvestigation,
 	onSeal,
 	onEvidence,
 }: {
@@ -695,7 +744,7 @@ function ExpedienteView({
 	readonly claim: string
 	readonly sealed: boolean
 	readonly busy: boolean
-	readonly onOpen?: () => void
+	readonly onStartInvestigation?: () => void
 	readonly onSeal: (input: {
 		readonly claim: string
 		readonly cited: readonly string[]
@@ -712,10 +761,12 @@ function ExpedienteView({
 		scope: '',
 	})
 	const [cited, setCited] = useState<readonly string[]>([])
+	const [selected, setSelected] = useState('incident/notice.txt')
+	const content = artifactContent(selected)
 
-	useEffect(() => {
-		onOpen?.()
-	}, [onOpen])
+	const openArtifact = (reference: string) => {
+		setSelected(reference)
+	}
 
 	const toggle = (reference: string) => {
 		setCited((current) =>
@@ -727,170 +778,251 @@ function ExpedienteView({
 
 	return (
 		<div className={styles.panel}>
-			<p className={styles.panelLead}>
-				Abre el aviso, los logs, el inventario y las copias inmutables. Cita
-				fragmentos concretos antes de sellar D1.
-			</p>
+			<section className={styles.caseIntro}>
+				<p className={styles.eyebrow}>Caso AndinaPay · CWE-321</p>
+				<h2 className={styles.panelTitle}>
+					Una clave antigua permite leer dos registros
+				</h2>
+				<p className={styles.lead}>
+					Eres analista de respuesta de AndinaPay. Un aviso anónimo adjunta un
+					fragmento legible —<code>SYN-001 / tok_demo_A</code>— y un volcado
+					cifrado. Tu trabajo no es romper AES: es comprobar si una clave que
+					quedó en el historial del repositorio explica esos registros,
+					migrarlos a una clave nueva sin romper la aplicación y explicar qué
+					sigue expuesto.
+				</p>
+				<ol className={styles.caseSteps}>
+					<li>
+						<strong>Lee el aviso</strong> y localiza el fragmento y el adjunto.
+					</li>
+					<li>
+						<strong>Busca la clave</strong> en el historial: abre{' '}
+						<code>AP-H1</code> y compara con HEAD.
+					</li>
+					<li>
+						<strong>Confirma el hallazgo</strong> con el botón inferior.
+					</li>
+					<li>
+						<strong>Prueba la clave</strong> en la ventana{' '}
+						<em>Banco criptográfico</em> y revisa los registros.
+					</li>
+					<li>
+						<strong>Completa D1</strong> y sigue con la recuperación en{' '}
+						<em>Respuesta de claves</em>.
+					</li>
+				</ol>
+				<button
+					type="button"
+					className={styles.button}
+					disabled={sealed}
+					onClick={() => onStartInvestigation?.()}
+				>
+					{sealed
+						? 'Investigación iniciada'
+						: 'He leído el aviso y localizado la clave en AP-H1'}
+				</button>
+			</section>
+
 			<div className={styles.grid}>
 				<section aria-labelledby="a0-title">
 					<h2 id="a0-title" className={styles.panelTitle}>
 						Materiales A0
 					</h2>
-					<ul className={styles.materialList}>
+					<ul className={styles.artifactList}>
 						{ANDINAPAY_ARTIFACTS.map((artifact) => (
 							<li key={artifact.path}>
-								<code>{artifact.path}</code>{' '}
 								<button
 									type="button"
-									className={styles.button}
-									style={{ padding: '0.15rem 0.5rem', fontSize: '0.72rem' }}
-									onClick={() => onEvidence(artifact.path)}
+									className={
+										selected === artifact.path
+											? `${styles.artifactButton} ${styles.artifactButtonActive}`
+											: styles.artifactButton
+									}
+									onClick={() => openArtifact(artifact.path)}
 								>
-									Añadir referencia
+									{artifact.path}
 								</button>
 							</li>
 						))}
-						{['AP-H1', 'AP-H2', 'AP-H3'].map((revision) => (
+						{(['AP-H1', 'AP-H2', 'AP-H3'] as const).map((revision) => (
 							<li key={revision}>
-								<code>{revision}</code>{' '}
 								<button
 									type="button"
-									className={styles.button}
-									style={{ padding: '0.15rem 0.5rem', fontSize: '0.72rem' }}
-									onClick={() => onEvidence(revision)}
+									className={
+										selected === revision
+											? `${styles.artifactButton} ${styles.artifactButtonActive}`
+											: styles.artifactButton
+									}
+									onClick={() => openArtifact(revision)}
 								>
-									Añadir referencia
+									{revision}
 								</button>
 							</li>
 						))}
 					</ul>
 					<p className={styles.small}>
-						Evidencias registradas: {state.evidence.length}
+						Haz clic en un material para leerlo. D1 solo pide dos evidencias; no
+						necesitas citar todo.
+					</p>
+					<p className={styles.small}>
+						Evidencias citadas: {state.evidence.length}
 						{state.evidence.length ? ` · ${state.evidence.join(' · ')}` : ''}
 					</p>
 				</section>
 
-				<section aria-labelledby="d1-title">
-					<h2 id="d1-title" className={styles.panelTitle}>
-						Diagnóstico D1
+				<section aria-labelledby="reader-title">
+					<h2 id="reader-title" className={styles.panelTitle}>
+						{selected}
 					</h2>
-					{sealed ? (
-						<>
-							<p className={styles.hint}>
-								Diagnóstico sellado; no se reescribe.
-							</p>
-							<pre className={styles.codeBlock}>{claim}</pre>
-						</>
-					) : (
-						<>
-							<label className={styles.label} htmlFor="d1-claim">
-								Afirmación provisional
-							</label>
-							<textarea
-								id="d1-claim"
-								className={styles.textarea}
-								rows={3}
-								value={draft.claim}
-								onChange={(event) =>
-									setDraft((current) => ({
-										...current,
-										claim: event.target.value,
-									}))
-								}
-							/>
-							<p className={styles.label}>Dos evidencias citadas</p>
-							<div className={styles.checkboxRow}>
-								{ANDINAPAY_EVIDENCE.map((reference) => (
-									<label key={reference}>
-										<input
-											type="checkbox"
-											checked={cited.includes(reference)}
-											onChange={() => toggle(reference)}
-										/>
-										{reference}
-									</label>
-								))}
-							</div>
-							<label className={styles.label} htmlFor="d1-rival">
-								Alternativa rival
-							</label>
-							<textarea
-								id="d1-rival"
-								className={styles.textarea}
-								rows={2}
-								value={draft.rival}
-								onChange={(event) =>
-									setDraft((current) => ({
-										...current,
-										rival: event.target.value,
-									}))
-								}
-							/>
-							<label className={styles.label} htmlFor="d1-test">
-								Prueba propuesta
-							</label>
-							<textarea
-								id="d1-test"
-								className={styles.textarea}
-								rows={2}
-								value={draft.proposedTest}
-								onChange={(event) =>
-									setDraft((current) => ({
-										...current,
-										proposedTest: event.target.value,
-									}))
-								}
-							/>
-							<label className={styles.label} htmlFor="d1-scope">
-								Alcance y no determinado
-							</label>
-							<textarea
-								id="d1-scope"
-								className={styles.textarea}
-								rows={2}
-								value={draft.scope}
-								onChange={(event) =>
-									setDraft((current) => ({
-										...current,
-										scope: event.target.value,
-									}))
-								}
-							/>
-							<button
-								type="button"
-								className={styles.button}
-								disabled={
-									busy ||
-									!draft.claim.trim() ||
-									!draft.rival.trim() ||
-									!draft.proposedTest.trim() ||
-									!draft.scope.trim() ||
-									cited.length < 2
-								}
-								onClick={() =>
-									void onSeal({
-										claim: draft.claim,
-										cited,
-										rival: draft.rival,
-										proposedTest: draft.proposedTest,
-										scope: draft.scope,
-									})
-								}
-							>
-								Sellar diagnóstico D1
-							</button>
-							<p className={styles.small}>
-								Mínimo dos evidencias; el diagnóstico no exige acertar para
-								avanzar.
-							</p>
-						</>
-					)}
+					<pre className={styles.codeBlock}>{content}</pre>
+					<button
+						type="button"
+						className={styles.button}
+						onClick={() => onEvidence(selected)}
+					>
+						Citar esta evidencia
+					</button>
+					<p className={styles.small}>
+						{selected === 'incident/notice.txt'
+							? 'El aviso dice que el origen no está autenticado y que el fragmento adjunto es SYN-001 / tok_demo_A.'
+							: selected === 'AP-H1'
+								? 'AP-H1 contiene la literal KEY_HEX que ya no está en HEAD. Esa es la clave candidata.'
+								: selected === 'data/partial-v1.json'
+									? 'El volcado contiene R01 y R02 cifrados con legacy-demo.'
+									: 'Registra la referencia si la usarás como evidencia de D1.'}
+					</p>
 				</section>
 			</div>
+
+			<section aria-labelledby="d1-title" style={{ marginTop: '1.25rem' }}>
+				<h2 id="d1-title" className={styles.panelTitle}>
+					Diagnóstico D1
+				</h2>
+				{sealed ? (
+					<>
+						<p className={styles.hint}>Diagnóstico sellado; no se reescribe.</p>
+						<pre className={styles.codeBlock}>{claim}</pre>
+					</>
+				) : (
+					<>
+						<p className={styles.hint}>
+							No necesitas acertar para avanzar. D1 pide: qué encontraste, dos
+							evidencias, una explicación rival, una prueba y lo que sigue sin
+							saberse.
+						</p>
+						<label className={styles.label} htmlFor="d1-claim">
+							1. ¿Qué encontraste?
+						</label>
+						<textarea
+							id="d1-claim"
+							className={styles.textarea}
+							rows={3}
+							placeholder="Ej.: La clave legacy-demo de AP-H1 cifra R01 y R02; AP-H3 eliminó el literal pero no rotó la clave."
+							value={draft.claim}
+							onChange={(event) =>
+								setDraft((current) => ({
+									...current,
+									claim: event.target.value,
+								}))
+							}
+						/>
+						<p className={styles.label}>2. Elige dos evidencias</p>
+						<div className={styles.evidenceGroups}>
+							{EVIDENCE_GROUPS.map((group) => (
+								<div key={group.label} className={styles.evidenceGroup}>
+									<strong>{group.label}</strong>
+									<div className={styles.checkboxRow}>
+										{group.refs.map((reference) => (
+											<label key={reference}>
+												<input
+													type="checkbox"
+													checked={cited.includes(reference)}
+													onChange={() => toggle(reference)}
+												/>
+												{reference}
+											</label>
+										))}
+									</div>
+								</div>
+							))}
+						</div>
+						<label className={styles.label} htmlFor="d1-rival">
+							3. ¿Qué otra explicación descartas?
+						</label>
+						<textarea
+							id="d1-rival"
+							className={styles.textarea}
+							rows={2}
+							placeholder="Ej.: El identificador público merchant-demo-17 no explica el descifrado."
+							value={draft.rival}
+							onChange={(event) =>
+								setDraft((current) => ({
+									...current,
+									rival: event.target.value,
+								}))
+							}
+						/>
+						<label className={styles.label} htmlFor="d1-test">
+							4. ¿Qué prueba propondrías?
+						</label>
+						<textarea
+							id="d1-test"
+							className={styles.textarea}
+							rows={2}
+							placeholder="Ej.: Descifrar R01 con legacy-demo y comprobar que R03 falla con la misma clave."
+							value={draft.proposedTest}
+							onChange={(event) =>
+								setDraft((current) => ({
+									...current,
+									proposedTest: event.target.value,
+								}))
+							}
+						/>
+						<label className={styles.label} htmlFor="d1-scope">
+							5. ¿Qué sigue sin saberse?
+						</label>
+						<textarea
+							id="d1-scope"
+							className={styles.textarea}
+							rows={2}
+							placeholder="Ej.: Se demuestra la lectura de R01/R02; no se conoce el vector de fuga ni quién usó la clave."
+							value={draft.scope}
+							onChange={(event) =>
+								setDraft((current) => ({
+									...current,
+									scope: event.target.value,
+								}))
+							}
+						/>
+						<button
+							type="button"
+							className={styles.button}
+							disabled={
+								busy ||
+								!draft.claim.trim() ||
+								!draft.rival.trim() ||
+								!draft.proposedTest.trim() ||
+								!draft.scope.trim() ||
+								cited.length < 2
+							}
+							onClick={() =>
+								void onSeal({
+									claim: draft.claim,
+									cited,
+									rival: draft.rival,
+									proposedTest: draft.proposedTest,
+									scope: draft.scope,
+								})
+							}
+						>
+							Sellar diagnóstico D1
+						</button>
+					</>
+				)}
+			</section>
 		</div>
 	)
 }
-
 function RepositorioView({
 	onEvidence,
 }: {

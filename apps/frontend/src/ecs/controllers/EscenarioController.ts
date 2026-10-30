@@ -62,6 +62,7 @@ export class EscenarioController {
 	private progresoController?: ProgresoController
 	private guardadoProgreso?: Promise<unknown>
 	private escenarioIniciado: boolean = false // FLAG PARA EVITAR MÚLTIPLES INICIALIZACIONES
+	private motivoBloqueoReanudacion: string | null = null
 
 	private static instance: EscenarioController | null = null
 
@@ -402,13 +403,37 @@ export class EscenarioController {
 		this.sistemaTiempo.pausar(this.entidadTiempo)
 	}
 
-	public reanudarTiempo(): void {
+	public reanudarTiempo(): boolean {
+		if (this.motivoBloqueoReanudacion) {
+			return false
+		}
 		if (!this.sistemaTiempo || !this.entidadTiempo) {
 			console.error('Sistema de tiempo no inicializado')
-			return
+			return false
 		}
 
 		this.sistemaTiempo.reanudar(this.entidadTiempo)
+		return true
+	}
+
+	/**
+	 * Impide reanudar el reloj hasta que se complete el paso indicado.
+	 * La UI muestra el motivo y el reloj permanece pausado.
+	 */
+	public bloquearReanudacion(motivo: string): void {
+		if (this.motivoBloqueoReanudacion === motivo) return
+		this.motivoBloqueoReanudacion = motivo
+		this.ecsManager.emit(EventosPublicos.REANUDACION_BLOQUEADA, { motivo })
+	}
+
+	public desbloquearReanudacion(): void {
+		if (this.motivoBloqueoReanudacion === null) return
+		this.motivoBloqueoReanudacion = null
+		this.ecsManager.emit(EventosPublicos.REANUDACION_DESBLOQUEADA)
+	}
+
+	public get bloqueoReanudacion(): string | null {
+		return this.motivoBloqueoReanudacion
 	}
 
 	public estaTiempoPausado(): boolean {

@@ -27,6 +27,8 @@ export enum EventosPublicos {
 	TIEMPO_PAUSADO = 'tiempo:pausado',
 	TIEMPO_REANUDADO = 'tiempo:reanudado',
 	TIEMPO_ACTUALIZADO = 'tiempo:actualizado',
+	REANUDACION_BLOQUEADA = 'tiempo:reanudacionBloqueada',
+	REANUDACION_DESBLOQUEADA = 'tiempo:reanudacionDesbloqueada',
 	PRESUPUESTO_ACTUALIZADO = 'presupuesto:actualizado',
 	PRESUPUESTO_AGOTADO = 'presupuesto:agotado',
 	FASE_COMPLETADA = 'fase:completada',

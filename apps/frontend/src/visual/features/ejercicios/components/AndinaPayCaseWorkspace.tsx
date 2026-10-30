@@ -171,6 +171,7 @@ export interface AndinaPayBridge {
 		pausarTiempo?: boolean,
 		tipo?: TipoLogGeneral,
 	) => void
+	readonly onStepDone?: () => void
 }
 
 interface AndinaPayContextValue {
@@ -194,6 +195,7 @@ interface AndinaPayContextValue {
 	readonly submitArtifact: () => Promise<void>
 	readonly submitReport: () => Promise<void>
 	readonly completeFase1: () => void
+	readonly stepDone: () => void
 	readonly reset: () => void
 }
 
@@ -277,6 +279,12 @@ export function AndinaPayProvider({
 			const next = await apply(state, command)
 			if (next) await commit(next)
 			setBusy(false)
+			if (
+				next?.writerKey === 'recovery-v2' &&
+				next.retiredKeys.includes('legacy-demo')
+			) {
+				bridge?.onStepDone?.()
+			}
 			if (next && command.kind === 'commit_recovery') {
 				bridge?.onObjective?.(
 					3,
@@ -305,6 +313,10 @@ export function AndinaPayProvider({
 		setBusy(false)
 	}, [state])
 
+	const stepDone = useCallback(() => {
+		bridge?.onStepDone?.()
+	}, [bridge])
+
 	const completeFase1 = useCallback(() => {
 		if (fase1Completada.current) return
 		fase1Completada.current = true
@@ -313,6 +325,7 @@ export function AndinaPayProvider({
 			1,
 			'Leer el aviso y adjuntar la versión H1 al expediente',
 		)
+		bridge?.onStepDone?.()
 	}, [bridge])
 
 	const sealDiagnosis = useCallback(
@@ -367,6 +380,7 @@ export function AndinaPayProvider({
 			bridge?.onLog?.(
 				'Diagnóstico D1 sellado; vistas de intervención habilitadas.',
 			)
+			bridge?.onStepDone?.()
 			return true
 		},
 		[state, apply, attempt, commit, bridge],
@@ -424,6 +438,7 @@ export function AndinaPayProvider({
 		await attempt.recordExplanation(text)
 		bridge?.onObjective?.(4, 'Verificar B/Q/C y enviar el informe')
 		bridge?.onLog?.('Informe enviado; caso completado.', true)
+		bridge?.onStepDone?.()
 		await saveProgress()
 		setBusy(false)
 	}, [state, apply, attempt, reportFields, bridge, saveProgress])
@@ -454,6 +469,7 @@ export function AndinaPayProvider({
 			submitArtifact,
 			submitReport,
 			completeFase1,
+			stepDone,
 			reset,
 		}),
 		[
@@ -470,6 +486,7 @@ export function AndinaPayProvider({
 			submitArtifact,
 			submitReport,
 			completeFase1,
+			stepDone,
 			reset,
 		],
 	)
@@ -559,6 +576,7 @@ function AndinaPayTabs({
 					}}
 					onEvidence={(reference) => void ctx.recordEvidence(reference)}
 					onLocateKey={ctx.completeFase1}
+					onStepDone={ctx.stepDone}
 				/>
 			) : null}
 
@@ -644,6 +662,7 @@ export function AndinaPayExpedienteWindow() {
 				}}
 				onEvidence={(reference) => void ctx.recordEvidence(reference)}
 				onLocateKey={ctx.completeFase1}
+				onStepDone={ctx.stepDone}
 			/>
 		</WindowPanel>
 	)
@@ -802,6 +821,7 @@ function ExpedienteView({
 	onSeal,
 	onEvidence,
 	onLocateKey,
+	onStepDone,
 }: {
 	readonly state: AndinaPayState
 	readonly claim: string
@@ -816,6 +836,7 @@ function ExpedienteView({
 	}) => Promise<void>
 	readonly onEvidence: (reference: string) => void
 	readonly onLocateKey?: () => void
+	readonly onStepDone?: () => void
 }) {
 	const [draft, setDraft] = useState({
 		claim: '',
@@ -826,9 +847,12 @@ function ExpedienteView({
 	const [cited, setCited] = useState<readonly string[]>([])
 	const [selected, setSelected] = useState('incident/notice.txt')
 	const content = artifactContent(selected)
+	const stepDoneRef = useRef(onStepDone)
+	stepDoneRef.current = onStepDone
 
 	useEffect(() => {
 		markAndinaPayNoticeRead()
+		stepDoneRef.current?.()
 	}, [])
 
 	const openArtifact = (reference: string) => {
@@ -902,16 +926,26 @@ function ExpedienteView({
 						{displayRef(selected)}
 					</h2>
 					<pre className={styles.codeBlock}>{content}</pre>
-					<button
-						type="button"
-						className={styles.button}
-						onClick={() => {
-							onEvidence(selected)
-							if (selected === 'AP-H1') onLocateKey?.()
-						}}
-					>
-						Citar esta evidencia
-					</button>
+					{selected === 'AP-H1' ? (
+						<button
+							type="button"
+							className={styles.button}
+							onClick={() => {
+								onEvidence('AP-H1')
+								onLocateKey?.()
+							}}
+						>
+							Adjuntar Versión H1 al expediente
+						</button>
+					) : (
+						<button
+							type="button"
+							className={styles.button}
+							onClick={() => onEvidence(selected)}
+						>
+							Citar esta evidencia
+						</button>
+					)}
 				</section>
 			</div>
 

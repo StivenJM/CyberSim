@@ -271,6 +271,7 @@ function Dispositivos({ embedded = false }: { embedded?: boolean }) {
 					>[2],
 				) =>
 					escenarioController?.registrarLogDeCaso(mensaje, pausarTiempo, tipo),
+				onStepDone: () => escenarioController?.desbloquearReanudacion(),
 			}
 		: undefined
 

@@ -122,6 +122,16 @@
 	color: var(--text-primary);
 }
 
+.dock .controlBtn:disabled {
+	opacity: 0.4;
+	cursor: not-allowed;
+}
+
+.dock .controlBtn:disabled:hover {
+	background: transparent;
+	color: var(--text-muted);
+}
+
 /* Chat button special styling */
 .chatBtn {
 	composes: controlBtn;

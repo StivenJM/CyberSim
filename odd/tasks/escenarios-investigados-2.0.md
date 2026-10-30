@@ -92,8 +92,9 @@ S20. El estado del banco se conserva en `localStorage` por estudiante y caso, co
 No se requieren imágenes nuevas; cualquier asset opcional se lista al final de la entrega.
 
 S21. La sección **Partida** es la guía de inicio: muestra las cuatro fases con objetivos
-descriptivos (abrir el expediente, sellar D1, migrar R01/R02, verificar y enviar el informe) y
-avanza cuando el estudiante cumple cada hito. No se añade un botón flotante en la oficina.
+descriptivos (leer el aviso y localizar la clave en AP-H1, sellar D1, migrar R01/R02, verificar y
+enviar el informe) y avanza cuando el estudiante confirma cada hito. No se añade un botón flotante
+en la oficina ni se completa un objetivo por abrir una ventana.
 
 S22. El ejercicio se resuelve desde el escritorio existente de **Dispositivos**: seis ventanas
 propias del caso (Expediente, Repositorio, Banco, Respuesta, Comprobaciones, Informe) se suman a
@@ -113,6 +114,12 @@ S25. El acceso al caso sigue el patrón de los escenarios antiguos: clic en `AP-
 S26. El intento y el progreso se conservan: diagnóstico, pruebas, revisiones, entrega y explicación
 en `/api/attempts`; `/progreso` con `terminado: true` al enviar el informe. La suite de integración
 de los trece recorridos existentes debe seguir verde.
+
+S27. La ventana **Expediente** explica el caso en lenguaje llano antes de pedir datos: quién eres,
+qué ocurrió, qué debes demostrar, cinco pasos de inicio y un lector de materiales. El aviso se lee
+con su contenido real, no solo como nombre de archivo. D1 se presenta como cinco preguntas guiadas
+con ejemplos y evidencias agrupadas. El primer objetivo se confirma con un botón explícito después
+de leer el aviso y AP-H1; no se completa al abrir la ventana.
 
 ## Tasks
 
@@ -142,6 +149,7 @@ de los trece recorridos existentes debe seguir verde.
 | T22 | S24 | inline | hecho — avisos temporizados y logs de hitos con pausa del reloj |
 | T23 | S25 | inline | hecho — sin botón flotante; menú Configurar y foco de cámara |
 | T24 | S26 | inline | hecho — intento/progreso conservados; integración 13/13 y unitarias verdes |
+| T25 | S27 | inline | hecho — intro narrativa, lector de materiales, D1 guiado y primer objetivo explícito |
 
 ## Log
 
@@ -237,3 +245,18 @@ La suite de integración de ejercicios volvió a 13/13; las unitarias siguen ver
 recorrido completo mapa → oficina → monitor → ventanas se hizo manualmente porque el helper de clic
 3D y el doble clic del escritorio resultaron frágiles en el runner de integración; el flujo visual
 observado fue: ventanas abiertas, D1 visible, objetivo de Fase 1 completado y Fase 2 en Partida.
+
+L16 (corrección literal del usuario):
+> No se entiende nada no es nada lógico, no sé de qué mismo se trata la práctica
+
+L17. Se corrigió la capa didáctica del Expediente. La ventana abre con un relato en lenguaje llano
+(analista de AndinaPay, aviso anónimo, fragmento SYN-001/tok_demo_A, volcado cifrado, objetivo de
+comprobar la clave histórica, migrar y explicar límites), cinco pasos de inicio y un lector de
+materiales que muestra el contenido real del aviso, los logs, el inventario y AP-H1/H2/H3. D1 se
+presenta como cinco preguntas con ejemplos y evidencias agrupadas (repositorio, datos/logs, aviso y
+custodia, envelopes). El primer objetivo ya no se completa al abrir la ventana: el estudiante pulsa
+"He leído el aviso y localizado la clave en AP-H1", se registra una sola vez y Partida avanza a
+Fase 2. Verificación manual observada: intro visible, aviso y AP-H1 legibles, botón habilitado,
+log único "Objetivo completado: Leer el aviso y localizar la clave histórica en AP-H1" y Partida
+en Fase 2 con "Sellar el diagnóstico provisional con dos evidencias". Typecheck y biome limpios;
+las suites de integración existentes siguen en 13/13.

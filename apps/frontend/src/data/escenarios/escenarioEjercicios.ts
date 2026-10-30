@@ -116,7 +116,7 @@ const SEEDS: readonly ExerciseSeed[] = [
 ]
 
 const ANDINAPAY_OBJETIVOS = [
-	['Revisar el aviso y abrir el expediente en AP-IR-01'],
+	['Leer el aviso y localizar la clave histórica en AP-H1'],
 	['Sellar el diagnóstico provisional con dos evidencias'],
 	['Migrar R01/R02 a recovery-v2 y retirar legacy-demo'],
 	['Verificar B/Q/C y enviar el informe'],

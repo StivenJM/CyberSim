@@ -4,6 +4,8 @@ Documentación técnica del sistema implementado. Para procedimientos de ejecuci
 
 | Documento | Pregunta que responde |
 |---|---|
+| [Rutas del backend](rutas-backend.md) | ¿Qué endpoints existen y qué acceso permiten a docentes, estudiantes y servicios internos? |
+| [Rutas del frontend](rutas-frontend.md) | ¿Qué rutas existen y cuáles permiten el acceso a docentes y estudiantes? |
 | [Arquitectura de un vistazo](resumen.md) | ¿Cómo entiendo rápidamente la aplicación con un diagrama Mermaid? |
 | [Visión general](vision-general.md) | ¿Qué procesos y servicios componen CyberSim? |
 | [Frontend](frontend.md) | ¿Cómo se organizan las pantallas, rutas y estado del cliente? |

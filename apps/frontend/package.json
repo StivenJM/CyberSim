@@ -32,7 +32,6 @@
 		"react": "^19.1.1",
 		"react-dom": "^19.1.1",
 		"react-router": "^7.9.4",
-		"sql.js": "1.13.0",
 		"three": "^0.180.0",
 		"three-stdlib": "2.36.1"
 	},
@@ -42,7 +41,6 @@
 		"@types/node": "^24.10.1",
 		"@types/react": "^19.1.16",
 		"@types/react-dom": "^19.1.9",
-		"@types/sql.js": "1.4.11",
 		"@types/three": "^0.180.0",
 		"@vitejs/plugin-react": "^5.0.4",
 		"@vitest/coverage-v8": "^4.0.2",

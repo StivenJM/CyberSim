@@ -3,17 +3,11 @@
 Estado técnico de los cinco casos del conjunto 2.0. Cada caso tiene modelo de dominio cerrado y
 verificador propio en `packages/exercises`; el banco de pruebas ejecuta la batería real.
 
-```powershell
-pnpm --filter @cybersim/exercises test
-pnpm --filter @cybersim/frontend exec vitest --run tests/exercisesSection.test.ts
-```
+## Integración con los escenarios
 
-## Apartado en la aplicación
-
-`/ejercicios` muestra solo los cinco casos investigados. `/ejercicios/:caseId` permite ejecutar el
-verificador sobre el estado inicial y sobre la solución de referencia, y publica la tabla de
-comprobaciones con su evidencia. Las tarjetas y la tabla son navegables por teclado y no dependen del
-color para indicar el resultado.
+Los cinco escenarios siguen en el selector. AndinaPay incorpora sus ventanas y su flujo de trabajo
+en la oficina 3D. La integración de las interacciones y del registro de evidencias en los demás
+escenarios queda pendiente.
 
 ## Casos
 
@@ -30,11 +24,9 @@ color para indicar el resultado.
 - **AndinaPay** descifra los siete envelopes AES-256-GCM publicados con WebCrypto y exige
   `ciphertext || tag`; una clave, tag o AAD incorrectos devuelven `AUTHENTICATION_FAILED` sin texto
   parcial. La recuperación completa exige recifrado con plaintext conservado y lectura posterior.
-- **BibliotecaViva** ejecuta SQLite real. En las pruebas del paquete usa `node:sqlite`; en el navegador usa
-  `sql.js` dentro de un Worker aislado, con una base en memoria por prueba. El verificador reejecuta la
-  batería completa, incluida la carga de contraste, la identidad por sesión, el error público frente al
-  inspector autorizado y la sonda de
-  escritura denegada por una conexión de solo lectura.
+- **BibliotecaViva** ejecuta SQLite real con `node:sqlite` en las pruebas del paquete. El verificador
+  comprueba la carga de contraste, la identidad por sesión, el manejo de errores y la restricción de
+  escritura. Aún no hay un banco SQL integrado en el escenario 3D.
 - **TalentoAndino** clasifica el catálogo inerte T01–T13 y el inventario LG01–LG03, aplica límites
   exactos, asigna IDs internos sin usar el nombre original y conserva la relación del propietario.
   La cuarentena bloquea la entrega y el contraste intercala la admisión provisional P0.
@@ -62,28 +54,21 @@ color para indicar el resultado.
 ```powershell
 pnpm --filter @cybersim/exercises test
 pnpm --filter @cybersim/attempt-ledger test
-pnpm --filter @cybersim/frontend exec vitest --run tests/sqljsPort.test.ts
-pnpm test:integration:exercises
+pnpm --filter @cybersim/frontend exec vitest --run tests/exerciseReference.test.ts tests/exerciseCatalog.test.ts
+pnpm test:integration:core tests/integration/intentos.spec.ts
 ```
 
 - `@cybersim/exercises`: 84 pruebas del dominio y de los verificadores B/Q/C.
 - `@cybersim/attempt-ledger`: 30 del ciclo de intento y del informe.
-- `sqljsPort.test.ts`: la batería SQL completa sobre `sql.js` sin navegador.
-- `tests/integration/ejercicios.spec.ts`: 13 recorridos sobre el stack real (Vite, Express y PostgreSQL) con
-  login y reset protegido. Cubren catálogo, A0, D1 obligatorio, la verificación inicial de los cinco casos,
-  las rutas de referencia (recuperación de claves, Worker SQL, política e inventario, matriz de autorización y
-  restauración staged) y la persistencia del intento con verificación de propiedad.
+- `exerciseReference.test.ts` y `exerciseCatalog.test.ts`: modelos de referencia y publicación de los escenarios.
+- `tests/integration/intentos.spec.ts`: persistencia y propiedad de los intentos mediante la API.
 
 La suite de integración requiere Docker Desktop y aplica `migrate reset` antes de cada recorrido; no usa
 proveedores externos con `--core`. La suite E2E con mocks se mantiene separada.
 
 ## Límites declarados
 
-- BibliotecaViva ejecuta el banco real en un Worker SQLite/WASM (`sql.js` fijado a una versión exacta, base
-  en memoria por prueba, presupuesto de 4 s y terminación del Worker al agotarse). Decisión y fuentes en
-  [runtime SQL](runtime-sql.md).
-- Las vistas propias de cada caso (expediente, banco criptográfico, editor de parches) son I03. El
-  apartado actual expone el modelo y el verificador, no un escritorio por caso.
+- El registro de evidencias dentro de los escenarios 3D se definirá por separado.
 - Persistencia: adaptador Prisma y `/attempts` implementados; falta aplicar la migración y ejecutar la
   batería docente en el servidor.
 - Informe, rúbrica y validación con personas corresponden a I10 e I12.

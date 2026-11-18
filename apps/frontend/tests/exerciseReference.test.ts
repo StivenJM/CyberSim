@@ -2,7 +2,7 @@ import { EXERCISE_INDEX, runExercise } from '@cybersim/exercises'
 import { INVESTIGATED_CASE_IDS } from '@cybersim/scenario-contract'
 import { describe, expect, it } from 'vitest'
 
-describe('exercises section', () => {
+describe('exercise reference models', () => {
 	it('lists exactly the five canonical investigated cases', () => {
 		expect(EXERCISE_INDEX.map((entry) => entry.caseId)).toEqual([
 			...INVESTIGATED_CASE_IDS,

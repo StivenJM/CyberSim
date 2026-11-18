@@ -17,8 +17,6 @@
 		"test:e2e": "pnpm --filter @cybersim/frontend run test:e2e",
 		"test:integration": "node infra/integration/run.mjs",
 		"test:integration:core": "node infra/integration/run.mjs --core",
-		"test:integration:exercises": "node infra/integration/run.mjs --core --headless tests/integration/ejercicios.spec.ts",
-		"test:integration:exercises:ui": "node infra/integration/run.mjs --core tests/integration/ejercicios.spec.ts --ui",
 		"test:integration:cleanup": "node infra/integration/cleanup.mjs",
 		"test:integration:safety": "node --test infra/integration/safety.test.mjs",
 		"test:integration:report": "pnpm --filter @cybersim/frontend exec playwright show-report playwright-report/integration",

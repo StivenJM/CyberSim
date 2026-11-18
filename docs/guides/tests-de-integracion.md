@@ -225,31 +225,14 @@ pnpm test:integration:core --debug --grep HU016
 
 Ese comando inicia una nueva ejecución aislada y permite avanzar o detener las acciones en el navegador real. Para una HU que requiera IA, usa `pnpm test:integration --skip-email --debug --grep HU020`. Un canvas transparente en el visor no demuestra que el test fallase por WebGL: selecciona la acción roja y revisa **Errors**, **Call**, **Console** y **Network** para identificar el fallo efectivo.
 
-## Recorridos de los ejercicios investigados
+## Persistencia y propiedad de intentos
 
-Los cinco casos del conjunto 2.0 **forman parte de esta suite** en el proyecto `core`. Usan el stack real
-(Vite, Express y PostgreSQL), inician sesión con una cuenta sembrada y ejecutan el reset protegido; no
-necesitan proveedores externos.
-
-```powershell
-pnpm test:integration:exercises
-if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
-```
-
-Son 13 recorridos: el catálogo, el expediente A0, el bloqueo de las vistas hasta sellar D1, la verificación
-del estado inicial de los cinco casos, las rutas de referencia (recuperación de claves, Worker SQLite/WASM,
-política e inventario, matriz de autorización y restauración staged) y la persistencia del intento (crear,
-diagnosticar, revisar, entregar y negar la lectura a otro estudiante).
-
-Para depurarlos con la interfaz interactiva, el orquestador levanta el stack y abre Playwright:
+Los recorridos de integración comprueban la persistencia de un intento y que otro estudiante no pueda
+leerlo. Usan Vite, Express y PostgreSQL con una cuenta sembrada y reset protegido, sin proveedores externos.
 
 ```powershell
-pnpm test:integration:exercises:ui
+pnpm test:integration:core tests/integration/intentos.spec.ts
 ```
-
-`--headless` evita abrir ventanas. El reporte queda en `playwright-report/integration`. El detalle por capa
-está en la [guía de calidad](pruebas-y-calidad.md) y en el
-[estado de implementación](../project/ejercicios/implementacion.md).
 
 ## Separación de CI y calidad habitual
 

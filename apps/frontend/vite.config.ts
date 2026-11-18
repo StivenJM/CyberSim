@@ -25,11 +25,6 @@ export default defineConfig(({ mode }) => {
 	}
 
 	return {
-		// sql.js se carga dentro de un Worker: preoptimizarlo evita que Vite
-		// recargue la página a mitad de una prueba E2E al descubrirlo.
-		optimizeDeps: {
-			include: ['sql.js'],
-		},
 		plugins: [
 			react(),
 			{

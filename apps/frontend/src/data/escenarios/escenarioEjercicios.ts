@@ -18,8 +18,7 @@ import { ColoresRed } from '../colores'
  * Cinco ejercicios investigados del conjunto 2.0.
  *
  * La definición aporta identidad, topología y fases; el modelo de dominio, los
- * verificadores y las vistas viven en `@cybersim/exercises` y en el apartado
- * `/ejercicios`. El manifiesto solo enlaza el caso mediante `exercise`.
+ * verificadores viven en `@cybersim/exercises`. El manifiesto enlaza el caso mediante `exercise`.
  */
 interface ExerciseSeed {
 	readonly id: number

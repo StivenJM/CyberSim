@@ -29,4 +29,4 @@ Las decisiones observadas se registran en [ADRs](../project/adrs/README.md). Est
 
 ## Ejercicios investigados
 
-- [Escenarios investigativos](escenarios-investigativos.md): cinco casos con dominio, verificadores y apartado `/ejercicios`; sin validación con estudiantes. Brechas en [implementación](../project/ejercicios/implementacion.md).
+- [Escenarios investigativos](escenarios-investigativos.md): cinco casos con dominio, verificadores y manifiestos 3D; sin validación con estudiantes. Brechas en [implementación](../project/ejercicios/implementacion.md).

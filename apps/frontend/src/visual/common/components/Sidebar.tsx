@@ -175,13 +175,6 @@ const Sidebar: React.FC = () => {
 							data-tour="dock-partida"
 							tooltipPosition="right"
 						/>
-						<NavigationLink
-							icon={<EstrellasIcon size={20} />}
-							label="Ejercicios"
-							to="/ejercicios"
-							data-tour="dock-ejercicios"
-							tooltipPosition="right"
-						/>
 					</div>
 
 					<div className={styles.spacer} />

@@ -1,8 +1,8 @@
 # Implementar después los cinco ejercicios investigados
 
-**Estado a 28-10-2026:** el dominio, los verificadores, el apartado `/ejercicios` y los cinco manifiestos
-están implementados y probados; faltan las vistas por caso, el Worker SQLite/WASM, la persistencia aplicada y
-la validación con estudiantes. No se ejecutó seed ni publicación RAG. Leer [contrato común](../project/ejercicios/README.md), ficha del caso, memo científico, [arquitectura propuesta](../architecture/escenarios-investigativos.md), [estado de implementación](../project/ejercicios/implementacion.md) y [tareas canónicas](../project/ejercicios/plan-implementacion.md), en ese orden.
+**Estado actual:** los cinco manifiestos, el dominio y los verificadores se conservan. AndinaPay
+funciona dentro de la oficina 3D; la integración equivalente de los demás casos y su registro de
+evidencias siguen pendientes. Leer [contrato común](../project/ejercicios/README.md), ficha del caso, memo científico, [arquitectura propuesta](../architecture/escenarios-investigativos.md), [estado de implementación](../project/ejercicios/implementacion.md) y [tareas canónicas](../project/ejercicios/plan-implementacion.md), en ese orden.
 
 ## 1. Preparación sin alterar datos
 

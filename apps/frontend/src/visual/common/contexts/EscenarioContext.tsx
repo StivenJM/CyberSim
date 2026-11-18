@@ -7,7 +7,7 @@ import {
 	useMemo,
 	useState,
 } from 'react'
-import { useLocation, useNavigate } from 'react-router'
+import { useNavigate } from 'react-router'
 import {
 	DispositivoComponent,
 	TransformComponent,
@@ -166,7 +166,6 @@ export function EscenarioProvider({
 }: EscenarioProviderProps) {
 	const { selectedEscenario } = useSelectedLevel()
 	const navigate = useNavigate()
-	const location = useLocation()
 	const [escenario, setEscenarioState] = useState<Escenario | null>(
 		selectedEscenario ?? initialEscenario ?? null,
 	)
@@ -187,14 +186,13 @@ export function EscenarioProvider({
 		}
 	}, [selectedEscenario])
 
-	// Redirigir a selección de niveles si no hay escenario, salvo en el apartado
-	// de ejercicios, que es independiente del escenario seleccionado.
+	// Redirigir a selección de niveles si no hay escenario.
 	useEffect(() => {
-		if (!escenario && !location.pathname.startsWith('/ejercicios')) {
+		if (!escenario) {
 			EscenarioController.reset()
 			navigate('/seleccion-niveles')
 		}
-	}, [escenario, navigate, location.pathname])
+	}, [escenario, navigate])
 
 	const setEscenario = useCallback((nuevoEscenario: Escenario) => {
 		setEscenarioState(nuevoEscenario)

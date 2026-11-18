@@ -22,7 +22,7 @@ import {
 	AndinaPayInformeWindow,
 	AndinaPayProvider,
 	AndinaPayRepositorioWindow,
-} from '../../ejercicios/components/AndinaPayCaseWorkspace'
+} from '../../andinapay/components/AndinaPayCaseWorkspace'
 import { useECSSceneContext } from '../../escenarios-simulados/context/ECSSceneContext'
 import ModalVPNCliente from '../../simulacion-redes/components/ModalVPNCliente'
 import ModalApps from '../components/ModalApps'

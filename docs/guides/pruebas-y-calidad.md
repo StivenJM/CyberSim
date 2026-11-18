@@ -151,21 +151,11 @@ pnpm test:e2e --grep @slow
 
 El segundo comando incluye el smoke WebGL. Para consultar el reporte HTML usa `pnpm --filter @cybersim/frontend exec playwright show-report playwright-report/e2e` después de una ejecución con el reporter HTML predeterminado, o revisa trazas y errores en los artefactos de la ejecución. Los reportes E2E e integración usan carpetas hermanas para que una ejecución no borre las evidencias de la otra.
 
-### Recorridos de los ejercicios investigados
+### Persistencia de intentos
 
-Los cinco casos del conjunto 2.0 se verifican en la **suite de integración real**, no en la E2E con mocks:
-`tests/integration/ejercicios.spec.ts` usa Vite, Express y PostgreSQL, inicia sesión con una cuenta sembrada y
-ejecuta el reset protegido. Requiere Docker Desktop y el procedimiento de
-[tests de integración](tests-de-integracion.md).
-
-```powershell
-pnpm test:integration:exercises
-if ($LASTEXITCODE -ne 0) { throw 'Fallaron los recorridos de los ejercicios.' }
-```
-
-Son 13 recorridos: el catálogo, los cinco casos con A0 y D1, sus rutas de referencia, el Worker SQLite/WASM y
-la persistencia del intento con verificación de propiedad. No forman parte de `pnpm test:e2e`, que conserva
-los recorridos con mocks.
+Las pruebas de API para crear, actualizar y entregar un intento y comprobar su propiedad se ejecutan
+en la [suite de integración real](tests-de-integracion.md#persistencia-y-propiedad-de-intentos), no en
+la suite E2E con mocks.
 
 ## 5. Asegurar el build y revisar sus artefactos
 

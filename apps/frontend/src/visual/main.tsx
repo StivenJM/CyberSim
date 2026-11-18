@@ -28,9 +28,7 @@ import VistaDocente from './features/admin-docente-y-estudiante/pages/VistaDocen
 import VistaPerfil from './features/admin-docente-y-estudiante/pages/VistaPerfil.tsx'
 import { AgentMalvadoProvider } from './features/agent-malvado/presentation/context/AgentMalvadoContext.tsx'
 import { ChatProvider } from './features/chat/context/ChatContext.tsx'
-import AndinaPayFeedbackListener from './features/ejercicios/components/AndinaPayFeedbackListener.tsx'
-import VistaEjercicio from './features/ejercicios/pages/VistaEjercicio.tsx'
-import VistaEjercicios from './features/ejercicios/pages/VistaEjercicios.tsx'
+import AndinaPayFeedbackListener from './features/andinapay/components/AndinaPayFeedbackListener.tsx'
 import EventLogsPanel from './features/escenarios-simulados/components/EventLogsPanel.tsx'
 import TarjetaLogNuevo from './features/escenarios-simulados/components/TarjetaLogNuevo.tsx'
 import TutorialTour from './features/escenarios-simulados/components/TutorialTour.tsx'
@@ -144,28 +142,6 @@ function AnimatedRoutes() {
 					<Route path="/redes" element={<Redes />} />
 					<Route path="/fases-partida" element={<VistaFasesPartida />} />
 				</Route>
-
-				{/*
-				  El apartado de ejercicios no depende del escenario ECS ni del
-				  escritorio 3D: mantiene su propio layout para que un enlace directo
-				  no exija un nivel seleccionado.
-				*/}
-				<Route
-					path="/ejercicios"
-					element={
-						<ProtectedRoute>
-							<VistaEjercicios />
-						</ProtectedRoute>
-					}
-				/>
-				<Route
-					path="/ejercicios/:caseId"
-					element={
-						<ProtectedRoute>
-							<VistaEjercicio />
-						</ProtectedRoute>
-					}
-				/>
 
 				<Route path="*" element={<NotFound />} />
 			</Routes>

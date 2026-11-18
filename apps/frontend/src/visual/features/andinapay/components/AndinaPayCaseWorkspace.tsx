@@ -28,29 +28,11 @@ import {
 	useRef,
 	useState,
 } from 'react'
-import { useNavigate } from 'react-router'
 
 import { ProgresoController } from '../../../../ecs/controllers/ProgresoController'
 import type { TipoLogGeneral } from '../../../../shared/types/EventosEnums'
 import { useAndinaPayAttempt } from '../hooks/useAndinaPayAttempt'
-import styles from '../styles/Ejercicios.module.css'
-
-type TabId =
-	| 'expediente'
-	| 'repositorio'
-	| 'banco'
-	| 'claves'
-	| 'comprobaciones'
-	| 'informe'
-
-const TABS: readonly { readonly id: TabId; readonly label: string }[] = [
-	{ id: 'expediente', label: 'Expediente' },
-	{ id: 'repositorio', label: 'Repositorio' },
-	{ id: 'banco', label: 'Banco criptográfico' },
-	{ id: 'claves', label: 'Respuesta de claves' },
-	{ id: 'comprobaciones', label: 'Comprobaciones' },
-	{ id: 'informe', label: 'Informe' },
-]
+import styles from '../styles/AndinaPay.module.css'
 
 interface ReportFields {
 	readonly occurred: string
@@ -72,15 +54,6 @@ interface StoredExercise {
 	readonly state: AndinaPayState
 	readonly startedAt: number
 	readonly reportFields: ReportFields
-}
-
-export interface AndinaPayCaseWorkspaceProps {
-	readonly caseId?: string
-	readonly scenarioSlug?: string
-	readonly scenarioRevision?: number
-	readonly scenarioContentHash?: string
-	readonly embedded?: boolean
-	readonly onCompleted?: () => void
 }
 
 function currentStudentKey(): string {
@@ -495,152 +468,6 @@ export function AndinaPayProvider({
 		<AndinaPayContext.Provider value={value}>
 			{children}
 		</AndinaPayContext.Provider>
-	)
-}
-
-function AndinaPayTabs({
-	embedded = false,
-	onMap,
-}: {
-	readonly embedded?: boolean
-	readonly onMap?: () => void
-}) {
-	const ctx = useAndinaPay()
-	const [active, setActive] = useState<TabId>('expediente')
-	const tabs = useMemo(
-		() => TABS.filter((tab) => tab.id === 'expediente' || ctx.sealed),
-		[ctx.sealed],
-	)
-
-	return (
-		<section
-			className={
-				embedded ? `${styles.section} ${styles.embedded}` : styles.section
-			}
-			aria-labelledby="andinapay-title"
-		>
-			<header className={styles.header}>
-				<p className={styles.eyebrow}>CWE-321 · AndinaPay</p>
-				<h1 id="andinapay-title" className={styles.title}>
-					Expediente de datos
-				</h1>
-				<p className={styles.lead}>
-					Investiga el aviso recibido por AndinaPay. Explica qué puede
-					demostrarse sobre el texto legible y los registros afectados, y qué
-					sigue sin saberse. La clave de una versión anterior no se corrige
-					cambiando el algoritmo.
-				</p>
-			</header>
-
-			{!ctx.sealed ? (
-				<p className={styles.notice}>
-					Antes de abrir las vistas de intervención, entrega un diagnóstico
-					provisional con dos evidencias citadas y una predicción comprobable.
-				</p>
-			) : null}
-
-			<div className={styles.tabs} role="tablist" aria-label="Vistas del caso">
-				{tabs.map((tab) => (
-					<button
-						key={tab.id}
-						type="button"
-						role="tab"
-						aria-selected={active === tab.id}
-						className={
-							active === tab.id
-								? `${styles.tab} ${styles.tabActive}`
-								: styles.tab
-						}
-						onClick={() => setActive(tab.id)}
-					>
-						{tab.label}
-					</button>
-				))}
-			</div>
-
-			{ctx.error ? (
-				<p className={styles.notice} role="alert">
-					{ctx.error}
-				</p>
-			) : null}
-
-			{active === 'expediente' ? (
-				<ExpedienteView
-					state={ctx.state}
-					claim={ctx.state.sealedDiagnosis ?? ''}
-					sealed={ctx.sealed}
-					busy={ctx.busy}
-					onSeal={async (input) => {
-						const ok = await ctx.sealDiagnosis(input)
-						if (ok) setActive('repositorio')
-					}}
-					onEvidence={(reference) => void ctx.recordEvidence(reference)}
-					onLocateKey={ctx.completeFase1}
-					onStepDone={ctx.stepDone}
-				/>
-			) : null}
-
-			{active === 'repositorio' ? (
-				<RepositorioView
-					onEvidence={(reference) => void ctx.recordEvidence(reference)}
-					onLocateKey={ctx.completeFase1}
-				/>
-			) : null}
-
-			{active === 'banco' ? (
-				<BancoView
-					onEvidence={(reference) => void ctx.recordEvidence(reference)}
-				/>
-			) : null}
-
-			{active === 'claves' ? (
-				<ClavesView
-					state={ctx.state}
-					busy={ctx.busy}
-					onCommand={(command) => void ctx.run(command)}
-				/>
-			) : null}
-
-			{active === 'comprobaciones' ? (
-				<ComprobacionesView
-					state={ctx.state}
-					report={ctx.report}
-					busy={ctx.busy}
-					onVerify={() => void ctx.verify()}
-					onCheck={(checkId) => void ctx.run({ kind: 'run_check', checkId })}
-				/>
-			) : null}
-
-			{active === 'informe' ? (
-				<InformeView
-					state={ctx.state}
-					reportFields={ctx.reportFields}
-					setReportFields={ctx.setReportFields}
-					busy={ctx.busy}
-					onArtifact={ctx.submitArtifact}
-					onReport={ctx.submitReport}
-					onReset={ctx.reset}
-					onMap={onMap}
-					onVerify={() => void ctx.verify()}
-				/>
-			) : null}
-		</section>
-	)
-}
-
-export default function AndinaPayCaseWorkspace({
-	scenarioSlug = 'andinapay-clave-expuesta',
-	embedded = false,
-	onCompleted,
-}: AndinaPayCaseWorkspaceProps) {
-	const navigate = useNavigate()
-	return (
-		<AndinaPayProvider scenarioSlug={scenarioSlug} onCompleted={onCompleted}>
-			<AndinaPayTabs
-				embedded={embedded}
-				onMap={() => navigate('/seleccion-niveles')}
-			/>
-		</AndinaPayProvider>
 	)
 }
 
@@ -1848,7 +1675,6 @@ function InformeView({
 	onArtifact,
 	onReport,
 	onReset,
-	onMap,
 	onVerify,
 }: {
 	readonly state: AndinaPayState
@@ -1858,7 +1684,6 @@ function InformeView({
 	readonly onArtifact: () => Promise<void>
 	readonly onReport: () => Promise<void>
 	readonly onReset: () => void
-	readonly onMap?: () => void
 	readonly onVerify: () => void
 }) {
 	const complete = Object.values(reportFields).every((value) => value.trim())
@@ -1985,11 +1810,6 @@ function InformeView({
 					vector de fuga no se conoce. El nodo del mapa se marcará como
 					completado al guardar el progreso.
 					<div className={styles.actions}>
-						{onMap ? (
-							<button type="button" className={styles.button} onClick={onMap}>
-								Volver al mapa
-							</button>
-						) : null}
 						<button type="button" className={styles.button} onClick={onReset}>
 							Reiniciar caso
 						</button>

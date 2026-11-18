@@ -127,23 +127,6 @@ async function main() {
 							id_estudiante: student.id_estudiante,
 						},
 					})
-				if (
-					fixture.code === 20240001 &&
-					!(await tx.progreso.findFirst({
-						where: {
-							id_estudiante: student.id_estudiante,
-							slug_escenario: 'control-acceso',
-						},
-					}))
-				)
-					await tx.progreso.create({
-						data: {
-							id_estudiante: student.id_estudiante,
-							slug_escenario: 'control-acceso',
-							terminado: false,
-							tiempo: 0,
-						},
-					})
 			}
 		},
 		{ timeout: 15000 },

@@ -1,24 +1,15 @@
-import { useCallback, useRef, useState } from 'react'
-import type { EscenarioController } from '../../../../ecs/controllers/EscenarioController'
+import { useCallback, useEffect, useRef, useState } from 'react'
 
 export interface LogEntry {
-	time: string
+	numero: string
 	content: string
 	category: string
 }
 
-function formatearTiempo(segundos: number): string {
-	const minutos = Math.floor(segundos / 60)
-	const segs = Math.floor(segundos % 60)
-	return `${minutos.toString().padStart(2, '0')}:${segs
-		.toString()
-		.padStart(2, '0')}`
-}
-
-export function useECSLogs(escenarioController: EscenarioController) {
+export function useECSLogs() {
 	const [mostrarNuevoLog, setMostrarNuevoLog] = useState(false)
 	const [mensajeLog, setMensajeLog] = useState('')
-	const [tiempoLog, setTiempoLog] = useState(0)
+	const [numeroLog, setNumeroLog] = useState(0)
 	const [tipoLog, setTipoLog] = useState<
 		'ataque' | 'advertencia' | 'completado' | 'informacion'
 	>('advertencia')
@@ -28,22 +19,30 @@ export function useECSLogs(escenarioController: EscenarioController) {
 
 	const lastSeenCountRef = useRef(0)
 	const closeDevicePanelRef = useRef<(() => void) | null>(null)
+	// Numeración secuencial de los mensajes: sustituye al tiempo mostrado.
+	const logCounterRef = useRef(0)
+	// Ref para no romper la identidad de `agregarLog` cuando cambia el panel:
+	// si `agregarLog` cambiara de identidad, el efecto de useECSScene se
+	// re-ejecutaría y perdería sus suscripciones.
+	const logsPanelOpenRef = useRef(false)
 
-	const agregarLog = useCallback(
-		(content: string, category: string) => {
-			const tiempo = escenarioController.tiempoTranscurrido
-			const nuevoLog = {
-				time: formatearTiempo(tiempo),
-				content,
-				category,
-			}
-			setLogs((prev) => [...prev, nuevoLog])
-			if (!logsPanelOpen) {
-				setHasNewLog(true)
-			}
-		},
-		[escenarioController],
-	)
+	useEffect(() => {
+		logsPanelOpenRef.current = logsPanelOpen
+	}, [logsPanelOpen])
+
+	const agregarLog = useCallback((content: string, category: string) => {
+		logCounterRef.current += 1
+		const nuevoLog = {
+			numero: String(logCounterRef.current),
+			content,
+			category,
+		}
+		setLogs((prev) => [...prev, nuevoLog])
+		setNumeroLog(logCounterRef.current)
+		if (!logsPanelOpenRef.current) {
+			setHasNewLog(true)
+		}
+	}, [])
 
 	const toggleLogsPanel = useCallback(
 		(isOpen: boolean) => {
@@ -60,20 +59,20 @@ export function useECSLogs(escenarioController: EscenarioController) {
 	const resetLogs = useCallback(() => {
 		setLogs([])
 		setMostrarNuevoLog(false)
+		logCounterRef.current = 0
 		lastSeenCountRef.current = 0
 	}, [])
 
 	return {
 		mostrarNuevoLog,
 		mensajeLog,
-		tiempoLog,
+		numeroLog,
 		tipoLog,
 		logs,
 		hasNewLog,
 		logsPanelOpen,
 		setMostrarNuevoLog,
 		setMensajeLog,
-		setTiempoLog,
 		setTipoLog,
 		agregarLog,
 		toggleLogsPanel,

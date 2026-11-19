@@ -14,7 +14,7 @@ export default function TarjetaLogNuevo() {
 		setMensajeLog,
 		mensajeLog,
 		tipoLog,
-		tiempoLog,
+		numeroLog,
 	} = useECSSceneContext()
 
 	useEffect(() => {
@@ -31,12 +31,6 @@ export default function TarjetaLogNuevo() {
 
 	if (!mostrarNuevoLog) {
 		return null
-	}
-
-	const formatearTiempo = (segundos: number): string => {
-		const minutos = Math.floor(segundos / 60)
-		const segs = Math.floor(segundos % 60)
-		return `${minutos.toString().padStart(2, '0')}:${segs.toString().padStart(2, '0')}`
 	}
 
 	// Mapear el tipo a categorías de log
@@ -58,7 +52,7 @@ export default function TarjetaLogNuevo() {
 		>
 			<div className={styles.logItemTime} style={{ color }}>
 				{icon}
-				<time>{formatearTiempo(tiempoLog)}</time>
+				<time>{numeroLog}</time>
 			</div>
 			<p>{mensajeLog}</p>
 		</article>

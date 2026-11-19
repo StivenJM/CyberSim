@@ -1,12 +1,5 @@
-import {
-	EventosInternos,
-	EventosPublicos,
-} from '../../shared/types/EventosEnums'
-import {
-	AtaqueComponent,
-	type EventoComponent,
-	TiempoComponent,
-} from '../components'
+import { EventosPublicos } from '../../shared/types/EventosEnums'
+import { type EventoComponent, TiempoComponent } from '../components'
 import { type Entidad, Sistema } from '../core'
 
 export class SistemaTiempo extends Sistema {
@@ -90,36 +83,6 @@ export class SistemaTiempo extends Sistema {
 				transcurrido: tiempo.transcurrido,
 				pausado: tiempo.pausado,
 			})
-
-			/* Verificar que sea un tiempo de notificacion de ataque o evento
-         y verificar que sea un tiempo de ejecución de ataque o evento
-      */
-			for (const evento of this.eventosEscenario) {
-				if (tiempo.transcurrido === evento.tiempoNotificacion) {
-					if (evento instanceof AtaqueComponent) {
-						this.ecsManager.emit(EventosPublicos.TIEMPO_NOTIFICACION_ATAQUE, {
-							descripcionAtaque: evento.descripcion,
-						})
-					} else {
-						this.ecsManager.emit(EventosPublicos.TIEMPO_NOTIFICACION_EVENTO, {
-							descripcionEvento: evento.descripcion,
-						})
-					}
-				}
-				if (tiempo.transcurrido === evento.tiempoEnOcurrir) {
-					if (evento instanceof AtaqueComponent) {
-						this.ecsManager.emit(EventosInternos.TIEMPO_EJECUCION_ATAQUE, {
-							ataque: evento,
-						})
-					} else {
-						this.ecsManager.emit(EventosInternos.TIEMPO_EJECUCION_EVENTO, {
-							evento,
-						})
-					}
-				}
-			}
-
-			//console.log(`Tiempo transcurrido: ${tiempo.transcurrido}s`);
 		}, 1000)
 	}
 
@@ -140,11 +103,15 @@ export class SistemaTiempo extends Sistema {
 		}
 	}
 
-	// Método para limpiar el intervalo cuando se destruye el sistema
+	// Método para limpiar los intervalos cuando se destruye el sistema
 	public destruir() {
 		if (this.intervalo) {
 			clearInterval(this.intervalo)
 			this.intervalo = null
+		}
+		if (this.intervaloTiempoTotal) {
+			clearInterval(this.intervaloTiempoTotal)
+			this.intervaloTiempoTotal = null
 		}
 	}
 }

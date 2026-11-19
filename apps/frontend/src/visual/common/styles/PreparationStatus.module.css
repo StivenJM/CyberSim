@@ -23,6 +23,37 @@
 	line-height: 1.35;
 }
 
+.summaryLabel {
+	flex: 1;
+	min-width: 0;
+}
+
+.close {
+	flex-shrink: 0;
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 18px;
+	height: 18px;
+	border-radius: 5px;
+	background: transparent;
+	color: #d9c37a;
+	cursor: pointer;
+	transition:
+		background 0.15s ease,
+		color 0.15s ease;
+}
+
+.close:hover {
+	background: rgba(255, 255, 255, 0.1);
+	color: #f6ecc4;
+}
+
+.close:focus-visible {
+	outline: 2px solid #d9c37a;
+	outline-offset: 2px;
+}
+
 .summary::-webkit-details-marker {
 	display: none;
 }

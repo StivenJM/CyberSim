@@ -1,10 +1,16 @@
-import { ChevronRight } from 'lucide-react'
+import { ChevronRight, X } from 'lucide-react'
 import { useEffect, useState } from 'react'
 import styles from '../styles/PreparationStatus.module.css'
 
 type Status = { state: string; components?: Record<string, string> }
+
+// El cierre vive en el módulo: sobrevive a navegar entre pantallas dentro de la
+// SPA, y solo un recargo real (F5) lo reinicia.
+let prepStatusDismissed = false
+
 export default function PreparationStatus() {
 	const [status, setStatus] = useState<Status | null>(null)
+	const [dismissed, setDismissed] = useState(prepStatusDismissed)
 	useEffect(() => {
 		const poll = () =>
 			fetch('/api/health/status')
@@ -17,7 +23,9 @@ export default function PreparationStatus() {
 	}, [])
 	const estado =
 		typeof status?.state === 'string' ? status.state : 'sin comprobar'
-	if (!import.meta.env.DEV || !status || estado === 'listo') return null
+	if (!import.meta.env.DEV || !status || estado === 'listo' || dismissed) {
+		return null
+	}
 	const labels: Record<string, string> = {
 		database: 'Base de datos',
 		coordinator: 'Coordinación de IA',
@@ -47,7 +55,22 @@ export default function PreparationStatus() {
 		<details className={styles.chip}>
 			<summary className={styles.summary}>
 				<ChevronRight size={13} strokeWidth={2.5} className={styles.caret} />
-				Entorno de desarrollo: {estado.replaceAll('_', ' ')}
+				<span className={styles.summaryLabel}>
+					Entorno de desarrollo: {estado.replaceAll('_', ' ')}
+				</span>
+				<button
+					type="button"
+					className={styles.close}
+					aria-label="Cerrar aviso de desarrollo"
+					onClick={(event) => {
+						event.preventDefault()
+						event.stopPropagation()
+						prepStatusDismissed = true
+						setDismissed(true)
+					}}
+				>
+					<X size={13} strokeWidth={2.5} />
+				</button>
 			</summary>
 			<div className={styles.panel}>
 				<ul className={styles.list}>

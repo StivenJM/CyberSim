@@ -697,7 +697,7 @@ function ExpedienteView({
 	return (
 		<div className={styles.panel}>
 			<header className={styles.incidentHeader}>
-				<p className={styles.eyebrow}>Aviso recibido · 08:30</p>
+				<p className={styles.eyebrow}>Aviso recibido</p>
 				<h2 className={styles.panelTitle}>Expediente de datos</h2>
 				<p className={styles.small}>
 					Origen: canal de soporte · no autenticado. Revisa los materiales y

@@ -7,7 +7,11 @@ import {
 	obtenerIconoCategoria,
 } from '../utils/getCategoryDetails'
 
-const LogItem = (log: { time: string; content: string; category: string }) => (
+const LogItem = (log: {
+	numero: string
+	content: string
+	category: string
+}) => (
 	<article
 		className={styles.logItem}
 		style={{
@@ -19,7 +23,7 @@ const LogItem = (log: { time: string; content: string; category: string }) => (
 			style={{ color: obtenerColorCategoria(log.category as LogCategory) }}
 		>
 			{obtenerIconoCategoria(log.category as LogCategory)}
-			<time>{log.time}</time>
+			<time>{log.numero}</time>
 		</div>
 		<p>{log.content}</p>
 	</article>

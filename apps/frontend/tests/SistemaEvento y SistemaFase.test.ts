@@ -1457,12 +1457,15 @@ describe('SistemaEvento y SistemaFase', () => {
 		escenarioController.ejecutarTiempo()
 		escenarioController.iniciarTiempo()
 
+		// Ambos relojes corren: el de simulación (oculto) y el total.
 		expect(em.getSistema(SistemaTiempo)?.intervalo).not.toBeNull()
+		expect(em.getSistema(SistemaTiempo)?.intervaloTiempoTotal).not.toBeNull()
 
 		sistemaEvento.ejecutarEvento(eventos[0])
 
 		// Al completar el escenario, se espera que el tiempo se haya destruido por completo
 		expect(em.getSistema(SistemaTiempo)?.intervalo).toBeNull()
+		expect(em.getSistema(SistemaTiempo)?.intervaloTiempoTotal).toBeNull()
 
 		EscenarioController.reset()
 	})

@@ -28,7 +28,6 @@ import VistaDocente from './features/admin-docente-y-estudiante/pages/VistaDocen
 import VistaPerfil from './features/admin-docente-y-estudiante/pages/VistaPerfil.tsx'
 import { AgentMalvadoProvider } from './features/agent-malvado/presentation/context/AgentMalvadoContext.tsx'
 import { ChatProvider } from './features/chat/context/ChatContext.tsx'
-import AndinaPayFeedbackListener from './features/andinapay/components/AndinaPayFeedbackListener.tsx'
 import EventLogsPanel from './features/escenarios-simulados/components/EventLogsPanel.tsx'
 import TarjetaLogNuevo from './features/escenarios-simulados/components/TarjetaLogNuevo.tsx'
 import TutorialTour from './features/escenarios-simulados/components/TutorialTour.tsx'
@@ -66,7 +65,6 @@ function GameProvidersLayout() {
 									<ModelPreloader />
 									<Modal />
 									<Sidebar />
-									<AndinaPayFeedbackListener />
 									<TutorialTour />
 									<div className="content">
 										<Outlet />

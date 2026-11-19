@@ -47,6 +47,7 @@ export function useECSScene() {
 	const escenario = useEscenarioActual()
 	const [entities, setEntities] = useState<Map<Entidad, unknown>>(new Map())
 	const [presupuesto, setPresupuesto] = useState(0)
+	const [haySiguiente, setHaySiguiente] = useState(false)
 
 	const inicializado = useRef(false)
 	const escenarioIdRef = useRef<number | null>(null)
@@ -62,7 +63,7 @@ export function useECSScene() {
 	)
 
 	// --- Sub-hooks ---
-	const logState = useECSLogs(escenarioController)
+	const logState = useECSLogs()
 	const timeState = useECSTime(escenarioController)
 	const zoneState = useECSZones()
 	const navState = useECSNavigation()
@@ -104,9 +105,7 @@ export function useECSScene() {
 
 		const unsubscribeLogsGeneralesActualizados = escenarioController.on(
 			EventosPublicos.LOGS_GENERALES_ACTUALIZADOS,
-			(data: unknown) => {
-				const pausarTiempo = data as boolean
-
+			() => {
 				for (const [
 					,
 					container,
@@ -119,7 +118,6 @@ export function useECSScene() {
 
 							logState.setMostrarNuevoLog(true)
 							logState.setMensajeLog(ultimoLog.mensaje)
-							logState.setTiempoLog(escenarioController.tiempoTranscurrido)
 
 							let tipoLogUI:
 								| 'ataque'
@@ -144,10 +142,6 @@ export function useECSScene() {
 						}
 						break
 					}
-				}
-
-				if (pausarTiempo) {
-					timeState.pause()
 				}
 			},
 		)
@@ -185,6 +179,10 @@ export function useECSScene() {
 				timeState.setIsPaused(false)
 			},
 		)
+
+		// Recorrido manual: muestra el primer mensaje y deja el "Siguiente" listo.
+		escenarioController.mostrarPrimeraNotificacion()
+		setHaySiguiente(escenarioController.hayEventosPendientes())
 
 		return () => {
 			unsubscribeLogsGeneralesActualizados()
@@ -349,11 +347,19 @@ export function useECSScene() {
 		)
 	}, [entities, zoneState.zonaActual])
 
+	// Recorrido manual: ejecuta el evento actual y muestra el siguiente mensaje.
+	const avanzar = useCallback(() => {
+		escenarioController.avanzarEscenario()
+		setHaySiguiente(escenarioController.hayEventosPendientes())
+	}, [escenarioController])
+
 	return {
 		entities,
+		avanzar,
+		haySiguiente,
 		mostrarNuevoLog: logState.mostrarNuevoLog,
 		mensajeLog: logState.mensajeLog,
-		tiempoLog: logState.tiempoLog,
+		numeroLog: logState.numeroLog,
 		tipoLog: logState.tipoLog,
 		logs: logState.logs,
 		hasNewLog: logState.hasNewLog,

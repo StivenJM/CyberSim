@@ -63,6 +63,10 @@ export class EscenarioController {
 	private guardadoProgreso?: Promise<unknown>
 	private escenarioIniciado: boolean = false // FLAG PARA EVITAR MÚLTIPLES INICIALIZACIONES
 	private motivoBloqueoReanudacion: string | null = null
+	// Recorrido manual (sin reloj): los eventos ordenados por tiempo de
+	// notificación y el índice del mensaje actualmente mostrado.
+	private eventosOrdenados: EventoComponent[] = []
+	private indiceNotificacion = 0
 
 	private static instance: EscenarioController | null = null
 
@@ -356,12 +360,68 @@ export class EscenarioController {
 		}
 		const eventos = this.getEventos()
 		this.sistemaTiempo.eventosEscenario = eventos
+		this.eventosOrdenados = [...eventos].sort(
+			(a, b) => a.tiempoNotificacion - b.tiempoNotificacion,
+		)
 		// Los casos investigados guían su narrativa con eventos de tiempo, pero
 		// sus objetivos los actualiza la aplicación del caso; no deben pasar por
 		// la lista secuencial de fases del ECS.
 		this.sistemaFase.eventosEscenario = this.escenario.exercise
 			? []
-			: eventos.sort((a, b) => a.tiempoNotificacion - b.tiempoNotificacion)
+			: [...this.eventosOrdenados]
+	}
+
+	/**
+	 * Muestra el primer mensaje de notificación del recorrido (sin reloj).
+	 */
+	public mostrarPrimeraNotificacion(): void {
+		this.indiceNotificacion = 0
+		const primero = this.eventosOrdenados[0]
+		if (primero) this.emitirNotificacion(primero)
+	}
+
+	/**
+	 * Avanza un paso: ejecuta el evento cuyo mensaje se mostró (salvo los avisos
+	 * de los casos investigados, que solo notifican y se marcan con
+	 * `tiempoEnOcurrir` 999999) y muestra el siguiente mensaje de notificación.
+	 */
+	public avanzarEscenario(): void {
+		const actual = this.eventosOrdenados[this.indiceNotificacion]
+		if (actual && actual.tiempoEnOcurrir !== 999999) {
+			this.emitirEjecucion(actual)
+		}
+		this.indiceNotificacion++
+		const siguiente = this.eventosOrdenados[this.indiceNotificacion]
+		if (siguiente) this.emitirNotificacion(siguiente)
+	}
+
+	/** Quedan eventos por recorrer con el botón "Siguiente". */
+	public hayEventosPendientes(): boolean {
+		return this.indiceNotificacion < this.eventosOrdenados.length
+	}
+
+	private emitirNotificacion(evento: EventoComponent): void {
+		if (evento instanceof AtaqueComponent) {
+			this.ecsManager.emit(EventosPublicos.TIEMPO_NOTIFICACION_ATAQUE, {
+				descripcionAtaque: evento.descripcion,
+			})
+		} else {
+			this.ecsManager.emit(EventosPublicos.TIEMPO_NOTIFICACION_EVENTO, {
+				descripcionEvento: evento.descripcion,
+			})
+		}
+	}
+
+	private emitirEjecucion(evento: EventoComponent): void {
+		if (evento instanceof AtaqueComponent) {
+			this.ecsManager.emit(EventosInternos.TIEMPO_EJECUCION_ATAQUE, {
+				ataque: evento,
+			})
+		} else {
+			this.ecsManager.emit(EventosInternos.TIEMPO_EJECUCION_EVENTO, {
+				evento,
+			})
+		}
 	}
 
 	public ejecutarTiempo(): void {
@@ -391,6 +451,8 @@ export class EscenarioController {
 			console.error('Sistema de tiempo no inicializado')
 			return
 		}
+		// El reloj corre oculto: solo sella las acciones con su tiempo, para el
+		// registro/análisis. Ya no dispara notificaciones (eso lo hace "Siguiente").
 		this.sistemaTiempo.iniciar(this.entidadTiempo)
 		this.sistemaTiempo.iniciarTiempoTotal(this.entidadTiempoTotal)
 	}

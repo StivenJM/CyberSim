@@ -134,7 +134,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 5,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'08:30 — Aviso anónimo recibido en el canal de soporte. Hay un expediente nuevo en el PC del analista; ábrelo desde el monitor.',
+			'Aviso anónimo recibido en el canal de soporte. Hay un expediente nuevo en el PC del analista; ábrelo desde el monitor.',
 		fase: 1,
 		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},

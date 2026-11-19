@@ -37,6 +37,24 @@
 	border: 1px solid var(--border-primary);
 }
 
+.nextButton {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	color: var(--text-primary);
+	background: var(--surface-secondary);
+	cursor: pointer;
+}
+
+.nextButton:hover:not(:disabled) {
+	background: var(--surface-tertiary);
+}
+
+.nextButton:disabled {
+	opacity: 0.5;
+	cursor: not-allowed;
+}
+
 .title {
 	font-size: 14px;
 	font-weight: 600;

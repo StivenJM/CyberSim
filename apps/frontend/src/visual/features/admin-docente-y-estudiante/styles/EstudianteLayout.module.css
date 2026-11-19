@@ -6,25 +6,101 @@
 	color: var(--text-primary);
 }
 
+/* El mapa de niveles es la pantalla principal del curso: el arte de fondo y el
+   ancho completo pertenecen solo a esa ruta. */
+.page[data-screen="niveles"] {
+	--page-gutter: clamp(20px, 4vw, 64px);
+	--rail-width: 400px;
+	background-color: var(--surface-primary);
+}
+
+/* Arte del mapa. Va en el contenedor de scroll, no en el contenido: así el fondo
+   no se desplaza con la sección y cubre solo lo visible. Se recorta a la columna
+   del recorrido, del borde izquierdo a la línea divisoria. */
+.page[data-screen="niveles"] .content {
+	background-image: url("/assets/pictures/level_map_background.png");
+	background-repeat: no-repeat;
+	background-position: left top;
+	background-size: calc(100% - var(--rail-width)) 100%;
+}
+
+@media (min-width: 1320px) and (max-width: 1620px) {
+	.page[data-screen="niveles"] {
+		--rail-width: 344px;
+	}
+}
+
+/* Una sola columna: el arte ocupa el ancho del recorrido. */
+@media (max-width: 1200px) {
+	.page[data-screen="niveles"] .content {
+		background-size: 100% 100%;
+	}
+}
+
 /* ── Header ── */
 
 .header {
-	display: flex;
-	justify-content: space-between;
+	display: grid;
+	grid-template-columns: auto minmax(0, 1fr) auto;
 	align-items: center;
 	height: 64px;
 	padding: 0 max(24px, calc((100% - 1280px) / 2 + 48px));
 	border-bottom: 1px solid var(--border-primary);
 	flex-shrink: 0;
+	z-index: 5;
 }
 
-.logoButton {
-	padding: 0;
-	background: transparent !important;
-	border: none;
-	cursor: pointer;
+.page[data-screen="niveles"] .header {
+	height: 74px;
+	padding: 0 var(--page-gutter);
+	border-bottom-color: rgba(255, 255, 255, 0.06);
+	/* Mismo tono neutro que --surface-primary (#171717): no teñir de azul. */
+	background: rgba(23, 23, 23, 0.72);
+	backdrop-filter: blur(10px);
+}
+
+.brand {
 	display: flex;
 	align-items: center;
+	gap: 11px;
+	padding: 0;
+	background: transparent;
+	border-radius: 0;
+}
+
+.brand img {
+	display: block;
+	flex-shrink: 0;
+}
+
+.brand:hover .wordmark {
+	color: #ffffff;
+}
+
+.wordmark {
+	font-size: 20px;
+	font-weight: 700;
+	letter-spacing: -0.025em;
+	color: #f2f5f8;
+	transition: color 0.15s ease;
+}
+
+.brand:focus-visible {
+	outline: 2px solid var(--blue);
+	outline-offset: 4px;
+	border-radius: 4px;
+}
+
+.headerCenter {
+	display: flex;
+	justify-content: center;
+	align-items: center;
+	min-width: 0;
+	padding: 0 24px;
+}
+
+.headerUser {
+	justify-self: end;
 }
 
 /* ── Content area ── */
@@ -41,10 +117,50 @@
 	padding: 60px 48px 32px 48px;
 }
 
+.contentFull {
+	max-width: none;
+	margin: 0;
+	padding: 36px var(--page-gutter) 48px;
+}
+
 /* ── Responsive ── */
+
+@media (max-width: 760px) {
+	.page[data-screen="niveles"] .header {
+		grid-template-rows: auto auto;
+		row-gap: 10px;
+		height: auto;
+		padding-top: 10px;
+		padding-bottom: 12px;
+	}
+
+	.brand {
+		grid-column: 1;
+		grid-row: 1;
+	}
+
+	.headerUser {
+		grid-column: 3;
+		grid-row: 1;
+	}
+
+	.headerCenter {
+		grid-column: 1 / -1;
+		grid-row: 2;
+		padding: 0;
+	}
+}
 
 @media (max-width: 640px) {
 	.contentInner {
 		padding: 24px 16px;
+	}
+
+	.contentFull {
+		padding: 20px 16px 32px;
+	}
+
+	.wordmark {
+		font-size: 18px;
 	}
 }

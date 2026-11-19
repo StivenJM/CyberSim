@@ -1,3 +1,4 @@
+import { Trophy } from 'lucide-react'
 import Identicon from '../../../common/components/Identicon'
 import type { LeaderboardEntry } from '../hooks/useLeaderboard'
 import styles from '../styles/Leaderboard.module.css'
@@ -17,6 +18,12 @@ function rankClass(rank: number): string {
 	return ''
 }
 
+// 1250 → "1 250 pts": espacio fino como separador de miles, igual que el resto
+// de cifras de la pantalla, sin depender del locale del navegador.
+function formatPuntos(puntos: number): string {
+	return `${puntos.toLocaleString('en-US').replace(/,/g, '\u202F')} pts`
+}
+
 export default function Leaderboard({
 	entries,
 	groupName,
@@ -24,37 +31,24 @@ export default function Leaderboard({
 	error,
 	currentStudentId,
 }: LeaderboardProps) {
-	// No group state
-	if (!loading && !groupName && !error) {
-		return (
-			<div className={styles.card}>
-				<div className={styles.header}>
-					<h3 className={styles.title}>Ranking</h3>
-				</div>
-				<div className={styles.empty}>
-					<p className={styles.emptyText}>
-						Únete a un grupo para ver el ranking de tu clase
-					</p>
-				</div>
-			</div>
-		)
-	}
-
 	return (
-		<div className={styles.card}>
+		<section className={styles.card} aria-labelledby="ranking-titulo">
 			<div className={styles.header}>
-				<h3 className={styles.title}>Ranking</h3>
-				{groupName && <p className={styles.groupName}>{groupName}</p>}
+				<Trophy size={16} strokeWidth={2} className={styles.trophy} />
+				<h2 className={styles.title} id="ranking-titulo">
+					Ranking del grupo
+				</h2>
+				{groupName && <span className={styles.groupName}>{groupName}</span>}
 			</div>
 
 			{loading ? (
 				<div className={styles.skeleton}>
-					{Array.from({ length: 5 }).map((_, i) => (
+					{Array.from({ length: 3 }).map((_, i) => (
 						// biome-ignore-start lint/suspicious/noArrayIndexKey: These fixed display slots retain their positional identity.
 						<div
 							key={i}
 							className={styles.skeletonRow}
-							style={{ width: `${85 - i * 8}%` }}
+							style={{ width: `${88 - i * 10}%` }}
 						/>
 						// biome-ignore-end lint/suspicious/noArrayIndexKey: Limit the positional-key exception to this element.
 					))}
@@ -63,36 +57,49 @@ export default function Leaderboard({
 				<div className={styles.empty}>
 					<p className={styles.emptyText}>No se pudo cargar el ranking</p>
 				</div>
+			) : !groupName ? (
+				<div className={styles.empty}>
+					<p className={styles.emptyText}>
+						Únete a un grupo para ver el ranking de tu clase
+					</p>
+				</div>
 			) : entries.length === 0 ? (
 				<div className={styles.empty}>
 					<p className={styles.emptyText}>Aún no hay progreso en el grupo</p>
 				</div>
 			) : (
-				<div className={styles.list}>
-					{entries.map((entry) => {
-						const isCurrent = entry.idEstudiante === currentStudentId
-						return (
-							<div
-								key={entry.idEstudiante}
-								className={`${styles.row} ${isCurrent ? styles.currentRow : ''}`}
-							>
-								<span className={`${styles.rank} ${rankClass(entry.rank)}`}>
-									{entry.rank}
-								</span>
-								<div className={styles.avatar}>
-									<Identicon seed={entry.correo} />
-								</div>
-								<span className={styles.name}>{entry.nombre}</span>
-								<span
-									className={`${styles.score} ${isCurrent ? styles.scoreCurrent : ''}`}
+				<>
+					<ol className={styles.list}>
+						{entries.slice(0, 5).map((entry) => {
+							const isCurrent = entry.idEstudiante === currentStudentId
+							return (
+								<li
+									key={entry.idEstudiante}
+									className={`${styles.row} ${isCurrent ? styles.currentRow : ''}`}
 								>
-									{entry.puntaje.toLocaleString()} pts
-								</span>
-							</div>
-						)
-					})}
-				</div>
+									<span className={`${styles.rank} ${rankClass(entry.rank)}`}>
+										{entry.rank}
+									</span>
+									<span className={styles.avatar}>
+										<Identicon seed={entry.correo} />
+									</span>
+									<span className={styles.name}>{entry.nombre}</span>
+									<span className={styles.score}>
+										{formatPuntos(entry.puntaje)}
+									</span>
+								</li>
+							)
+						})}
+					</ol>
+					{entries.length > 5 && (
+						<p className={styles.more}>
+							y {entries.length - 5}{' '}
+							{entries.length - 5 === 1 ? 'estudiante más' : 'estudiantes más'}{' '}
+							en el grupo
+						</p>
+					)}
+				</>
 			)}
-		</div>
+		</section>
 	)
 }

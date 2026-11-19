@@ -1,4 +1,6 @@
+import { ChevronRight } from 'lucide-react'
 import { useEffect, useState } from 'react'
+import styles from '../styles/PreparationStatus.module.css'
 
 type Status = { state: string; components?: Record<string, string> }
 export default function PreparationStatus() {
@@ -13,7 +15,9 @@ export default function PreparationStatus() {
 		const timer = setInterval(() => void poll(), 10000)
 		return () => clearInterval(timer)
 	}, [])
-	if (!import.meta.env.DEV || !status || status.state === 'listo') return null
+	const estado =
+		typeof status?.state === 'string' ? status.state : 'sin comprobar'
+	if (!import.meta.env.DEV || !status || estado === 'listo') return null
 	const labels: Record<string, string> = {
 		database: 'Base de datos',
 		coordinator: 'Coordinación de IA',
@@ -40,31 +44,24 @@ export default function PreparationStatus() {
 		low: 'poco espacio',
 	}
 	return (
-		<details
-			style={{
-				position: 'fixed',
-				bottom: 8,
-				left: 8,
-				zIndex: 10000,
-				maxWidth: 350,
-				padding: 10,
-				borderRadius: 8,
-				background: '#201d10',
-				color: '#ffe6a3',
-				fontSize: 13,
-			}}
-		>
-			<summary>
-				Entorno de desarrollo: {status.state.replaceAll('_', ' ')}
+		<details className={styles.chip}>
+			<summary className={styles.summary}>
+				<ChevronRight size={13} strokeWidth={2.5} className={styles.caret} />
+				Entorno de desarrollo: {estado.replaceAll('_', ' ')}
 			</summary>
-			<ul>
-				{Object.entries(status.components || {}).map(([key, value]) => (
-					<li key={key}>
-						{labels[key] || key}: {states[value] || value}
-					</li>
-				))}
-			</ul>
-			<span>Consulta la guía de Docker para completar la preparación.</span>
+			<div className={styles.panel}>
+				<ul className={styles.list}>
+					{Object.entries(status.components || {}).map(([key, value]) => (
+						<li key={key}>
+							<span>{labels[key] || key}</span>
+							<span className={styles.state}>{states[value] || value}</span>
+						</li>
+					))}
+				</ul>
+				<span className={styles.hint}>
+					Consulta la guía de Docker para completar la preparación.
+				</span>
+			</div>
 		</details>
 	)
 }

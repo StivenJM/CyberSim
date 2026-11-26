@@ -54,7 +54,7 @@ function VistaOficina() {
 				<TarjetaEntidadSeleccionada visible={!!dispositivoSeleccionado} />
 			)}
 			{!desktopMode && <TarjetaZonaActual visible={true} />}
-			<MonitorDesktopOverlay />
+			<MonitorDesktopOverlay machineName={dispositivoSeleccionado?.nombre} />
 		</div>
 	)
 }

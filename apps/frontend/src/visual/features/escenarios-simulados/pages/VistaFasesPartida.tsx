@@ -7,56 +7,37 @@ import styles from '../styles/VistaFasesPartida.module.css'
 function CasoAndinaPayIntro() {
 	return (
 		<section className={styles.casoIntro}>
-			<p className={styles.casoEyebrow}>AndinaPay · CWE-321</p>
-			<h1 className={styles.casoIntroTitle}>
-				Una clave antigua permite leer dos registros
-			</h1>
+			<p className={styles.casoEyebrow}>AndinaPay · Respuesta a incidentes</p>
+			<h1 className={styles.casoIntroTitle}>Un aviso por investigar</h1>
 			<p className={styles.casoIntroLead}>
-				AndinaPay es una fintech ficticia. Un aviso anónimo adjunta un fragmento
-				legible y un volcado cifrado. Una clave que quedó en el historial del
-				repositorio todavía permite leer dos registros. Tu trabajo no es romper
-				AES: es demostrar qué clave explica esos datos, migrarlos a una clave
-				nueva sin romper la aplicación y explicar qué sigue expuesto.
+				AndinaPay es una fintech quiteña de doce personas que ayuda a pequeños
+				comercios a cobrar con tarjeta. Te incorporas como analista de respuesta
+				a incidentes: soporte ha reenviado un mensaje que menciona datos de la
+				empresa. Gerencia necesita saber qué se puede demostrar y qué queda por
+				investigar.
 			</p>
-			<h2 className={styles.casoSubtitle}>Cómo se juega</h2>
+			<h2 className={styles.casoSubtitle}>Tu puesto de trabajo</h2>
 			<ol className={styles.casoSteps}>
 				<li>
-					En la oficina, abre el monitor del <strong>PC Analista</strong> y
-					entra en <strong>Expediente</strong>.
+					Abre el monitor del <strong>PC Analista</strong>. En{' '}
+					<strong>Correo</strong> encontrarás los mensajes recibidos; puedes
+					orientarte por sus asuntos y vistas previas.
 				</li>
 				<li>
-					Lee el aviso y revisa la <strong>versión H1</strong> del repositorio
-					para localizar la clave histórica.
+					Los materiales recibidos están disponibles en{' '}
+					<strong>Expediente</strong>. También tienes acceso al{' '}
+					<strong>Repositorio</strong> y al <strong>Banco criptográfico</strong>{' '}
+					para contrastar tus hipótesis.
 				</li>
 				<li>
-					<span>
-						Registra el hallazgo, prueba la clave en el{' '}
-						<strong>Banco criptográfico</strong> y completa el{' '}
-						<strong>diagnóstico D1</strong>.
-					</span>
-				</li>
-				<li>
-					En <strong>Respuesta de claves</strong>, prepara K2, migra R01 y R02,
-					publica la recuperación y retira <code>legacy-demo</code>.
-				</li>
-				<li>
-					En <strong>Comprobaciones</strong> ejecuta B/Q/C y en{' '}
-					<strong>Informe</strong> documenta la continuidad y la exposición
-					residual.
+					Conserva las evidencias que sostengan tu diagnóstico y distingue lo
+					comprobado de las afirmaciones que todavía no puedes confirmar. Puedes
+					consultar los materiales en cualquier orden.
 				</li>
 			</ol>
 			<p className={styles.casoNote}>
-				<strong>Glosario:</strong> <code>SYN-001</code> es el identificador
-				sintético del documento de R01 y <code>tok_demo_A</code> su token de
-				tarjeta. No son credenciales reales; el aviso los usa como prueba de
-				acceso. El aviso no está autenticado: el fragmento es una pista, no una
-				prueba.
-			</p>
-			<p className={styles.casoNote}>
-				<strong>Qué debes demostrar:</strong> que la clave histórica explica
-				R01/R02, que R03 usa otra clave, que la aplicación sigue leyendo los
-				registros legítimos después de la migración y que la copia antigua sigue
-				siendo legible para quien tenga K1.
+				Los datos, las personas y los correos pertenecen a una simulación. No
+				necesitas contactar a nadie ni utilizar servicios externos.
 			</p>
 		</section>
 	)

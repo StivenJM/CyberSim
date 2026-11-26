@@ -5,14 +5,6 @@
 	color: #f4f6fb;
 }
 
-.eyebrow {
-	margin: 0;
-	font-size: 0.8rem;
-	letter-spacing: 0.16em;
-	text-transform: uppercase;
-	color: #7dd3fc;
-}
-
 .actions {
 	display: flex;
 	flex-wrap: wrap;
@@ -46,77 +38,6 @@
 	opacity: 0.5;
 }
 
-.summaryRow {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.5rem;
-	margin-bottom: 1rem;
-}
-
-.chipPass,
-.chipFail,
-.chipNeutral {
-	padding: 0.25rem 0.7rem;
-	border-radius: 999px;
-	font-size: 0.78rem;
-}
-
-.chipPass {
-	background: rgba(34, 197, 94, 0.2);
-	color: #bbf7d0;
-}
-
-.chipFail {
-	background: rgba(248, 113, 113, 0.2);
-	color: #fecaca;
-}
-
-.chipNeutral {
-	background: rgba(148, 163, 184, 0.18);
-	color: #cbd5e1;
-}
-
-.notice {
-	margin: 0 0 1rem;
-	padding: 0.9rem 1rem;
-	border-left: 3px solid #facc15;
-	background: rgba(250, 204, 21, 0.08);
-	color: #fde68a;
-	font-size: 0.9rem;
-}
-
-.tableWrapper {
-	overflow-x: auto;
-	border: 1px solid rgba(148, 163, 184, 0.25);
-	border-radius: 0.9rem;
-}
-
-.table {
-	width: 100%;
-	border-collapse: collapse;
-	font-size: 0.86rem;
-}
-
-.table caption {
-	padding: 0.75rem 1rem;
-	text-align: left;
-	color: #c7d2e4;
-}
-
-.table th,
-.table td {
-	padding: 0.6rem 0.9rem;
-	text-align: left;
-	border-top: 1px solid rgba(148, 163, 184, 0.18);
-	vertical-align: top;
-}
-
-.table th {
-	color: #7dd3fc;
-	font-weight: 600;
-	white-space: nowrap;
-}
-
 .pass {
 	color: #86efac;
 	font-weight: 600;
@@ -140,6 +61,13 @@
 	outline-offset: 2px;
 }
 
+/* Contenedor de herramientas (GitHub/VS Code): sin marco ni fondo azul. */
+.toolShell {
+	display: flex;
+	flex-direction: column;
+	min-height: 0;
+}
+
 .panelLead {
 	margin: 0 0 1rem;
 	color: #c7d2e4;
@@ -152,22 +80,10 @@
 	color: #7dd3fc;
 }
 
-.incidentHeader {
-	display: grid;
-	gap: 0.3rem;
-	margin-bottom: 1rem;
-}
-
 .grid {
 	display: grid;
 	grid-template-columns: repeat(auto-fit, minmax(17rem, 1fr));
 	gap: 1.5rem;
-}
-
-.hint {
-	margin: 0.5rem 0;
-	font-size: 0.82rem;
-	color: #94a3b8;
 }
 
 .label {
@@ -175,24 +91,6 @@
 	margin: 0.75rem 0 0.35rem;
 	font-size: 0.82rem;
 	color: #c7d2e4;
-}
-
-.textarea {
-	width: 100%;
-	margin-bottom: 0.75rem;
-	padding: 0.6rem;
-	border: 1px solid rgba(148, 163, 184, 0.35);
-	border-radius: 0.5rem;
-	background: rgba(2, 6, 23, 0.6);
-	color: #e2e8f0;
-	font: inherit;
-	font-size: 0.88rem;
-	resize: vertical;
-}
-
-.textarea:focus-visible {
-	outline: 2px solid #38bdf8;
-	outline-offset: 1px;
 }
 
 .select {
@@ -323,25 +221,6 @@
 	font-size: 0.72rem;
 }
 
-.checkboxRow {
-	display: flex;
-	flex-wrap: wrap;
-	gap: 0.4rem 0.9rem;
-	margin: 0.5rem 0;
-	padding: 0.6rem;
-	border: 1px solid rgba(148, 163, 184, 0.22);
-	border-radius: 0.5rem;
-	background: rgba(2, 6, 23, 0.35);
-	font-size: 0.8rem;
-	color: #c7d2e4;
-}
-
-.checkboxRow label {
-	display: inline-flex;
-	gap: 0.35rem;
-	align-items: center;
-}
-
 .footerNotice {
 	margin-top: 1rem;
 	padding: 0.75rem 0.9rem;
@@ -352,110 +231,77 @@
 	color: #bae6fd;
 }
 
-.artifactList {
-	margin: 0 0 0.75rem;
-	padding: 0;
-	list-style: none;
-	display: grid;
-	gap: 0.3rem;
-}
-
-.artifactButton {
-	width: 100%;
-	padding: 0.45rem 0.6rem;
-	border: 1px solid transparent;
-	border-radius: 0.4rem;
-	background: rgba(2, 6, 23, 0.45);
-	color: #c7d2e4;
-	font: inherit;
-	font-size: 0.8rem;
-	text-align: left;
-	cursor: pointer;
-}
-
-.artifactButton:hover,
-.artifactButton:focus-visible {
-	border-color: rgba(125, 211, 252, 0.45);
-	color: #e0f2fe;
-	outline: none;
-}
-
-.artifactButtonActive {
-	border-color: #38bdf8;
-	background: rgba(14, 165, 233, 0.18);
-	color: #e0f2fe;
-}
-
-.evidenceGroups {
-	display: grid;
-	gap: 0.6rem;
-	margin: 0.5rem 0 0.75rem;
-}
-
-.evidenceGroup {
-	padding: 0.5rem 0.6rem;
-	border: 1px solid rgba(148, 163, 184, 0.2);
-	border-radius: 0.5rem;
-	background: rgba(2, 6, 23, 0.3);
-	font-size: 0.78rem;
-}
-
-.evidenceGroup strong {
-	display: block;
-	margin-bottom: 0.25rem;
-	color: #7dd3fc;
-}
-
 .ide {
-	border: 1px solid #3c3c3c;
+	border: 1px solid #30363d;
 	border-radius: 0.6rem;
 	overflow: hidden;
-	background: #1e1e1e;
-	color: #cccccc;
+	background: #0d1117;
+	color: #e6edf3;
 	box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
 }
 
-.ideTitlebar {
+.ideHeader {
 	display: flex;
 	align-items: center;
-	gap: 0.75rem;
-	padding: 0.45rem 0.75rem;
-	background: #323233;
-	border-bottom: 1px solid #3c3c3c;
+	gap: 0.5rem;
+	padding: 0.6rem 0.9rem;
+	background: #010409;
 }
 
-.ideDots {
-	display: inline-flex;
-	gap: 0.35rem;
+.ideRepoIcon {
 	flex: none;
-}
-
-.ideDots span {
-	width: 9px;
-	height: 9px;
 	border-radius: 50%;
-	background: #4b4b4b;
-}
-
-.ideDots span:nth-child(1) {
-	background: #ff5f57;
-}
-
-.ideDots span:nth-child(2) {
-	background: #febc2e;
-}
-
-.ideDots span:nth-child(3) {
-	background: #28c840;
-}
-
-.ideTitle {
-	min-width: 0;
 	overflow: hidden;
-	text-overflow: ellipsis;
-	white-space: nowrap;
-	font-size: 0.72rem;
-	color: #9d9d9d;
+}
+
+.ideRepoName {
+	font-size: 0.86rem;
+	font-weight: 700;
+	color: #e6edf3;
+}
+
+.ideRepoOwner {
+	font-size: 0.86rem;
+	color: #58a6ff;
+}
+
+.ideRepoSlash {
+	font-size: 0.86rem;
+	color: #6e7681;
+}
+
+.ideRepoVisibility {
+	margin-left: 0.35rem;
+	padding: 0.02rem 0.45rem;
+	border: 1px solid #30363d;
+	border-radius: 999px;
+	font-size: 0.62rem;
+	letter-spacing: 0.02em;
+	color: #8b949e;
+}
+
+.ideNavTabs {
+	display: flex;
+	gap: 0.25rem;
+	padding: 0 0.65rem;
+	background: #010409;
+	border-bottom: 1px solid #30363d;
+}
+
+.ideNavTab {
+	padding: 0.5rem 0.75rem;
+	border-bottom: 2px solid transparent;
+	font-size: 0.8rem;
+	color: #8b949e;
+	cursor: default;
+}
+
+.ideNavTabActive {
+	padding: 0.5rem 0.75rem;
+	border-bottom: 2px solid #f78166;
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #e6edf3;
 }
 
 .ideBody {
@@ -469,8 +315,8 @@
 	flex-direction: column;
 	gap: 0.35rem;
 	padding: 0.6rem;
-	background: #252526;
-	border-right: 1px solid #3c3c3c;
+	background: #0d1117;
+	border-right: 1px solid #30363d;
 }
 
 .ideSidebarTitle {
@@ -478,14 +324,131 @@
 	font-size: 0.64rem;
 	letter-spacing: 0.08em;
 	text-transform: uppercase;
-	color: #bbbbbb;
+	color: #8b949e;
 }
 
-.ideRepo {
-	margin: 0;
-	font-size: 0.72rem;
+.ideBranchRow {
+	position: relative;
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	padding: 0.3rem 0.45rem;
+	border: 1px solid #30363d;
+	border-radius: 0.35rem;
+	background: #161b22;
+	color: #8b949e;
+}
+
+.ideBranchRow svg {
+	flex: none;
+	color: #8b949e;
+}
+
+.ideBranchButton {
+	display: flex;
+	align-items: center;
+	gap: 0.35rem;
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: #e6edf3;
+	font: inherit;
+	cursor: pointer;
+}
+
+.ideBranchButton:focus-visible {
+	outline: none;
+}
+
+.ideBranchCurrent {
+	flex: 1;
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.75rem;
 	font-weight: 600;
-	color: #e8e8e8;
+	text-align: left;
+}
+
+.ideBranchMenu {
+	position: absolute;
+	top: calc(100% + 0.3rem);
+	left: 0;
+	z-index: 30;
+	display: grid;
+	gap: 0.1rem;
+	min-width: 15rem;
+	max-width: 19rem;
+	padding: 0.35rem;
+	border: 1px solid #30363d;
+	border-radius: 0.4rem;
+	background: #161b22;
+	box-shadow: 0 10px 28px rgba(1, 4, 9, 0.65);
+}
+
+.ideBranchGroup {
+	margin: 0.35rem 0.4rem 0.15rem;
+	font-size: 0.6rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #6e7681;
+}
+
+.ideBranchItem {
+	display: flex;
+	align-items: center;
+	gap: 0.45rem;
+	width: 100%;
+	padding: 0.35rem 0.45rem;
+	border: none;
+	border-radius: 0.3rem;
+	background: transparent;
+	color: #c9d1d9;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.ideBranchItem:hover,
+.ideBranchItem:focus-visible {
+	background: #1f6feb;
+	color: #ffffff;
+	outline: none;
+}
+
+.ideBranchItemActive {
+	background: #1f6feb;
+	color: #ffffff;
+}
+
+.ideBranchName {
+	font-size: 0.75rem;
+	font-weight: 600;
+}
+
+.ideCommitMessage {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	font-size: 0.72rem;
+}
+
+.ideCommitHash {
+	flex: none;
+	margin-left: auto;
+	color: #8b949e;
+	font-size: 0.66rem;
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.ideBranchItem:hover .ideCommitHash,
+.ideBranchItem:focus-visible .ideCommitHash,
+.ideBranchItemActive .ideCommitHash {
+	color: #d1d9e6;
 }
 
 .ideTree,
@@ -513,7 +476,7 @@
 .ideFolder {
 	margin: 0.15rem 0;
 	font-size: 0.68rem;
-	color: #9d9d9d;
+	color: #58a6ff;
 }
 
 .ideFile {
@@ -539,8 +502,8 @@
 }
 
 .ideFileActive {
-	background: #37373d;
-	color: #ffffff;
+	background: rgba(56, 139, 253, 0.15);
+	color: #e6edf3;
 }
 
 .ideFileIcon {
@@ -584,8 +547,8 @@
 }
 
 .ideCommitActive {
-	background: #1f3a4d;
-	border-color: #0e639c;
+	background: rgba(56, 139, 253, 0.12);
+	border-color: #58a6ff;
 }
 
 .ideCommitDot {
@@ -598,7 +561,7 @@
 }
 
 .ideCommitActive .ideCommitDot {
-	background: #4fc1ff;
+	background: #58a6ff;
 }
 
 .ideCommitBody {
@@ -616,7 +579,7 @@
 
 .ideCommitHead code {
 	flex: none;
-	color: #4fc1ff;
+	color: #58a6ff;
 	font-size: 0.66rem;
 }
 
@@ -634,9 +597,9 @@
 .ideEvidence {
 	margin-top: auto;
 	padding: 0.4rem 0.5rem;
-	border: 1px solid #0e639c;
+	border: 1px solid #238636;
 	border-radius: 0.35rem;
-	background: #0e639c;
+	background: #238636;
 	color: #ffffff;
 	font: inherit;
 	font-size: 0.7rem;
@@ -645,7 +608,7 @@
 
 .ideEvidence:hover,
 .ideEvidence:focus-visible {
-	background: #1177bb;
+	background: #2ea043;
 	outline: none;
 }
 
@@ -653,44 +616,90 @@
 	display: flex;
 	flex-direction: column;
 	min-width: 0;
-	background: #1e1e1e;
+	background: #0d1117;
 }
 
-.ideTabs {
+.ideRepoCard {
 	display: flex;
-	background: #252526;
-	border-bottom: 1px solid #3c3c3c;
+	align-items: center;
+	gap: 0.5rem;
+	padding: 0.5rem 0.75rem;
+	border-bottom: 1px solid #30363d;
+	background: #010409;
+	font-size: 0.72rem;
+	color: #8b949e;
 }
 
-.ideTabActive {
+.ideRepoAvatar {
 	display: inline-flex;
 	align-items: center;
-	gap: 0.35rem;
-	padding: 0.4rem 0.7rem;
-	border-right: 1px solid #3c3c3c;
-	background: #1e1e1e;
-	color: #e8e8e8;
-	font-size: 0.72rem;
+	justify-content: center;
+	width: 1.35rem;
+	height: 1.35rem;
+	flex: none;
+	border-radius: 50%;
+	background: #1f6feb;
+	color: #ffffff;
+	font-size: 0.66rem;
+	font-weight: 700;
 }
 
-.ideTabBadge {
-	padding: 0.02rem 0.25rem;
-	border-radius: 0.2rem;
-	background: #0e639c;
-	color: #ffffff;
-	font-size: 0.6rem;
+.ideRepoCommitMsg {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	color: #e6edf3;
+}
+
+.ideRepoHash {
+	flex: none;
+	padding: 0.02rem 0.3rem;
+	border-radius: 0.25rem;
+	background: #161b22;
+	color: #58a6ff;
+	font-size: 0.66rem;
+}
+
+.ideRepoDate {
+	flex: none;
+	margin-left: auto;
+	color: #8b949e;
+}
+
+.ideFileHeader {
+	display: flex;
+	align-items: baseline;
+	justify-content: space-between;
+	gap: 0.75rem;
+	padding: 0.5rem 0.75rem;
+	border-bottom: 1px solid #30363d;
+	background: #010409;
+}
+
+.ideFileHeaderName {
+	font-size: 0.8rem;
+	font-weight: 600;
+	color: #e6edf3;
+}
+
+.ideFileHeaderMeta {
+	font-size: 0.68rem;
+	color: #8b949e;
 }
 
 .ideBreadcrumb {
 	margin: 0;
 	padding: 0.35rem 0.75rem;
-	border-bottom: 1px solid #2b2b2b;
-	color: #8b8b8b;
+	border-bottom: 1px solid #30363d;
+	color: #8b949e;
 	font-size: 0.68rem;
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 }
 
 .ideBreadcrumb span {
 	margin: 0 0.2rem;
+	color: #6e7681;
 }
 
 .ideCode {
@@ -699,8 +708,8 @@
 	margin: 0;
 	padding: 0.6rem 0.4rem;
 	overflow: auto;
-	background: #1e1e1e;
-	color: #d4d4d4;
+	background: #0d1117;
+	color: #e6edf3;
 	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
 	font-size: 0.76rem;
 	line-height: 1.6;
@@ -710,9 +719,10 @@
 	display: flex;
 	flex-wrap: wrap;
 	gap: 0.9rem;
-	padding: 0.25rem 0.6rem;
-	background: #007acc;
-	color: #ffffff;
+	padding: 0.3rem 0.6rem;
+	border-top: 1px solid #30363d;
+	background: #010409;
+	color: #8b949e;
 	font-size: 0.64rem;
 }
 
@@ -785,5 +795,329 @@
 
 	.ideEvidence {
 		margin-top: 0.5rem;
+	}
+}
+
+/* ── Expediente · calca de Visual Studio Code ─────────────────────────── */
+
+.vscode {
+	display: flex;
+	min-height: 24rem;
+	border: 1px solid #3c3c3c;
+	border-radius: 0.6rem;
+	overflow: hidden;
+	background: #1e1e1e;
+	color: #cccccc;
+	box-shadow: 0 18px 40px rgba(2, 6, 23, 0.35);
+}
+
+.vscodeActivityBar {
+	display: flex;
+	flex-direction: column;
+	align-items: center;
+	gap: 0.35rem;
+	padding: 0.4rem 0.3rem;
+	background: #333333;
+}
+
+.vscodeActivity,
+.vscodeActivityActive {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	width: 2rem;
+	height: 2rem;
+	border: none;
+	border-left: 2px solid transparent;
+	background: transparent;
+	color: #858585;
+	cursor: pointer;
+}
+
+.vscodeActivity:hover,
+.vscodeActivity:focus-visible {
+	color: #cccccc;
+	outline: none;
+}
+
+.vscodeActivityActive {
+	border-left-color: #ffffff;
+	color: #ffffff;
+}
+
+.vscodeSidebar {
+	display: flex;
+	flex-direction: column;
+	gap: 0.15rem;
+	width: 13rem;
+	flex: none;
+	padding: 0.35rem 0.3rem;
+	overflow: auto;
+	background: #252526;
+	border-right: 1px solid #3c3c3c;
+}
+
+.vscodeSidebarHead {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	padding: 0.2rem 0.35rem;
+}
+
+.vscodeSidebarTitle {
+	margin: 0;
+	font-size: 0.64rem;
+	letter-spacing: 0.08em;
+	text-transform: uppercase;
+	color: #bbbbbb;
+}
+
+.vscodeSidebarActions {
+	display: inline-flex;
+	align-items: center;
+	gap: 0.35rem;
+	color: #9d9d9d;
+}
+
+.vscodeRoot {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+	padding: 0.2rem 0.3rem;
+	font-size: 0.72rem;
+	font-weight: 700;
+	color: #e8e8e8;
+}
+
+.vscodeRootName {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.vscodeTree {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05rem;
+	padding: 0 0 0 0.75rem;
+	margin: 0;
+	list-style: none;
+}
+
+.vscodeFileList {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05rem;
+}
+
+.vscodeChevron {
+	flex: none;
+	width: 0.7rem;
+	font-size: 0.6rem;
+	color: #9d9d9d;
+}
+
+.vscodeFolderIcon {
+	flex: none;
+	color: #dcb67a;
+}
+
+.vscodeFolderRow {
+	display: flex;
+	align-items: center;
+	gap: 0.3rem;
+	width: 100%;
+	padding: 0.18rem 0.3rem;
+	border: none;
+	border-radius: 0.2rem;
+	background: transparent;
+	font: inherit;
+	font-size: 0.72rem;
+	font-weight: 600;
+	color: #cccccc;
+	text-align: left;
+	cursor: pointer;
+}
+
+.vscodeFolderRow:hover,
+.vscodeFolderRow:focus-visible {
+	background: #2a2d2e;
+	outline: none;
+}
+
+.vscodeFolderFiles {
+	display: flex;
+	flex-direction: column;
+	gap: 0.05rem;
+	padding-left: 0.9rem;
+}
+
+.vscodeFolderName {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.vscodeFile {
+	display: flex;
+	align-items: center;
+	gap: 0.4rem;
+	width: 100%;
+	padding: 0.16rem 0.3rem;
+	border: none;
+	border-radius: 0.2rem;
+	background: transparent;
+	color: #cccccc;
+	font: inherit;
+	font-size: 0.72rem;
+	text-align: left;
+	cursor: pointer;
+}
+
+.vscodeFile:hover,
+.vscodeFile:focus-visible {
+	background: #2a2d2e;
+	outline: none;
+}
+
+.vscodeFileActive {
+	background: #37373d;
+	color: #ffffff;
+}
+
+.vscodeFileBadge {
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	flex: none;
+	min-width: 1.15rem;
+	height: 1rem;
+	padding: 0 0.15rem;
+	border: 1px solid currentColor;
+	border-radius: 0.2rem;
+	font-size: 0.52rem;
+	font-weight: 700;
+	line-height: 1;
+	letter-spacing: -0.02em;
+}
+
+.vscodeFileName {
+	min-width: 0;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+}
+
+.vscodeEvidence {
+	margin: auto 0 0;
+	padding: 0.4rem 0.35rem;
+	border-top: 1px solid #3c3c3c;
+	font-size: 0.68rem;
+	color: #9d9d9d;
+}
+
+.vscodeEditor {
+	display: flex;
+	flex-direction: column;
+	flex: 1;
+	min-width: 0;
+	background: #1e1e1e;
+}
+
+.vscodeTabs {
+	display: flex;
+	background: #252526;
+	border-bottom: 1px solid #3c3c3c;
+}
+
+.vscodeTabActive {
+	display: inline-flex;
+	align-items: center;
+	padding: 0.4rem 0.75rem;
+	border-right: 1px solid #3c3c3c;
+	border-top: 1px solid #007acc;
+	background: #1e1e1e;
+	color: #ffffff;
+	font-size: 0.72rem;
+}
+
+.vscodeBreadcrumb {
+	margin: 0;
+	padding: 0.3rem 0.75rem;
+	border-bottom: 1px solid #2b2b2b;
+	color: #9d9d9d;
+	font-size: 0.68rem;
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+}
+
+.vscodeBreadcrumb span {
+	margin: 0 0.2rem;
+	color: #6e6e6e;
+}
+
+.vscodeCode {
+	flex: 1;
+	margin: 0;
+	padding: 0.5rem 0.4rem;
+	overflow: auto;
+	background: #1e1e1e;
+	color: #d4d4d4;
+	font-family: ui-monospace, SFMono-Regular, Consolas, monospace;
+	font-size: 0.76rem;
+	line-height: 1.6;
+}
+
+.vscodeStatusbar {
+	display: flex;
+	align-items: center;
+	gap: 1rem;
+	padding: 0.2rem 0.6rem;
+	background: #007acc;
+	color: #ffffff;
+	font-size: 0.66rem;
+}
+
+.vscodeStatusSpacer {
+	flex: 1;
+}
+
+.vscodeAttach {
+	padding: 0.15rem 0.5rem;
+	border: 1px solid rgba(255, 255, 255, 0.7);
+	border-radius: 0.25rem;
+	background: rgba(255, 255, 255, 0.16);
+	color: #ffffff;
+	font: inherit;
+	font-size: 0.66rem;
+	cursor: pointer;
+}
+
+.vscodeAttach:hover:not(:disabled),
+.vscodeAttach:focus-visible:not(:disabled) {
+	background: rgba(255, 255, 255, 0.28);
+	outline: none;
+}
+
+.vscodeAttach:disabled {
+	cursor: default;
+	opacity: 0.65;
+}
+
+@media (max-width: 760px) {
+	.vscode {
+		flex-direction: column;
+	}
+
+	.vscodeActivityBar {
+		flex-direction: row;
+		justify-content: center;
+	}
+
+	.vscodeSidebar {
+		width: 100%;
+		border-right: none;
+		border-bottom: 1px solid #3c3c3c;
 	}
 }

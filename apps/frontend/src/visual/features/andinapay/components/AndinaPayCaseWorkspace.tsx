@@ -2,7 +2,6 @@ import {
 	ANDINAPAY_ARTIFACTS,
 	ANDINAPAY_ENVELOPES,
 	ANDINAPAY_KEYS,
-	ANDINAPAY_PROPOSED_CHANGE,
 	ANDINAPAY_REVISIONS,
 	type AndinaPayCommand,
 	type AndinaPayKeyId,
@@ -11,12 +10,8 @@ import {
 	applyAndinaPay,
 	createAndinaPayState,
 	decryptEnvelope,
-	diffRevisions,
-	type ExerciseReport,
 	type RepositoryFile,
 	revisionById,
-	searchRevision,
-	verifyAndinaPay,
 } from '@cybersim/exercises'
 import {
 	createContext,
@@ -29,31 +24,12 @@ import {
 	useState,
 } from 'react'
 
-import { ProgresoController } from '../../../../ecs/controllers/ProgresoController'
 import type { TipoLogGeneral } from '../../../../shared/types/EventosEnums'
 import { useAndinaPayAttempt } from '../hooks/useAndinaPayAttempt'
 import styles from '../styles/AndinaPay.module.css'
 
-interface ReportFields {
-	readonly occurred: string
-	readonly recoverable: string
-	readonly cause: string
-	readonly continuity: string
-	readonly limits: string
-}
-
-const EMPTY_REPORT: ReportFields = {
-	occurred: '',
-	recoverable: '',
-	cause: '',
-	continuity: '',
-	limits: '',
-}
-
 interface StoredExercise {
 	readonly state: AndinaPayState
-	readonly startedAt: number
-	readonly reportFields: ReportFields
 }
 
 function currentStudentKey(): string {
@@ -114,23 +90,10 @@ function loadStored(): StoredExercise | null {
 		}
 		return {
 			state: parsed.state,
-			startedAt:
-				typeof parsed.startedAt === 'number' ? parsed.startedAt : Date.now(),
-			reportFields: { ...EMPTY_REPORT, ...(parsed.reportFields ?? {}) },
 		}
 	} catch {
 		return null
 	}
-}
-
-function reportText(fields: ReportFields): string {
-	return [
-		`Qué ocurrió: ${fields.occurred.trim()}`,
-		`Datos recuperables: ${fields.recoverable.trim()}`,
-		`Causa y corrección: ${fields.cause.trim()}`,
-		`Continuidad verificada: ${fields.continuity.trim()}`,
-		`Límites y próximos pasos: ${fields.limits.trim()}`,
-	].join('\n')
 }
 
 function envelopeLabel(envelope: (typeof ANDINAPAY_ENVELOPES)[number]): string {
@@ -149,27 +112,9 @@ export interface AndinaPayBridge {
 
 interface AndinaPayContextValue {
 	readonly state: AndinaPayState
-	readonly sealed: boolean
-	readonly busy: boolean
-	readonly error: string | null
-	readonly report: ExerciseReport | null
-	readonly reportFields: ReportFields
-	readonly setReportFields: (next: ReportFields) => void
-	readonly run: (command: AndinaPayCommand) => Promise<AndinaPayState | null>
 	readonly recordEvidence: (reference: string) => Promise<void>
-	readonly verify: () => Promise<void>
-	readonly sealDiagnosis: (input: {
-		readonly claim: string
-		readonly cited: readonly string[]
-		readonly rival: string
-		readonly proposedTest: string
-		readonly scope: string
-	}) => Promise<boolean>
-	readonly submitArtifact: () => Promise<void>
-	readonly submitReport: () => Promise<void>
 	readonly completeFase1: () => void
 	readonly stepDone: () => void
-	readonly reset: () => void
 }
 
 const AndinaPayContext = createContext<AndinaPayContextValue | undefined>(
@@ -186,14 +131,10 @@ function useAndinaPay(): AndinaPayContextValue {
 
 export function AndinaPayProvider({
 	children,
-	scenarioSlug = 'andinapay-clave-expuesta',
 	bridge,
-	onCompleted,
 }: {
 	readonly children: ReactNode
-	readonly scenarioSlug?: string
 	readonly bridge?: AndinaPayBridge
-	readonly onCompleted?: () => void
 }) {
 	const initial = useRef<StoredExercise | null>(null)
 	if (initial.current === null) initial.current = loadStored()
@@ -201,26 +142,13 @@ export function AndinaPayProvider({
 	const [state, setState] = useState<AndinaPayState>(
 		() => initial.current?.state ?? createAndinaPayState(),
 	)
-	const [busy, setBusy] = useState(false)
-	const [error, setError] = useState<string | null>(null)
-	const [report, setReport] = useState<ExerciseReport | null>(null)
-	const [reportFields, setReportFields] = useState<ReportFields>(
-		initial.current?.reportFields ?? EMPTY_REPORT,
-	)
-	const startedAt = useRef(initial.current?.startedAt ?? Date.now())
 	const fase1Completada = useRef(false)
 	const attempt = useAndinaPayAttempt()
 
-	const sealed = state.sealedDiagnosis !== null
-
 	useEffect(() => {
-		const stored: StoredExercise = {
-			state,
-			startedAt: startedAt.current,
-			reportFields,
-		}
+		const stored: StoredExercise = { state }
 		localStorage.setItem(andinaPayStorageKey(), JSON.stringify(stored))
-	}, [state, reportFields])
+	}, [state])
 
 	const apply = useCallback(
 		async (
@@ -228,11 +156,7 @@ export function AndinaPayProvider({
 			command: AndinaPayCommand,
 		): Promise<AndinaPayState | null> => {
 			const outcome = await applyAndinaPay(current, command)
-			if (!outcome.ok) {
-				setError(`${outcome.code}: ${outcome.detail}`)
-				return null
-			}
-			return outcome.state
+			return outcome.ok ? outcome.state : null
 		},
 		[],
 	)
@@ -240,7 +164,6 @@ export function AndinaPayProvider({
 	const commit = useCallback(
 		async (next: AndinaPayState) => {
 			setState(next)
-			setError(null)
 			await attempt.saveRevision(next)
 		},
 		[attempt],
@@ -248,28 +171,11 @@ export function AndinaPayProvider({
 
 	const run = useCallback(
 		async (command: AndinaPayCommand) => {
-			setBusy(true)
 			const next = await apply(state, command)
 			if (next) await commit(next)
-			setBusy(false)
-			if (
-				next?.writerKey === 'recovery-v2' &&
-				next.retiredKeys.includes('legacy-demo')
-			) {
-				bridge?.onStepDone?.()
-			}
-			if (next && command.kind === 'commit_recovery') {
-				bridge?.onObjective?.(
-					3,
-					'Migrar R01/R02 a recovery-v2 y retirar legacy-demo',
-				)
-				bridge?.onLog?.(
-					'Recuperación publicada; legacy-demo retirada del servicio.',
-				)
-			}
 			return next
 		},
-		[apply, state, commit, bridge],
+		[apply, state, commit],
 	)
 
 	const recordEvidence = useCallback(
@@ -278,13 +184,6 @@ export function AndinaPayProvider({
 		},
 		[run],
 	)
-
-	const verify = useCallback(async () => {
-		setBusy(true)
-		const result = await verifyAndinaPay(state)
-		setReport(result)
-		setBusy(false)
-	}, [state])
 
 	const stepDone = useCallback(() => {
 		bridge?.onStepDone?.()
@@ -301,167 +200,14 @@ export function AndinaPayProvider({
 		bridge?.onStepDone?.()
 	}, [bridge])
 
-	const sealDiagnosis = useCallback(
-		async ({
-			claim,
-			cited,
-			rival,
-			proposedTest,
-			scope,
-		}: {
-			readonly claim: string
-			readonly cited: readonly string[]
-			readonly rival: string
-			readonly proposedTest: string
-			readonly scope: string
-		}) => {
-			setBusy(true)
-			let next = state
-			for (const reference of cited) {
-				const withEvidence = await apply(next, {
-					kind: 'record_evidence',
-					reference,
-				})
-				if (!withEvidence) {
-					setBusy(false)
-					return false
-				}
-				next = withEvidence
-			}
-			const text = [
-				`Afirmación: ${claim.trim()}`,
-				`Evidencias: ${cited.join(', ')}`,
-				`Alternativa rival: ${rival.trim()}`,
-				`Prueba propuesta: ${proposedTest.trim()}`,
-				`Alcance/no determinado: ${scope.trim()}`,
-			].join('\n')
-			const diagnosed = await apply(next, {
-				kind: 'submit_diagnosis',
-				text,
-			})
-			if (!diagnosed) {
-				setBusy(false)
-				return false
-			}
-			await attempt.saveDiagnosis(claim.trim(), cited)
-			await commit(diagnosed)
-			setBusy(false)
-			bridge?.onObjective?.(
-				2,
-				'Sellar el diagnóstico provisional con dos evidencias',
-			)
-			bridge?.onLog?.(
-				'Diagnóstico D1 sellado; vistas de intervención habilitadas.',
-			)
-			bridge?.onStepDone?.()
-			return true
-		},
-		[state, apply, attempt, commit, bridge],
-	)
-
-	const saveProgress = useCallback(async () => {
-		localStorage.setItem('slug_escenario_actual', scenarioSlug)
-		localStorage.removeItem('revision_escenario_actual')
-		localStorage.removeItem('content_hash_escenario_actual')
-		const elapsed = Math.max(
-			0,
-			Math.round((Date.now() - startedAt.current) / 1000),
-		)
-		try {
-			await ProgresoController.getInstance().guardarProgresoEstudiante(
-				true,
-				elapsed,
-				[],
-				[],
-			)
-		} catch {
-			// La partida local sigue siendo válida; el mapa se actualizará al
-			// recuperar la conexión y volver a intentar el cierre.
-		}
-		onCompleted?.()
-	}, [scenarioSlug, onCompleted])
-
-	const submitArtifact = useCallback(async () => {
-		setBusy(true)
-		const next = await apply(state, { kind: 'submit_artifact' })
-		if (!next) {
-			setBusy(false)
-			return
-		}
-		setState(next)
-		const verified = await verifyAndinaPay(next)
-		setReport(verified)
-		await attempt.deliver(next, verified)
-		bridge?.onLog?.('Artefacto entregado; controles y pruebas congelados.')
-		setBusy(false)
-	}, [state, apply, attempt, bridge])
-
-	const submitReport = useCallback(async () => {
-		setBusy(true)
-		const text = reportText(reportFields)
-		const next = await apply(state, {
-			kind: 'submit_report',
-			text,
-		})
-		if (!next) {
-			setBusy(false)
-			return
-		}
-		setState(next)
-		await attempt.recordExplanation(text)
-		bridge?.onObjective?.(4, 'Verificar B/Q/C y enviar el informe')
-		bridge?.onLog?.('Informe enviado; caso completado.', true)
-		bridge?.onStepDone?.()
-		await saveProgress()
-		setBusy(false)
-	}, [state, apply, attempt, reportFields, bridge, saveProgress])
-
-	const reset = useCallback(() => {
-		for (let index = localStorage.length - 1; index >= 0; index -= 1) {
-			const key = localStorage.key(index)
-			if (key?.startsWith('cybersim:andinapay:')) {
-				localStorage.removeItem(key)
-			}
-		}
-		window.location.reload()
-	}, [])
-
 	const value = useMemo<AndinaPayContextValue>(
 		() => ({
 			state,
-			sealed,
-			busy,
-			error,
-			report,
-			reportFields,
-			setReportFields,
-			run,
 			recordEvidence,
-			verify,
-			sealDiagnosis,
-			submitArtifact,
-			submitReport,
 			completeFase1,
 			stepDone,
-			reset,
 		}),
-		[
-			state,
-			sealed,
-			busy,
-			error,
-			report,
-			reportFields,
-			run,
-			recordEvidence,
-			verify,
-			sealDiagnosis,
-			submitArtifact,
-			submitReport,
-			completeFase1,
-			stepDone,
-			reset,
-		],
+		[state, recordEvidence, completeFase1, stepDone],
 	)
 
 	return (
@@ -475,18 +221,17 @@ function WindowPanel({ children }: { readonly children: ReactNode }) {
 	return <div className={styles.windowPanel}>{children}</div>
 }
 
-export function AndinaPayExpedienteWindow() {
+export function AndinaPayExpedienteWindow({
+	requestedMaterial,
+}: {
+	readonly requestedMaterial?: { readonly reference: string }
+}) {
 	const ctx = useAndinaPay()
 	return (
 		<WindowPanel>
 			<ExpedienteView
+				requestedMaterial={requestedMaterial}
 				state={ctx.state}
-				claim={ctx.state.sealedDiagnosis ?? ''}
-				sealed={ctx.sealed}
-				busy={ctx.busy}
-				onSeal={async (input) => {
-					await ctx.sealDiagnosis(input)
-				}}
 				onEvidence={(reference) => void ctx.recordEvidence(reference)}
 				onLocateKey={ctx.completeFase1}
 				onStepDone={ctx.stepDone}
@@ -496,13 +241,9 @@ export function AndinaPayExpedienteWindow() {
 }
 
 export function AndinaPayRepositorioWindow() {
-	const ctx = useAndinaPay()
 	return (
 		<WindowPanel>
-			<RepositorioView
-				onEvidence={(reference) => void ctx.recordEvidence(reference)}
-				onLocateKey={ctx.completeFase1}
-			/>
+			<RepositorioView />
 		</WindowPanel>
 	)
 }
@@ -518,418 +259,556 @@ export function AndinaPayBancoWindow() {
 	)
 }
 
-export function AndinaPayClavesWindow() {
-	const ctx = useAndinaPay()
-	return (
-		<WindowPanel>
-			<ClavesView
-				state={ctx.state}
-				busy={ctx.busy}
-				onCommand={(command) => void ctx.run(command)}
-			/>
-		</WindowPanel>
-	)
+const FILE_BADGES: Record<string, { label: string; color: string }> = {
+	ts: { label: 'TS', color: '#3b82f6' },
+	tsx: { label: 'TX', color: '#3b82f6' },
+	json: { label: '{ }', color: '#eab308' },
+	csv: { label: 'CSV', color: '#22c55e' },
+	log: { label: 'LOG', color: '#94a3b8' },
+	txt: { label: 'TXT', color: '#94a3b8' },
+	md: { label: 'MD', color: '#38bdf8' },
+	yml: { label: 'YML', color: '#ef4444' },
+	yaml: { label: 'YML', color: '#ef4444' },
 }
 
-export function AndinaPayComprobacionesWindow() {
-	const ctx = useAndinaPay()
-	return (
-		<WindowPanel>
-			<ComprobacionesView
-				state={ctx.state}
-				report={ctx.report}
-				busy={ctx.busy}
-				onVerify={() => void ctx.verify()}
-				onCheck={(checkId) => void ctx.run({ kind: 'run_check', checkId })}
-			/>
-		</WindowPanel>
-	)
-}
-
-export function AndinaPayInformeWindow() {
-	const ctx = useAndinaPay()
-	return (
-		<WindowPanel>
-			<InformeView
-				state={ctx.state}
-				reportFields={ctx.reportFields}
-				setReportFields={ctx.setReportFields}
-				busy={ctx.busy}
-				onArtifact={ctx.submitArtifact}
-				onReport={ctx.submitReport}
-				onReset={ctx.reset}
-				onVerify={() => void ctx.verify()}
-			/>
-		</WindowPanel>
-	)
-}
-function displayRef(reference: string): string {
-	switch (reference) {
-		case 'AP-H1':
-			return 'Versión H1 (histórica)'
-		case 'AP-H2':
-			return 'Versión H2 (literal retirado)'
-		case 'AP-H3':
-			return 'Versión H3 (actual)'
-		default:
-			return reference
+function fileBadge(name: string): { label: string; color: string } {
+	if (name === '.env' || name === '.env.example') {
+		return { label: 'ENV', color: '#eab308' }
 	}
-}
-
-function revisionTag(reference: string): string {
-	switch (reference) {
-		case 'AP-H1':
-			return 'histórica'
-		case 'AP-H2':
-			return 'literal retirado'
-		case 'AP-H3':
-			return 'actual'
-		default:
-			return reference
+	if (name === '.gitignore' || name === '.gitattributes') {
+		return { label: 'GIT', color: '#f97316' }
 	}
-}
-
-const EVIDENCE_GROUPS: readonly {
-	readonly label: string
-	readonly refs: readonly string[]
-}[] = [
-	{ label: 'Repositorio', refs: ['AP-H1', 'AP-H2', 'AP-H3'] },
-	{
-		label: 'Datos y logs',
-		refs: [
-			'logs/application.log',
-			'keys/inventory.csv',
-			'data/current-index.csv',
-			'data/partial-v1.json',
-		],
-	},
-	{
-		label: 'Aviso y custodia',
-		refs: ['incident/notice.txt', 'recovery/policy.txt'],
-	},
-	{
-		label: 'Envelopes',
-		refs: [
-			'R01/K1/v1',
-			'R02/K1/v1',
-			'R03/KI/v1',
-			'R04/K1/v1',
-			'R01/K2/v2',
-			'R02/K2/v2',
-			'R04/K2/v2',
-		],
-	},
-]
-
-function artifactContent(reference: string): string {
-	const artifact = ANDINAPAY_ARTIFACTS.find((entry) => entry.path === reference)
-	if (artifact) return artifact.lines.join('\n')
-	if (reference === 'AP-H1' || reference === 'AP-H2' || reference === 'AP-H3') {
-		const revision = revisionById(reference)
-		if (revision) {
-			return revision.files
-				.map(
-					(file) =>
-						`${file.path}\n${file.lines
-							.map((line, index) => `${index + 1}  ${line}`)
-							.join('\n')}`,
-				)
-				.join('\n\n')
+	const dot = name.lastIndexOf('.')
+	const ext = dot > 0 ? name.slice(dot + 1).toLowerCase() : ''
+	return (
+		FILE_BADGES[ext] ?? {
+			label: (ext ? ext.slice(0, 3) : 'FILE').toUpperCase(),
+			color: '#94a3b8',
 		}
+	)
+}
+
+function VsFolder() {
+	return (
+		<svg
+			className={styles.vscodeFolderIcon}
+			width="14"
+			height="14"
+			viewBox="0 0 16 16"
+			fill="none"
+			aria-hidden="true"
+		>
+			<path
+				d="M1.5 3.5h4l1 1.5h7a.5.5 0 0 1 .5.5v7a.5.5 0 0 1-.5.5h-12a.5.5 0 0 1-.5-.5v-9a.5.5 0 0 1 .5-.5Z"
+				fill="currentColor"
+				opacity="0.45"
+			/>
+		</svg>
+	)
+}
+
+/** Líneas de un material: artefacto A0, archivo del repo actual o revisión. */
+function materialLines(reference: string): readonly string[] {
+	const artifact = ANDINAPAY_ARTIFACTS.find((entry) => entry.path === reference)
+	if (artifact) return artifact.lines
+	const current = revisionById('AP-H3')
+	const file = current?.files.find((entry) => entry.path === reference)
+	if (file) return file.lines
+	const revision = revisionById(reference as AndinaPayRevisionId)
+	if (revision) {
+		return revision.files.flatMap((item) => [
+			`// ${item.path}`,
+			...item.lines,
+			'',
+		])
 	}
-	return 'Selecciona un material de la lista para leerlo.'
+	return []
 }
 
 function ExpedienteView({
+	requestedMaterial,
 	state,
-	claim,
-	sealed,
-	busy,
-	onSeal,
 	onEvidence,
 	onLocateKey,
 	onStepDone,
 }: {
+	readonly requestedMaterial?: { readonly reference: string }
 	readonly state: AndinaPayState
-	readonly claim: string
-	readonly sealed: boolean
-	readonly busy: boolean
-	readonly onSeal: (input: {
-		readonly claim: string
-		readonly cited: readonly string[]
-		readonly rival: string
-		readonly proposedTest: string
-		readonly scope: string
-	}) => Promise<void>
 	readonly onEvidence: (reference: string) => void
 	readonly onLocateKey?: () => void
 	readonly onStepDone?: () => void
 }) {
-	const [draft, setDraft] = useState({
-		claim: '',
-		rival: '',
-		proposedTest: '',
-		scope: '',
-	})
-	const [cited, setCited] = useState<readonly string[]>([])
-	const [selected, setSelected] = useState('incident/notice.txt')
-	const content = artifactContent(selected)
+	const [selected, setSelected] = useState(
+		requestedMaterial?.reference ?? 'incident/notice.txt',
+	)
+	const [collapsed, setCollapsed] = useState<ReadonlySet<string>>(new Set())
+	const lines = materialLines(selected)
 	const stepDoneRef = useRef(onStepDone)
 	stepDoneRef.current = onStepDone
 
 	useEffect(() => {
+		if (requestedMaterial) setSelected(requestedMaterial.reference)
+	}, [requestedMaterial])
+
+	useEffect(() => {
+		if (selected !== 'incident/notice.txt') return
 		markAndinaPayNoticeRead()
 		stepDoneRef.current?.()
-	}, [])
+	}, [selected])
 
-	const openArtifact = (reference: string) => {
-		setSelected(reference)
+	const toggleFolder = (folder: string) => {
+		setCollapsed((prev) => {
+			const next = new Set(prev)
+			if (next.has(folder)) {
+				next.delete(folder)
+			} else {
+				next.add(folder)
+			}
+			return next
+		})
 	}
 
-	const toggle = (reference: string) => {
-		setCited((current) =>
-			current.includes(reference)
-				? current.filter((entry) => entry !== reference)
-				: [...current, reference],
-		)
+	const folders = useMemo(() => {
+		const current = revisionById('AP-H3')
+		const entries = [
+			...ANDINAPAY_ARTIFACTS.map((artifact) => ({
+				path: artifact.path,
+				lines: artifact.lines,
+			})),
+			...(current?.files.map((file) => ({
+				path: file.path,
+				lines: file.lines,
+			})) ?? []),
+		]
+		const groups = new Map<
+			string,
+			{ path: string; lines: readonly string[] }[]
+		>()
+		for (const file of entries) {
+			const folder = file.path.split('/').slice(0, -1).join('/')
+			const bucket = groups.get(folder)
+			if (bucket) {
+				bucket.push(file)
+			} else {
+				groups.set(folder, [file])
+			}
+		}
+		return [...groups.entries()].sort(([a], [b]) => {
+			if (!a) return -1
+			if (!b) return 1
+			return a.localeCompare(b)
+		})
+	}, [])
+
+	const isRevision =
+		selected === 'AP-H1' || selected === 'AP-H2' || selected === 'AP-H3'
+	const cited = state.evidence.includes(selected)
+	const canAttach =
+		ANDINAPAY_ARTIFACTS.some((artifact) => artifact.path === selected) ||
+		isRevision
+	const language = isRevision
+		? 'TypeScript'
+		: selected.endsWith('.ts')
+			? 'TypeScript'
+			: selected.endsWith('.json')
+				? 'JSON'
+				: selected.endsWith('.csv')
+					? 'CSV'
+					: selected.endsWith('.md')
+						? 'Markdown'
+						: 'Plain Text'
+
+	const attach = () => {
+		onEvidence(selected)
+		if (selected === 'AP-H1') onLocateKey?.()
 	}
 
 	return (
-		<div className={styles.panel}>
-			<header className={styles.incidentHeader}>
-				<p className={styles.eyebrow}>Aviso recibido</p>
-				<h2 className={styles.panelTitle}>Expediente de datos</h2>
-				<p className={styles.small}>
-					Origen: canal de soporte · no autenticado. Revisa los materiales y
-					registra el hallazgo en el repositorio.
-				</p>
-			</header>
-
-			<div className={styles.grid}>
-				<section aria-labelledby="a0-title">
-					<h2 id="a0-title" className={styles.panelTitle}>
-						Materiales A0
-					</h2>
-					<ul className={styles.artifactList}>
-						{ANDINAPAY_ARTIFACTS.map((artifact) => (
-							<li key={artifact.path}>
-								<button
-									type="button"
-									className={
-										selected === artifact.path
-											? `${styles.artifactButton} ${styles.artifactButtonActive}`
-											: styles.artifactButton
-									}
-									onClick={() => openArtifact(artifact.path)}
-								>
-									{artifact.path}
-								</button>
-							</li>
-						))}
-						{(['AP-H1', 'AP-H2', 'AP-H3'] as const).map((revision) => (
-							<li key={revision}>
-								<button
-									type="button"
-									className={
-										selected === revision
-											? `${styles.artifactButton} ${styles.artifactButtonActive}`
-											: styles.artifactButton
-									}
-									onClick={() => openArtifact(revision)}
-								>
-									{displayRef(revision)}
-								</button>
-							</li>
-						))}
-					</ul>
-					<p className={styles.small}>
-						Evidencias citadas: {state.evidence.length}
-						{state.evidence.length ? ` · ${state.evidence.join(' · ')}` : ''}
-					</p>
-				</section>
-
-				<section aria-labelledby="reader-title">
-					<h2 id="reader-title" className={styles.panelTitle}>
-						{displayRef(selected)}
-					</h2>
-					<pre className={styles.codeBlock}>{content}</pre>
-					{selected === 'AP-H1' ? (
-						<button
-							type="button"
-							className={styles.button}
-							onClick={() => {
-								onEvidence('AP-H1')
-								onLocateKey?.()
-							}}
+		<div className={styles.toolShell}>
+			<div className={styles.vscode}>
+				<aside
+					className={styles.vscodeActivityBar}
+					aria-label="Barra de actividad"
+				>
+					<button
+						type="button"
+						className={styles.vscodeActivityActive}
+						title="Explorador"
+						aria-label="Explorador"
+					>
+						<svg
+							width="24"
+							height="24"
+							viewBox="0 0 24 24"
+							fill="none"
+							aria-hidden="true"
 						>
-							Adjuntar Versión H1 al expediente
-						</button>
-					) : (
-						<button
-							type="button"
-							className={styles.button}
-							onClick={() => onEvidence(selected)}
+							<path
+								d="M8 3h5.5L17 6.5V19a1 1 0 0 1-1 1H8a1 1 0 0 1-1-1V4a1 1 0 0 1 1-1Z"
+								fill="currentColor"
+							/>
+							<path
+								d="M4 7h3.5v14H4a1 1 0 0 1-1-1V8a1 1 0 0 1 1-1Z"
+								fill="currentColor"
+								opacity="0.5"
+							/>
+						</svg>
+					</button>
+					<button
+						type="button"
+						className={styles.vscodeActivity}
+						title="Buscar"
+						aria-label="Buscar"
+					>
+						<svg
+							width="22"
+							height="22"
+							viewBox="0 0 24 24"
+							fill="none"
+							aria-hidden="true"
 						>
-							Citar esta evidencia
-						</button>
-					)}
-				</section>
-			</div>
+							<circle
+								cx="10.5"
+								cy="10.5"
+								r="5.5"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+							<path
+								d="m15 15 4.5 4.5"
+								stroke="currentColor"
+								strokeWidth="1.3"
+								strokeLinecap="round"
+							/>
+						</svg>
+					</button>
+					<button
+						type="button"
+						className={styles.vscodeActivity}
+						title="Control de código fuente"
+						aria-label="Control de código fuente"
+					>
+						<svg
+							width="22"
+							height="22"
+							viewBox="0 0 24 24"
+							fill="none"
+							aria-hidden="true"
+						>
+							<circle
+								cx="6.5"
+								cy="5.5"
+								r="2"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+							<circle
+								cx="6.5"
+								cy="18.5"
+								r="2"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+							<circle
+								cx="17"
+								cy="9"
+								r="2"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+							<path
+								d="M6.5 7.5v9M17 11c-4 0-6.5-1.4-7.5-3M17 7c-4 0-6.5 1.4-7.5 3"
+								stroke="currentColor"
+								strokeWidth="1.3"
+								strokeLinecap="round"
+							/>
+						</svg>
+					</button>
+					<button
+						type="button"
+						className={styles.vscodeActivity}
+						title="Ejecutar y depurar"
+						aria-label="Ejecutar y depurar"
+					>
+						<svg
+							width="22"
+							height="22"
+							viewBox="0 0 24 24"
+							fill="none"
+							aria-hidden="true"
+						>
+							<path
+								d="M8 5v14l11-7L8 5Z"
+								stroke="currentColor"
+								strokeWidth="1.3"
+								strokeLinejoin="round"
+							/>
+						</svg>
+					</button>
+					<button
+						type="button"
+						className={styles.vscodeActivity}
+						title="Extensiones"
+						aria-label="Extensiones"
+					>
+						<svg
+							width="22"
+							height="22"
+							viewBox="0 0 24 24"
+							fill="none"
+							aria-hidden="true"
+						>
+							<rect
+								x="4"
+								y="4"
+								width="6.5"
+								height="6.5"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+							<rect
+								x="13.5"
+								y="4"
+								width="6.5"
+								height="6.5"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+							<rect
+								x="4"
+								y="13.5"
+								width="6.5"
+								height="6.5"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+							<rect
+								x="13.5"
+								y="13.5"
+								width="6.5"
+								height="6.5"
+								stroke="currentColor"
+								strokeWidth="1.3"
+							/>
+						</svg>
+					</button>
+				</aside>
 
-			<section aria-labelledby="d1-title" style={{ marginTop: '1.25rem' }}>
-				<h2 id="d1-title" className={styles.panelTitle}>
-					Diagnóstico D1
-				</h2>
-				{sealed ? (
-					<>
-						<p className={styles.hint}>Diagnóstico sellado; no se reescribe.</p>
-						<pre className={styles.codeBlock}>{claim}</pre>
-					</>
-				) : (
-					<>
-						<p className={styles.hint}>
-							No necesitas acertar para avanzar. D1 pide: qué encontraste, dos
-							evidencias, una explicación rival, una prueba y lo que sigue sin
-							saberse.
-						</p>
-						<label className={styles.label} htmlFor="d1-claim">
-							1. ¿Qué encontraste?
-						</label>
-						<textarea
-							id="d1-claim"
-							className={styles.textarea}
-							rows={3}
-							placeholder="Ej.: La clave legacy-demo de la versión H1 cifra R01 y R02; la versión H3 eliminó el literal pero no rotó la clave."
-							value={draft.claim}
-							onChange={(event) =>
-								setDraft((current) => ({
-									...current,
-									claim: event.target.value,
-								}))
-							}
-						/>
-						<p className={styles.label}>2. Elige dos evidencias</p>
-						<div className={styles.evidenceGroups}>
-							{EVIDENCE_GROUPS.map((group) => (
-								<div key={group.label} className={styles.evidenceGroup}>
-									<strong>{group.label}</strong>
-									<div className={styles.checkboxRow}>
-										{group.refs.map((reference) => (
-											<label key={reference}>
-												<input
-													type="checkbox"
-													checked={cited.includes(reference)}
-													onChange={() => toggle(reference)}
-												/>
-												{displayRef(reference)}
-											</label>
-										))}
-									</div>
-								</div>
-							))}
-						</div>
-						<label className={styles.label} htmlFor="d1-rival">
-							3. ¿Qué otra explicación descartas?
-						</label>
-						<textarea
-							id="d1-rival"
-							className={styles.textarea}
-							rows={2}
-							placeholder="Ej.: El identificador público merchant-demo-17 no explica el descifrado."
-							value={draft.rival}
-							onChange={(event) =>
-								setDraft((current) => ({
-									...current,
-									rival: event.target.value,
-								}))
-							}
-						/>
-						<label className={styles.label} htmlFor="d1-test">
-							4. ¿Qué prueba propondrías?
-						</label>
-						<textarea
-							id="d1-test"
-							className={styles.textarea}
-							rows={2}
-							placeholder="Ej.: Descifrar R01 con legacy-demo y comprobar que R03 falla con la misma clave."
-							value={draft.proposedTest}
-							onChange={(event) =>
-								setDraft((current) => ({
-									...current,
-									proposedTest: event.target.value,
-								}))
-							}
-						/>
-						<label className={styles.label} htmlFor="d1-scope">
-							5. ¿Qué sigue sin saberse?
-						</label>
-						<textarea
-							id="d1-scope"
-							className={styles.textarea}
-							rows={2}
-							placeholder="Ej.: Se demuestra la lectura de R01/R02; no se conoce el vector de fuga ni quién usó la clave."
-							value={draft.scope}
-							onChange={(event) =>
-								setDraft((current) => ({
-									...current,
-									scope: event.target.value,
-								}))
-							}
-						/>
-						<button
-							type="button"
-							className={styles.button}
-							disabled={
-								busy ||
-								!draft.claim.trim() ||
-								!draft.rival.trim() ||
-								!draft.proposedTest.trim() ||
-								!draft.scope.trim() ||
-								cited.length < 2
-							}
-							onClick={() =>
-								void onSeal({
-									claim: draft.claim,
-									cited,
-									rival: draft.rival,
-									proposedTest: draft.proposedTest,
-									scope: draft.scope,
+				<aside className={styles.vscodeSidebar}>
+					<div className={styles.vscodeSidebarHead}>
+						<span className={styles.vscodeSidebarTitle}>Explorador</span>
+						<span className={styles.vscodeSidebarActions} aria-hidden="true">
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 16 16"
+								fill="none"
+								aria-hidden="true"
+							>
+								<path
+									d="M8 3v10M3 8h10"
+									stroke="currentColor"
+									strokeWidth="1.3"
+									strokeLinecap="round"
+								/>
+							</svg>
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 16 16"
+								fill="none"
+								aria-hidden="true"
+							>
+								<path
+									d="M2 4.5h4l1 1.5h7v7.5H2V4.5Z"
+									stroke="currentColor"
+									strokeWidth="1.1"
+									strokeLinejoin="round"
+								/>
+							</svg>
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 16 16"
+								fill="none"
+								aria-hidden="true"
+							>
+								<path
+									d="M13 8a5 5 0 1 1-1.5-3.5"
+									stroke="currentColor"
+									strokeWidth="1.2"
+									strokeLinecap="round"
+								/>
+								<path
+									d="M13 2v3h-3"
+									stroke="currentColor"
+									strokeWidth="1.2"
+									strokeLinecap="round"
+									strokeLinejoin="round"
+								/>
+							</svg>
+						</span>
+					</div>
+
+					<button
+						type="button"
+						className={styles.vscodeRoot}
+						onClick={() => toggleFolder('__root__')}
+					>
+						<span className={styles.vscodeChevron}>
+							{collapsed.has('__root__') ? '▸' : '▾'}
+						</span>
+						<VsFolder />
+						<span className={styles.vscodeRootName}>EXPEDIENTE-ANDINAPAY</span>
+					</button>
+
+					{!collapsed.has('__root__') ? (
+						<div className={styles.vscodeTree}>
+							{folders.map(([folder, entries]) => {
+								const isCollapsed = collapsed.has(folder)
+								const fileButtons = entries.map((file) => {
+									const name = file.path.split('/').pop() ?? file.path
+									const badge = fileBadge(name)
+									return (
+										<button
+											key={file.path}
+											type="button"
+											className={
+												selected === file.path
+													? `${styles.vscodeFile} ${styles.vscodeFileActive}`
+													: styles.vscodeFile
+											}
+											aria-current={selected === file.path ? 'true' : undefined}
+											onClick={() => setSelected(file.path)}
+										>
+											<span
+												className={styles.vscodeFileBadge}
+												style={{
+													color: badge.color,
+													borderColor: badge.color,
+												}}
+												aria-hidden="true"
+											>
+												{badge.label}
+											</span>
+											<span className={styles.vscodeFileName}>{name}</span>
+										</button>
+									)
 								})
-							}
+
+								if (!folder) {
+									return (
+										<div key="__rootfiles" className={styles.vscodeFileList}>
+											{fileButtons}
+										</div>
+									)
+								}
+
+								return (
+									<div key={folder}>
+										<button
+											type="button"
+											className={styles.vscodeFolderRow}
+											onClick={() => toggleFolder(folder)}
+										>
+											<span className={styles.vscodeChevron}>
+												{isCollapsed ? '▸' : '▾'}
+											</span>
+											<VsFolder />
+											<span className={styles.vscodeFolderName}>{folder}</span>
+										</button>
+										{!isCollapsed ? (
+											<div className={styles.vscodeFolderFiles}>
+												{fileButtons}
+											</div>
+										) : null}
+									</div>
+								)
+							})}
+						</div>
+					) : null}
+
+					<p className={styles.vscodeEvidence}>
+						Evidencias citadas: {state.evidence.length}
+					</p>
+				</aside>
+
+				<div className={styles.vscodeEditor}>
+					<div className={styles.vscodeTabs}>
+						<span className={styles.vscodeTabActive}>
+							{selected.split('/').pop() ?? selected}
+						</span>
+					</div>
+					<p className={styles.vscodeBreadcrumb}>
+						EXPEDIENTE-ANDINAPAY <span aria-hidden="true">›</span>{' '}
+						{selected.split('/').join(' › ')}
+					</p>
+					<section
+						className={styles.vscodeCode}
+						aria-label={`Contenido de ${selected}`}
+					>
+						{lines.map((line, index) => (
+							<div
+								// biome-ignore lint/suspicious/noArrayIndexKey: las líneas son posicionales y estáticas por material.
+								key={`${selected}-${index}`}
+								className={styles.codeLine}
+							>
+								<span className={styles.lineNumber}>{index + 1}</span>
+								<span>{line || '\u00a0'}</span>
+							</div>
+						))}
+					</section>
+					<div className={styles.vscodeStatusbar}>
+						<span>UTF-8</span>
+						<span>{language}</span>
+						<span>Ln {lines.length}</span>
+						<span className={styles.vscodeStatusSpacer} />
+						<button
+							type="button"
+							className={styles.vscodeAttach}
+							disabled={cited || !canAttach}
+							onClick={attach}
 						>
-							Sellar diagnóstico D1
+							{cited
+								? 'Adjuntado al expediente'
+								: !canAttach
+									? 'Solo lectura'
+									: selected === 'AP-H1'
+										? 'Adjuntar H1 al expediente'
+										: 'Adjuntar al expediente'}
 						</button>
-					</>
-				)}
-			</section>
+					</div>
+				</div>
+			</div>
 		</div>
 	)
 }
-function RepositorioView({
-	onEvidence,
-	onLocateKey,
-}: {
-	readonly onEvidence: (reference: string) => void
-	readonly onLocateKey?: () => void
-}) {
-	const [revision, setRevision] = useState<AndinaPayRevisionId>('AP-H1')
-	const [selectedPath, setSelectedPath] = useState('src/crypto-config.ts')
-	const [query, setQuery] = useState('')
-	const [diffFrom, setDiffFrom] = useState<AndinaPayRevisionId>('AP-H1')
-	const [diffTo, setDiffTo] = useState<AndinaPayRevisionId>('AP-H2')
-	const [diff, setDiff] = useState<
-		readonly ReturnType<typeof diffRevisions>[number][]
-	>([])
+function RepositorioView() {
+	const [revision, setRevision] = useState<AndinaPayRevisionId>('AP-H3')
+	const [selectedPath, setSelectedPath] = useState('src/config.ts')
+	const [branchOpen, setBranchOpen] = useState(false)
+	const branchRef = useRef<HTMLDivElement>(null)
+
+	useEffect(() => {
+		if (!branchOpen) return
+		const onPointerDown = (event: PointerEvent) => {
+			if (
+				branchRef.current &&
+				!branchRef.current.contains(event.target as Node)
+			) {
+				setBranchOpen(false)
+			}
+		}
+		document.addEventListener('pointerdown', onPointerDown)
+		return () => document.removeEventListener('pointerdown', onPointerDown)
+	}, [branchOpen])
 
 	const current = revisionById(revision)
 	const selected =
 		current?.files.find((file) => file.path === selectedPath) ??
 		current?.files[0]
-	const shortId = revision.replace('AP-', '')
-	const matches = useMemo(
-		() => searchRevision(revision, query),
-		[revision, query],
-	)
+	const shortId = revision.replace('AP-', '').toLowerCase()
+
 	const folders = useMemo(() => {
 		const groups = new Map<string, RepositoryFile[]>()
 		for (const file of current?.files ?? []) {
@@ -944,25 +823,197 @@ function RepositorioView({
 		return [...groups.entries()]
 	}, [current])
 
+	const switchRevision = (next: AndinaPayRevisionId) => {
+		setRevision(next)
+		const files = revisionById(next)?.files ?? []
+		if (!files.some((file) => file.path === selectedPath)) {
+			setSelectedPath(
+				files.find((file) => file.path === 'src/config.ts')?.path ??
+					files[0]?.path ??
+					'',
+			)
+		}
+	}
+
 	return (
-		<div className={styles.panel}>
+		<div className={styles.toolShell}>
 			<div className={styles.ide}>
-				<div className={styles.ideTitlebar}>
-					<span className={styles.ideDots} aria-hidden="true">
-						<span />
-						<span />
-						<span />
-					</span>
-					<span className={styles.ideTitle}>
-						andinapay — {selected?.path ?? 'repositorio'} —{' '}
-						{displayRef(revision)}
-					</span>
-				</div>
+				<header className={styles.ideHeader}>
+					<img
+						className={styles.ideRepoIcon}
+						src="/assets/pictures/github-icon.webp"
+						alt=""
+						width={16}
+						height={16}
+					/>
+					<span className={styles.ideRepoOwner}>andinapay</span>
+					<span className={styles.ideRepoSlash}>/</span>
+					<span className={styles.ideRepoName}>api</span>
+					<span className={styles.ideRepoVisibility}>Private</span>
+				</header>
+				<nav
+					className={styles.ideNavTabs}
+					aria-label="Secciones del repositorio"
+				>
+					<span className={styles.ideNavTabActive}>Code</span>
+					<span className={styles.ideNavTab}>Issues</span>
+					<span className={styles.ideNavTab}>Pull requests</span>
+					<span className={styles.ideNavTab}>Actions</span>
+				</nav>
 
 				<div className={styles.ideBody}>
 					<aside className={styles.ideSidebar}>
-						<p className={styles.ideSidebarTitle}>Explorador</p>
-						<p className={styles.ideRepo}>andinapay</p>
+						<p className={styles.ideSidebarTitle}>Files</p>
+						<div className={styles.ideBranchRow} ref={branchRef}>
+							<svg
+								width="14"
+								height="14"
+								viewBox="0 0 16 16"
+								fill="none"
+								aria-hidden="true"
+							>
+								<circle
+									cx="4.5"
+									cy="3.5"
+									r="1.5"
+									stroke="currentColor"
+									strokeWidth="1.1"
+								/>
+								<circle
+									cx="4.5"
+									cy="12.5"
+									r="1.5"
+									stroke="currentColor"
+									strokeWidth="1.1"
+								/>
+								<circle
+									cx="11"
+									cy="6"
+									r="1.5"
+									stroke="currentColor"
+									strokeWidth="1.1"
+								/>
+								<path
+									d="M4.5 5v6M11 7.5c-2.8 0-4-1-4.5-2M11 4.5c-2.8 0-4 1-4.5 2"
+									stroke="currentColor"
+									strokeWidth="1.1"
+									strokeLinecap="round"
+								/>
+							</svg>
+							<button
+								type="button"
+								className={styles.ideBranchButton}
+								onClick={() => setBranchOpen((open) => !open)}
+								aria-haspopup="listbox"
+								aria-expanded={branchOpen}
+							>
+								<span className={styles.ideBranchCurrent}>
+									{revision === 'AP-H3' ? 'main' : revision.replace('AP-', 'H')}
+								</span>
+								<svg
+									width="10"
+									height="10"
+									viewBox="0 0 16 16"
+									fill="none"
+									aria-hidden="true"
+								>
+									<path
+										d="m4 6 4 4 4-4"
+										stroke="currentColor"
+										strokeWidth="1.6"
+										strokeLinecap="round"
+										strokeLinejoin="round"
+									/>
+								</svg>
+							</button>
+
+							{branchOpen ? (
+								<div className={styles.ideBranchMenu} role="listbox">
+									<p className={styles.ideBranchGroup}>Rama</p>
+									<button
+										type="button"
+										className={
+											revision === 'AP-H3'
+												? `${styles.ideBranchItem} ${styles.ideBranchItemActive}`
+												: styles.ideBranchItem
+										}
+										role="option"
+										aria-selected={revision === 'AP-H3'}
+										onClick={() => {
+											switchRevision('AP-H3')
+											setBranchOpen(false)
+										}}
+									>
+										<svg
+											width="12"
+											height="12"
+											viewBox="0 0 16 16"
+											fill="none"
+											aria-hidden="true"
+										>
+											<circle
+												cx="4.5"
+												cy="3.5"
+												r="1.5"
+												stroke="currentColor"
+												strokeWidth="1.1"
+											/>
+											<circle
+												cx="4.5"
+												cy="12.5"
+												r="1.5"
+												stroke="currentColor"
+												strokeWidth="1.1"
+											/>
+											<circle
+												cx="11"
+												cy="6"
+												r="1.5"
+												stroke="currentColor"
+												strokeWidth="1.1"
+											/>
+											<path
+												d="M4.5 5v6M11 7.5c-2.8 0-4-1-4.5-2M11 4.5c-2.8 0-4 1-4.5 2"
+												stroke="currentColor"
+												strokeWidth="1.1"
+												strokeLinecap="round"
+											/>
+										</svg>
+										<span className={styles.ideBranchName}>main</span>
+									</button>
+
+									<p className={styles.ideBranchGroup}>Historial</p>
+									{[...ANDINAPAY_REVISIONS]
+										.reverse()
+										.filter((entry) => entry.id !== 'AP-H3')
+										.map((entry) => (
+											<button
+												key={entry.id}
+												type="button"
+												className={
+													revision === entry.id
+														? `${styles.ideBranchItem} ${styles.ideBranchItemActive}`
+														: styles.ideBranchItem
+												}
+												role="option"
+												aria-selected={revision === entry.id}
+												onClick={() => {
+													switchRevision(entry.id)
+													setBranchOpen(false)
+												}}
+											>
+												<span className={styles.ideCommitMessage}>
+													{entry.message}
+												</span>
+												<code className={styles.ideCommitHash}>
+													{entry.hash}
+												</code>
+											</button>
+										))}
+								</div>
+							) : null}
+						</div>
+
 						<ul className={styles.ideTree}>
 							{folders.map(([folder, entries]) => (
 								<li key={folder || 'root'}>
@@ -972,9 +1023,8 @@ function RepositorioView({
 									<ul className={styles.ideTreeFiles}>
 										{entries.map((file) => {
 											const name = file.path.split('/').pop() ?? file.path
-											const extension = name.includes('.')
-												? (name.split('.').pop() ?? '')
-												: ''
+											const dot = name.lastIndexOf('.')
+											const extension = dot > 0 ? name.slice(dot + 1) : ''
 											return (
 												<li key={file.path}>
 													<button
@@ -994,7 +1044,9 @@ function RepositorioView({
 															data-ext={extension}
 															aria-hidden="true"
 														>
-															{extension.slice(0, 2).toUpperCase()}
+															{extension
+																? extension.slice(0, 2).toUpperCase()
+																: name.slice(1, 2).toUpperCase()}
 														</span>
 														{name}
 													</button>
@@ -1005,62 +1057,32 @@ function RepositorioView({
 								</li>
 							))}
 						</ul>
-
-						<p className={styles.ideSidebarTitle}>Historial</p>
-						<ol className={styles.ideHistory}>
-							{[...ANDINAPAY_REVISIONS].reverse().map((entry) => (
-								<li key={entry.id}>
-									<button
-										type="button"
-										className={
-											entry.id === revision
-												? `${styles.ideCommit} ${styles.ideCommitActive}`
-												: styles.ideCommit
-										}
-										onClick={() => {
-											setRevision(entry.id)
-											setSelectedPath(entry.files[0]?.path ?? '')
-										}}
-									>
-										<span className={styles.ideCommitDot} aria-hidden="true" />
-										<span className={styles.ideCommitBody}>
-											<span className={styles.ideCommitHead}>
-												<code>{entry.id.replace('AP-', '')}</code>
-												<span>{entry.message}</span>
-											</span>
-											<span className={styles.ideCommitMeta}>
-												{entry.date} · {revisionTag(entry.id)}
-											</span>
-										</span>
-									</button>
-								</li>
-							))}
-						</ol>
-
-						<button
-							type="button"
-							className={styles.ideEvidence}
-							onClick={() => {
-								onEvidence(revision)
-								if (revision === 'AP-H1') onLocateKey?.()
-							}}
-						>
-							+ Adjuntar {displayRef(revision)} al expediente
-						</button>
 					</aside>
 
 					<div className={styles.ideMain}>
-						<div className={styles.ideTabs}>
-							<span className={styles.ideTabActive}>
+						<div className={styles.ideRepoCard}>
+							<span className={styles.ideRepoAvatar} aria-hidden="true">
+								A
+							</span>
+							<span className={styles.ideRepoCommitMsg}>
+								{current?.message}
+							</span>
+							<code className={styles.ideRepoHash}>{shortId}</code>
+							<span className={styles.ideRepoDate}>{current?.date}</span>
+						</div>
+
+						<div className={styles.ideFileHeader}>
+							<span className={styles.ideFileHeaderName}>
 								{selected
 									? (selected.path.split('/').pop() ?? selected.path)
 									: 'Sin archivo'}
-								<span className={styles.ideTabBadge}>{shortId}</span>
+							</span>
+							<span className={styles.ideFileHeaderMeta}>
+								{selected?.lines.length ?? 0} líneas
 							</span>
 						</div>
 						<p className={styles.ideBreadcrumb}>
-							andinapay <span aria-hidden="true">›</span>{' '}
-							{selected?.path.split('/').join(' › ')}
+							andinapay / {selected?.path.split('/').join(' / ')}
 						</p>
 						<section
 							className={styles.ideCode}
@@ -1073,150 +1095,31 @@ function RepositorioView({
 									className={styles.codeLine}
 								>
 									<span className={styles.lineNumber}>{index + 1}</span>
-									<span>{query.trim() ? highlight(line, query) : line}</span>
+									<span>{line || '\u00a0'}</span>
 								</div>
 							))}
 						</section>
 						<div className={styles.ideStatusbar}>
-							<span>main</span>
+							<span>
+								{revision === 'AP-H3' ? 'main' : revision.replace('AP-', 'H')}
+							</span>
 							<span>
 								{shortId} · {current?.date}
 							</span>
 							<span>{selected?.lines.length ?? 0} líneas</span>
 							<span>
-								{selected?.path.endsWith('.ts') ? 'TypeScript' : 'Plain Text'} ·
-								UTF-8
+								{selected?.path.endsWith('.ts')
+									? 'TypeScript'
+									: selected?.path.endsWith('.json')
+										? 'JSON'
+										: 'Plain Text'}{' '}
+								· UTF-8
 							</span>
 						</div>
 					</div>
 				</div>
 			</div>
-
-			<section className={styles.idePanel}>
-				<p className={styles.idePanelTitle}>Buscar en el historial</p>
-				<div className={styles.searchRow}>
-					<input
-						className={styles.searchInput}
-						placeholder="Búsqueda literal (por ejemplo KEY_HEX)"
-						value={query}
-						onChange={(event) => setQuery(event.target.value)}
-						aria-label="Búsqueda literal en el repositorio"
-					/>
-					<span className={styles.badge}>
-						{matches.length} coincidencia{matches.length === 1 ? '' : 's'}
-					</span>
-				</div>
-				{matches.length ? (
-					<ul className={styles.ideResults}>
-						{matches.map((match) => (
-							<li key={`${match.path}-${match.line}`}>
-								<button
-									type="button"
-									className={styles.ideResult}
-									onClick={() => setSelectedPath(match.path)}
-								>
-									<span className={styles.ideResultPath}>
-										{match.path}:{match.line}
-									</span>
-									<code>{highlight(match.text, query)}</code>
-								</button>
-							</li>
-						))}
-					</ul>
-				) : null}
-			</section>
-
-			<section className={styles.idePanel}>
-				<p className={styles.idePanelTitle}>Comparar revisiones</p>
-				<div className={styles.inline}>
-					<label className={styles.label} htmlFor="diff-from">
-						Desde
-					</label>
-					<select
-						id="diff-from"
-						className={styles.select}
-						style={{ width: 'auto' }}
-						value={diffFrom}
-						onChange={(event) =>
-							setDiffFrom(event.target.value as AndinaPayRevisionId)
-						}
-					>
-						{ANDINAPAY_REVISIONS.map((entry) => (
-							<option key={entry.id} value={entry.id}>
-								{displayRef(entry.id)}
-							</option>
-						))}
-					</select>
-					<label className={styles.label} htmlFor="diff-to">
-						Hasta
-					</label>
-					<select
-						id="diff-to"
-						className={styles.select}
-						style={{ width: 'auto' }}
-						value={diffTo}
-						onChange={(event) =>
-							setDiffTo(event.target.value as AndinaPayRevisionId)
-						}
-					>
-						{ANDINAPAY_REVISIONS.map((entry) => (
-							<option key={entry.id} value={entry.id}>
-								{displayRef(entry.id)}
-							</option>
-						))}
-					</select>
-					<button
-						type="button"
-						className={styles.button}
-						onClick={() => setDiff(diffRevisions(diffFrom, diffTo))}
-					>
-						Ver diferencias
-					</button>
-				</div>
-				{diff.length ? (
-					<div className={styles.ideDiff}>
-						{diff.map((entry) => (
-							<div key={entry.path} className={styles.statusCard}>
-								<strong>{entry.path}</strong>
-								{entry.removed.map((line) => (
-									<div key={`removed-${line}`} className={styles.fail}>
-										− {line}
-									</div>
-								))}
-								{entry.added.map((line) => (
-									<div key={`added-${line}`} className={styles.pass}>
-										+ {line}
-									</div>
-								))}
-							</div>
-						))}
-					</div>
-				) : null}
-			</section>
-
-			<div className={styles.footerNotice}>
-				Cambio propuesto para revisión:{' '}
-				<code>{ANDINAPAY_PROPOSED_CHANGE.path}</code> contiene la misma
-				asignación de <code>KEY_HEX</code>. Un escaneo que solo mira HEAD no lo
-				detecta; la prevención debe cubrir historial y cambios nuevos.
-			</div>
 		</div>
-	)
-}
-
-function highlight(text: string, query: string) {
-	const needle = query.trim()
-	if (!needle) return text
-	const index = text.toLowerCase().indexOf(needle.toLowerCase())
-	if (index < 0) return text
-	return (
-		<>
-			{text.slice(0, index)}
-			<span className={styles.match}>
-				{text.slice(index, index + needle.length)}
-			</span>
-			{text.slice(index + needle.length)}
-		</>
 	)
 }
 
@@ -1329,493 +1232,6 @@ function BancoView({
 				Los registros R01 y R02 se leen con K1; R03 usa KI. La clave K2 no se
 				muestra en el repositorio ni en los logs del modelo.
 			</p>
-		</div>
-	)
-}
-
-function ClavesView({
-	state,
-	busy,
-	onCommand,
-}: {
-	readonly state: AndinaPayState
-	readonly busy: boolean
-	readonly onCommand: (command: AndinaPayCommand) => void
-}) {
-	const [keySource, setKeySource] = useState<
-		'restricted-key-service' | 'restricted-runtime-file'
-	>('restricted-key-service')
-	const [preventionScope, setPreventionScope] = useState<
-		'head-only' | 'history-and-new-diff'
-	>('head-only')
-	const [preventionPolicy, setPreventionPolicy] = useState<
-		'silent-bypass' | 'review-required'
-	>('silent-bypass')
-
-	return (
-		<div className={styles.panel}>
-			<p className={styles.panelLead}>
-				Configura la custodia y migra los registros sin perder la lectura
-				legítima. Primero prepara K2; retirar K1 antes de migrar rompe la
-				función legítima.
-			</p>
-
-			<div className={styles.statusGrid}>
-				<div className={styles.statusCard}>
-					<strong>Índice actual</strong>
-					{Object.entries(state.index).map(([record, ref]) => (
-						<div key={record}>
-							{record}: {ref.keyId}/v{ref.version}
-						</div>
-					))}
-				</div>
-				<div className={styles.statusCard}>
-					<strong>Custodia</strong>
-					<div>Fuente: {state.keySource ?? 'sin configurar'}</div>
-					<div>Writer: {state.writerKey}</div>
-					<div>App payments: {state.appPaymentsKey}</div>
-				</div>
-				<div className={styles.statusCard}>
-					<strong>Staged</strong>
-					<div>
-						{state.staged
-							? Object.entries(state.staged)
-									.map(
-										([record, ref]) =>
-											`${record}:${ref?.keyId}/v${ref?.version}`,
-									)
-									.join(' · ')
-							: 'sin filas preparadas'}
-					</div>
-					<div>
-						K2:{' '}
-						{state.stagedKeys.includes('recovery-v2')
-							? 'preparada'
-							: 'no preparada'}
-					</div>
-					<div>Retiradas: {state.retiredKeys.join(', ') || 'ninguna'}</div>
-				</div>
-				<div className={styles.statusCard}>
-					<strong>Prevención</strong>
-					<div>Alcance: {state.prevention.scope}</div>
-					<div>Excepciones: {state.prevention.exceptionPolicy}</div>
-				</div>
-			</div>
-
-			<div className={styles.actions}>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={busy}
-					onClick={() => onCommand({ kind: 'stage_key', keyId: 'recovery-v2' })}
-				>
-					Preparar K2 para migración
-				</button>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={busy}
-					onClick={() =>
-						onCommand({ kind: 'rekey_records', records: ['R01', 'R02'] })
-					}
-				>
-					Recifrar R01 y R02 en staged
-				</button>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={busy}
-					onClick={() => onCommand({ kind: 'commit_recovery' })}
-				>
-					Publicar recuperación
-				</button>
-			</div>
-
-			<div className={styles.fieldGrid}>
-				<label className={styles.label} htmlFor="key-source">
-					Fuente de clave restringida
-					<select
-						id="key-source"
-						className={styles.select}
-						value={keySource}
-						onChange={(event) =>
-							setKeySource(
-								event.target.value as
-									| 'restricted-key-service'
-									| 'restricted-runtime-file',
-							)
-						}
-					>
-						<option value="restricted-key-service">
-							restricted-key-service
-						</option>
-						<option value="restricted-runtime-file">
-							restricted-runtime-file
-						</option>
-					</select>
-				</label>
-				<div className={styles.inline} style={{ alignItems: 'end' }}>
-					<button
-						type="button"
-						className={styles.button}
-						disabled={busy}
-						onClick={() =>
-							onCommand({ kind: 'set_key_source', source: keySource })
-						}
-					>
-						Fijar fuente de clave
-					</button>
-				</div>
-			</div>
-
-			<div className={styles.fieldGrid} style={{ marginTop: '0.75rem' }}>
-				<label className={styles.label} htmlFor="prevention-scope">
-					Alcance del escaneo
-					<select
-						id="prevention-scope"
-						className={styles.select}
-						value={preventionScope}
-						onChange={(event) =>
-							setPreventionScope(
-								event.target.value as 'head-only' | 'history-and-new-diff',
-							)
-						}
-					>
-						<option value="head-only">head-only</option>
-						<option value="history-and-new-diff">history-and-new-diff</option>
-					</select>
-				</label>
-				<label className={styles.label} htmlFor="prevention-policy">
-					Política de excepciones
-					<select
-						id="prevention-policy"
-						className={styles.select}
-						value={preventionPolicy}
-						onChange={(event) =>
-							setPreventionPolicy(
-								event.target.value as 'silent-bypass' | 'review-required',
-							)
-						}
-					>
-						<option value="silent-bypass">silent-bypass</option>
-						<option value="review-required">review-required</option>
-					</select>
-				</label>
-				<div className={styles.inline} style={{ alignItems: 'end' }}>
-					<button
-						type="button"
-						className={styles.button}
-						disabled={busy}
-						onClick={() =>
-							onCommand({
-								kind: 'configure_prevention',
-								scope: preventionScope,
-								exceptionPolicy: preventionPolicy,
-							})
-						}
-					>
-						Configurar prevención
-					</button>
-				</div>
-			</div>
-
-			<div className={styles.actions} style={{ marginTop: '1.25rem' }}>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={busy}
-					onClick={() =>
-						onCommand({ kind: 'retire_key_early', keyId: 'legacy-demo' })
-					}
-				>
-					Contraprueba: retirar K1 temprano
-				</button>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={busy}
-					onClick={() =>
-						onCommand({
-							kind: 'restore_key_for_recovery',
-							keyId: 'legacy-demo',
-						})
-					}
-				>
-					Restaurar K1 para recuperación
-				</button>
-			</div>
-			<p className={styles.small}>
-				Retirar K1 antes de migrar deja R01/R02 ilegibles: la contraprueba
-				existe para observar el fallo, no para declarar éxito.
-			</p>
-		</div>
-	)
-}
-
-function ComprobacionesView({
-	state,
-	report,
-	busy,
-	onVerify,
-	onCheck,
-}: {
-	readonly state: AndinaPayState
-	readonly report: ExerciseReport | null
-	readonly busy: boolean
-	readonly onVerify: () => void
-	readonly onCheck: (checkId: string) => void
-}) {
-	return (
-		<div className={styles.panel}>
-			<p className={styles.panelLead}>
-				Las comprobaciones devuelven hechos y procedencia, no la solución. El
-				éxito técnico es B && Q; el contraste C informa límites y exposición
-				residual.
-			</p>
-			<div className={styles.actions}>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={busy}
-					onClick={onVerify}
-				>
-					Verificar estado actual
-				</button>
-				{['B1', 'B2', 'Q1', 'Q2', 'Q3', 'C1', 'C2', 'C3', 'C4', 'C5'].map(
-					(checkId) => (
-						<button
-							key={checkId}
-							type="button"
-							className={styles.button}
-							disabled={busy}
-							onClick={() => onCheck(checkId)}
-						>
-							Ejecutar {checkId}
-						</button>
-					),
-				)}
-			</div>
-			{report ? <ReportTable report={report} /> : null}
-			{state.checks.length ? (
-				<p className={styles.small}>
-					Ejecuciones puntuales:{' '}
-					{state.checks
-						.map(
-							(check) => `${check.checkId}=${check.passed ? 'pasa' : 'falla'}`,
-						)
-						.join(' · ')}
-				</p>
-			) : null}
-		</div>
-	)
-}
-
-function ReportTable({ report }: { readonly report: ExerciseReport }) {
-	return (
-		<>
-			<div className={styles.summaryRow}>
-				<span className={report.B ? styles.chipPass : styles.chipFail}>
-					Función legítima B: {report.B ? 'pasa' : 'falla'}
-				</span>
-				<span className={report.Q ? styles.chipPass : styles.chipFail}>
-					Protección Q: {report.Q ? 'pasa' : 'falla'}
-				</span>
-				<span className={styles.chipNeutral}>
-					Contraste C:{' '}
-					{Object.entries(report.C)
-						.map(([id, passed]) => `${id}=${passed ? 'sí' : 'no'}`)
-						.join(' · ')}
-				</span>
-			</div>
-			{report.residualExposure ? (
-				<p className={styles.notice}>
-					La revisión deja exposición residual declarada; no se presenta como
-					remediación integral.
-				</p>
-			) : null}
-			<div className={styles.tableWrapper}>
-				<table className={styles.table}>
-					<caption>
-						Comprobaciones ejecutadas sobre el estado del banco. El verificador
-						reejecuta las propiedades declaradas.
-					</caption>
-					<thead>
-						<tr>
-							<th scope="col">ID</th>
-							<th scope="col">Tipo</th>
-							<th scope="col">Propiedad</th>
-							<th scope="col">Resultado</th>
-							<th scope="col">Evidencia</th>
-						</tr>
-					</thead>
-					<tbody>
-						{report.checks.map((check) => (
-							<tr key={check.id}>
-								<td>{check.id}</td>
-								<td>{check.kind}</td>
-								<td>{check.property}</td>
-								<td className={check.passed ? styles.pass : styles.fail}>
-									{check.passed ? 'pasa' : 'falla'}
-								</td>
-								<td>{check.evidence}</td>
-							</tr>
-						))}
-					</tbody>
-				</table>
-			</div>
-		</>
-	)
-}
-
-function InformeView({
-	state,
-	reportFields,
-	setReportFields,
-	busy,
-	onArtifact,
-	onReport,
-	onReset,
-	onVerify,
-}: {
-	readonly state: AndinaPayState
-	readonly reportFields: ReportFields
-	readonly setReportFields: (next: ReportFields) => void
-	readonly busy: boolean
-	readonly onArtifact: () => Promise<void>
-	readonly onReport: () => Promise<void>
-	readonly onReset: () => void
-	readonly onVerify: () => void
-}) {
-	const complete = Object.values(reportFields).every((value) => value.trim())
-
-	return (
-		<div className={styles.panel}>
-			<p className={styles.panelLead}>
-				Informe no técnico de cinco campos. Primero entrega el artefacto; la
-				entrega congela controles y pruebas. Después se habilita el informe
-				final.
-			</p>
-
-			<div className={styles.fieldGrid}>
-				<label className={styles.label} htmlFor="report-occurred">
-					Qué ocurrió según los materiales
-					<textarea
-						id="report-occurred"
-						className={styles.textarea}
-						rows={3}
-						value={reportFields.occurred}
-						onChange={(event) =>
-							setReportFields({ ...reportFields, occurred: event.target.value })
-						}
-					/>
-				</label>
-				<label className={styles.label} htmlFor="report-recoverable">
-					Qué datos se demostraron recuperables
-					<textarea
-						id="report-recoverable"
-						className={styles.textarea}
-						rows={3}
-						value={reportFields.recoverable}
-						onChange={(event) =>
-							setReportFields({
-								...reportFields,
-								recoverable: event.target.value,
-							})
-						}
-					/>
-				</label>
-				<label className={styles.label} htmlFor="report-cause">
-					Causa y corrección
-					<textarea
-						id="report-cause"
-						className={styles.textarea}
-						rows={3}
-						value={reportFields.cause}
-						onChange={(event) =>
-							setReportFields({ ...reportFields, cause: event.target.value })
-						}
-					/>
-				</label>
-				<label className={styles.label} htmlFor="report-continuity">
-					Continuidad verificada
-					<textarea
-						id="report-continuity"
-						className={styles.textarea}
-						rows={3}
-						value={reportFields.continuity}
-						onChange={(event) =>
-							setReportFields({
-								...reportFields,
-								continuity: event.target.value,
-							})
-						}
-					/>
-				</label>
-				<label className={styles.label} htmlFor="report-limits">
-					Límites y próximos pasos
-					<textarea
-						id="report-limits"
-						className={styles.textarea}
-						rows={3}
-						value={reportFields.limits}
-						onChange={(event) =>
-							setReportFields({ ...reportFields, limits: event.target.value })
-						}
-					/>
-				</label>
-			</div>
-
-			<div className={styles.actions}>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={
-						busy || state.sealedDiagnosis === null || state.artifactSubmitted
-					}
-					onClick={() => void onArtifact()}
-				>
-					{state.artifactSubmitted
-						? 'Artefacto entregado'
-						: 'Entregar artefacto'}
-				</button>
-				<button
-					type="button"
-					className={styles.button}
-					disabled={
-						busy ||
-						!state.artifactSubmitted ||
-						state.reportSubmitted ||
-						!complete
-					}
-					onClick={() => void onReport()}
-				>
-					{state.reportSubmitted ? 'Informe enviado' : 'Enviar informe'}
-				</button>
-				<button type="button" className={styles.button} onClick={onVerify}>
-					Verificar antes de entregar
-				</button>
-			</div>
-
-			{state.artifactSubmitted ? (
-				<p className={styles.hint}>
-					Entrega técnica congelada. Los controles y las pruebas ya no se
-					editan.
-				</p>
-			) : null}
-
-			{state.reportSubmitted ? (
-				<div className={styles.footerNotice}>
-					<strong>Caso completado.</strong> La copia histórica R01/v1 sigue
-					siendo legible con K1: la exposición residual está declarada y el
-					vector de fuga no se conoce. El nodo del mapa se marcará como
-					completado al guardar el progreso.
-					<div className={styles.actions}>
-						<button type="button" className={styles.button} onClick={onReset}>
-							Reiniciar caso
-						</button>
-					</div>
-				</div>
-			) : null}
 		</div>
 	)
 }

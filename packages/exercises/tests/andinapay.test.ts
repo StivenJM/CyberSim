@@ -105,18 +105,20 @@ describe('andinaPay fixtures', () => {
 })
 
 describe('andinaPay repository fixtures', () => {
-	it('finds KEY_HEX only in AP-H1 and never in HEAD', () => {
-		expect(searchRevision('AP-H1', 'KEY_HEX')).toHaveLength(1)
-		expect(searchRevision('AP-H2', 'KEY_HEX')).toEqual([])
-		expect(searchRevision('AP-H3', 'KEY_HEX')).toEqual([])
-		expect(searchRevision('AP-H3', 'legacy-demo')[0]?.text).toContain('KEY_ID')
+	it('finds the literal key only in AP-H1 and never in HEAD', () => {
+		expect(searchRevision('AP-H1', 'legacyKeyHex')).toHaveLength(1)
+		expect(searchRevision('AP-H2', 'legacyKeyHex')).toEqual([])
+		expect(searchRevision('AP-H3', 'legacyKeyHex')).toEqual([])
+		expect(searchRevision('AP-H3', 'legacy-demo')[0]?.text).toContain(
+			'legacyKeyId',
+		)
 	})
 
 	it('shows the removal of the literal between AP-H1 and AP-H2', () => {
 		const diff = diffRevisions('AP-H1', 'AP-H2')
-		const crypto = diff.find((entry) => entry.path === 'src/crypto-config.ts')
-		expect(crypto?.removed.join('\n')).toContain('KEY_HEX')
-		expect(crypto?.added.join('\n')).toContain('KEY_SOURCE')
+		const config = diff.find((entry) => entry.path === 'src/config.ts')
+		expect(config?.removed.join('\n')).toContain('legacyKeyHex')
+		expect(config?.added.join('\n')).toContain('keySource')
 	})
 
 	it('keeps the A0 artifacts and the candidate change available', () => {
@@ -134,7 +136,7 @@ describe('andinaPay repository fixtures', () => {
 			'AP-H2',
 			'AP-H3',
 		])
-		expect(ANDINAPAY_PROPOSED_CHANGE.lines.join('\n')).toContain('KEY_HEX')
+		expect(ANDINAPAY_PROPOSED_CHANGE.lines.join('\n')).toContain('legacyKeyHex')
 	})
 
 	it('lets the student cite repository artifacts and every envelope', () => {

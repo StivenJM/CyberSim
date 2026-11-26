@@ -44,3 +44,26 @@
 	color: #ffffff;
 	border-color: rgba(220, 38, 38, 0.5);
 }
+
+.machineLabel {
+	position: absolute;
+	top: -36px;
+	left: 0;
+	z-index: 200;
+	height: 28px;
+	padding: 0 10px;
+	display: flex;
+	align-items: center;
+	max-width: 60%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
+	background: rgba(0, 0, 0, 0.6);
+	border: 1px solid rgba(255, 255, 255, 0.15);
+	border-radius: 6px;
+	color: rgba(255, 255, 255, 0.85);
+	font-size: 12px;
+	font-weight: 600;
+	font-family: inherit;
+	backdrop-filter: blur(4px);
+}

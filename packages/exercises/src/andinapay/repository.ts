@@ -19,70 +19,314 @@ export interface RepositoryFile {
 
 export interface RepositoryRevision {
 	readonly id: AndinaPayRevisionId
+	readonly hash: string
 	readonly date: string
 	readonly message: string
 	readonly files: readonly RepositoryFile[]
 }
 
-const CRYPTO_CONFIG_H1: RepositoryFile = {
-	path: 'src/crypto-config.ts',
+/**
+ * AndinaPay API — repositorio ficticio con forma de backend TypeScript real.
+ * La clave histórica vive en `src/config.ts`; el resto de archivos aporta
+ * contexto de proyecto (rutas, servicios, tipos) sin lógica de dominio extra.
+ */
+
+const README: RepositoryFile = {
+	path: 'README.md',
 	lines: [
-		"export const KEY_ID = 'legacy-demo';",
-		"export const KEY_HEX = '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';",
+		'# AndinaPay API',
+		'',
+		'Servicio de pagos de AndinaPay.',
+		'',
+		'## Requisitos',
+		'- Node 20+',
+		'- pnpm',
+		'',
+		'## Desarrollo',
+		'```bash',
+		'pnpm install',
+		'cp .env.example .env',
+		'pnpm dev',
+		'```',
+		'',
+		'## Endpoints',
+		'- `GET /health`',
+		'- `GET /payments`',
+		'- `GET /payments/:recordId`',
 	],
 }
 
-const CRYPTO_CONFIG_H2: RepositoryFile = {
-	path: 'src/crypto-config.ts',
+const ENV: RepositoryFile = {
+	path: '.env',
 	lines: [
-		"export const KEY_ID = 'legacy-demo';",
-		"export const KEY_SOURCE = 'runtime-reference';",
+		'PORT=3000',
+		'DATABASE_URL=postgres://andinapay:andinapay@localhost:5432/andinapay',
+		'LOG_LEVEL=info',
+		'JWT_TTL=3600',
 	],
 }
 
-const CRYPTO_FLOW: RepositoryFile = {
-	path: 'src/crypto-flow.txt',
+const ENV_EXAMPLE: RepositoryFile = {
+	path: '.env.example',
 	lines: [
-		'key = keyService.get(KEY_ID)',
-		'cipher = AES-256-GCM',
-		'iv = independent per record',
-		'tag = 128 bits',
-		'aad = AndinaPay|<recordId>|<version>',
+		'PORT=3000',
+		'DATABASE_URL=postgres://user:password@localhost:5432/andinapay',
+		'LOG_LEVEL=info',
+		'JWT_TTL=3600',
 	],
 }
 
-const PUBLIC_CONFIG: RepositoryFile = {
-	path: 'public-config.txt',
-	lines: ['MERCHANT_PUBLIC_ID=merchant-demo-17'],
+const GITIGNORE: RepositoryFile = {
+	path: '.gitignore',
+	lines: ['node_modules/', 'dist/', '.env', '*.log'],
 }
+
+const PACKAGE_JSON: RepositoryFile = {
+	path: 'package.json',
+	lines: [
+		'{',
+		'  "name": "andinapay-api",',
+		'  "version": "2.4.0",',
+		'  "private": true,',
+		'  "type": "module",',
+		'  "scripts": {',
+		'    "dev": "tsx watch src/server.ts",',
+		'    "build": "tsc -p tsconfig.json",',
+		'    "start": "node dist/server.js",',
+		'    "test": "vitest run"',
+		'  },',
+		'  "dependencies": {',
+		'    "express": "^4.19.2",',
+		'    "zod": "^3.23.8"',
+		'  },',
+		'  "devDependencies": {',
+		'    "tsx": "^4.19.0",',
+		'    "typescript": "^5.6.3",',
+		'    "vitest": "^2.1.4"',
+		'  }',
+		'}',
+	],
+}
+
+const TSCONFIG: RepositoryFile = {
+	path: 'tsconfig.json',
+	lines: [
+		'{',
+		'  "compilerOptions": {',
+		'    "target": "ES2022",',
+		'    "module": "NodeNext",',
+		'    "moduleResolution": "NodeNext",',
+		'    "strict": true,',
+		'    "esModuleInterop": true,',
+		'    "outDir": "dist",',
+		'    "rootDir": "src"',
+		'  },',
+		'  "include": ["src"]',
+		'}',
+	],
+}
+
+const SERVER: RepositoryFile = {
+	path: 'src/server.ts',
+	lines: [
+		"import express from 'express'",
+		"import { config } from './config.js'",
+		"import { healthRouter } from './routes/health.route.js'",
+		"import { paymentsRouter } from './routes/payments.route.js'",
+		'',
+		'const app = express()',
+		'',
+		'app.use(express.json())',
+		"app.use('/health', healthRouter)",
+		"app.use('/payments', paymentsRouter)",
+		'',
+		'app.listen(config.port, () => {',
+		"  console.log('AndinaPay API escuchando en :' + config.port)",
+		'})',
+	],
+}
+
+const HEALTH_ROUTE: RepositoryFile = {
+	path: 'src/routes/health.route.ts',
+	lines: [
+		"import { Router } from 'express'",
+		'',
+		'export const healthRouter = Router()',
+		'',
+		"healthRouter.get('/', (_req, res) => {",
+		"  res.json({ status: 'ok', uptime: process.uptime() })",
+		'})',
+	],
+}
+
+const PAYMENTS_ROUTE: RepositoryFile = {
+	path: 'src/routes/payments.route.ts',
+	lines: [
+		"import { Router } from 'express'",
+		"import { readRecord, listRecords } from '../services/payment.service.js'",
+		'',
+		'export const paymentsRouter = Router()',
+		'',
+		"paymentsRouter.get('/', async (_req, res) => {",
+		'  res.json(await listRecords())',
+		'})',
+		'',
+		"paymentsRouter.get('/:recordId', async (req, res, next) => {",
+		'  try {',
+		'    res.json(await readRecord(req.params.recordId))',
+		'  } catch (error) {',
+		'    next(error)',
+		'  }',
+		'})',
+	],
+}
+
+const PAYMENT_SERVICE: RepositoryFile = {
+	path: 'src/services/payment.service.ts',
+	lines: [
+		"import { config } from '../config.js'",
+		"import { openEnvelope } from './crypto.service.js'",
+		"import type { PaymentRecord } from '../types/payment.types.js'",
+		'',
+		'export async function listRecords(): Promise<PaymentRecord[]> {',
+		'  return db.select().from(payments)',
+		'}',
+		'',
+		'export async function readRecord(recordId: string) {',
+		'  const envelope = await db.envelopes.find(recordId)',
+		'  const plaintext = await openEnvelope(envelope, config.legacyKeyId)',
+		'  return { recordId, plaintext }',
+		'}',
+	],
+}
+
+const CRYPTO_SERVICE_MIN: RepositoryFile = {
+	path: 'src/services/crypto.service.ts',
+	lines: [
+		"import { createDecipheriv } from 'node:crypto'",
+		'',
+		'export async function openEnvelope(envelope, keyId) {',
+		'  const key = await keyService.get(keyId)',
+		'  // AES-256-GCM: verifica el tag antes de devolver el texto.',
+		'  return decrypt(envelope, key)',
+		'}',
+	],
+}
+
+const CRYPTO_SERVICE_DOCS: RepositoryFile = {
+	path: 'src/services/crypto.service.ts',
+	lines: [
+		"import { createDecipheriv } from 'node:crypto'",
+		'',
+		'// app-payments: lectura de sobres con AES-256-GCM.',
+		'// key = keyService.get(KEY_ID)',
+		'// iv  = independiente por registro',
+		'// tag = 128 bits',
+		'// aad = AndinaPay|<recordId>|<version>',
+		'export async function openEnvelope(envelope, keyId) {',
+		'  const key = await keyService.get(keyId)',
+		'  // AES-256-GCM: verifica el tag antes de devolver el texto.',
+		'  return decrypt(envelope, key)',
+		'}',
+	],
+}
+
+const PAYMENT_TYPES: RepositoryFile = {
+	path: 'src/types/payment.types.ts',
+	lines: [
+		'export interface PaymentRecord {',
+		'  recordId: string',
+		'  merchantId: string',
+		'  amount: number',
+		'  currency: string',
+		'}',
+		'',
+		'export interface PaymentEnvelope {',
+		'  recordId: string',
+		'  keyId: string',
+		'  version: number',
+		'  ivHex: string',
+		'  tagHex: string',
+		'  ciphertextHex: string',
+		'}',
+	],
+}
+
+/** config.ts en la versión histórica: la clave literal quedó escrita. */
+const CONFIG_H1: RepositoryFile = {
+	path: 'src/config.ts',
+	lines: [
+		'export const config = {',
+		'  port: Number(process.env.PORT ?? 3000),',
+		"  databaseUrl: process.env.DATABASE_URL ?? '',",
+		"  merchantId: 'merchant-demo-17',",
+		"  legacyKeyId: 'legacy-demo',",
+		'  // Clave de cifrado de app-payments (queda en texto plano).',
+		'  legacyKeyHex:',
+		"    '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f',",
+		'}',
+	],
+}
+
+/** config.ts tras retirar el literal: la clave se resuelve en runtime. */
+const CONFIG_H2: RepositoryFile = {
+	path: 'src/config.ts',
+	lines: [
+		'export const config = {',
+		'  port: Number(process.env.PORT ?? 3000),',
+		"  databaseUrl: process.env.DATABASE_URL ?? '',",
+		"  merchantId: 'merchant-demo-17',",
+		"  legacyKeyId: 'legacy-demo',",
+		"  keySource: 'runtime-reference',",
+		'}',
+	],
+}
+
+const BASE_FILES: readonly RepositoryFile[] = [
+	README,
+	GITIGNORE,
+	ENV,
+	ENV_EXAMPLE,
+	PACKAGE_JSON,
+	TSCONFIG,
+	SERVER,
+	HEALTH_ROUTE,
+	PAYMENTS_ROUTE,
+	PAYMENT_SERVICE,
+	PAYMENT_TYPES,
+]
 
 export const ANDINAPAY_REVISIONS: readonly RepositoryRevision[] = [
 	{
 		id: 'AP-H1',
+		hash: '3f9a1c2',
 		date: '2026-08-03 10:00',
-		message: 'demo encryption',
-		files: [CRYPTO_CONFIG_H1],
+		message: 'feat: bootstrap payment service',
+		files: [...BASE_FILES, CRYPTO_SERVICE_MIN, CONFIG_H1],
 	},
 	{
 		id: 'AP-H2',
+		hash: 'b71e04d',
 		date: '2026-09-01 11:00',
-		message: 'use runtime key reference',
-		files: [CRYPTO_CONFIG_H2],
+		message: 'refactor: load key from runtime reference',
+		files: [...BASE_FILES, CRYPTO_SERVICE_MIN, CONFIG_H2],
 	},
 	{
 		id: 'AP-H3',
+		hash: 'd6fe10f',
 		date: '2026-10-24 16:00',
-		message: 'document key flow',
-		files: [CRYPTO_CONFIG_H2, CRYPTO_FLOW, PUBLIC_CONFIG],
+		message: 'docs: annotate AES-GCM flow',
+		files: [...BASE_FILES, CRYPTO_SERVICE_DOCS, CONFIG_H2],
 	},
 ]
 
 /** Candidate change shown to the scanner; it is not part of any revision. */
 export const ANDINAPAY_PROPOSED_CHANGE: RepositoryFile = {
-	path: 'src/demo-copy.ts',
+	path: 'src/config.example.ts',
 	lines: [
-		"export const KEY_ID = 'legacy-demo';",
-		"export const KEY_HEX = '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f';",
+		'// Copia propuesta en revisión; repite la clave literal.',
+		'export const legacyKeyHex =',
+		"  '000102030405060708090a0b0c0d0e0f101112131415161718191a1b1c1d1e1f'",
 	],
 }
 

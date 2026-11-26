@@ -42,6 +42,7 @@
 
 /* ═══ Desktop ═══ */
 .escritorio {
+	position: relative;
 	display: flex;
 	flex-direction: column;
 	flex: 1 1 auto;
@@ -51,6 +52,30 @@
 	border-radius: 0;
 	overflow: hidden;
 	transition: background 0.4s ease;
+}
+
+/* ═══ Machine name badge (top corner) ═══ */
+.nombreMaquina {
+	position: absolute;
+	top: 8px;
+	left: 12px;
+	z-index: 20;
+	padding: 4px 10px;
+	font-size: 12px;
+	font-weight: 600;
+	line-height: 1.2;
+	color: rgba(255, 255, 255, 0.92);
+	background: rgba(0, 0, 0, 0.38);
+	border: 1px solid rgba(255, 255, 255, 0.12);
+	border-radius: 6px;
+	backdrop-filter: blur(8px);
+	-webkit-backdrop-filter: blur(8px);
+	pointer-events: none;
+	white-space: nowrap;
+	max-width: 60%;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	text-shadow: 0 1px 2px rgba(0, 0, 0, 0.6);
 }
 
 /* === OS x Device Type wallpapers === */

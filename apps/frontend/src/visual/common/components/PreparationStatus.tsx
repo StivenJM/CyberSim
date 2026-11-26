@@ -11,6 +11,7 @@ let prepStatusDismissed = false
 export default function PreparationStatus() {
 	const [status, setStatus] = useState<Status | null>(null)
 	const [dismissed, setDismissed] = useState(prepStatusDismissed)
+	const [expanded, setExpanded] = useState(false)
 	useEffect(() => {
 		const poll = () =>
 			fetch('/api/health/status')
@@ -52,39 +53,53 @@ export default function PreparationStatus() {
 		low: 'poco espacio',
 	}
 	return (
-		<details className={styles.chip}>
-			<summary className={styles.summary}>
-				<ChevronRight size={13} strokeWidth={2.5} className={styles.caret} />
-				<span className={styles.summaryLabel}>
-					Entorno de desarrollo: {estado.replaceAll('_', ' ')}
-				</span>
+		<div className={styles.chip}>
+			<div className={styles.summary}>
+				<button
+					type="button"
+					className={styles.toggle}
+					aria-expanded={expanded}
+					onClick={() => setExpanded((value) => !value)}
+				>
+					<ChevronRight
+						size={13}
+						strokeWidth={2.5}
+						className={
+							expanded ? `${styles.caret} ${styles.caretOpen}` : styles.caret
+						}
+						aria-hidden="true"
+					/>
+					<span className={styles.summaryLabel}>
+						Entorno de desarrollo: {estado.replaceAll('_', ' ')}
+					</span>
+				</button>
 				<button
 					type="button"
 					className={styles.close}
 					aria-label="Cerrar aviso de desarrollo"
-					onClick={(event) => {
-						event.preventDefault()
-						event.stopPropagation()
+					onClick={() => {
 						prepStatusDismissed = true
 						setDismissed(true)
 					}}
 				>
-					<X size={13} strokeWidth={2.5} />
+					<X size={16} strokeWidth={2.5} aria-hidden="true" />
 				</button>
-			</summary>
-			<div className={styles.panel}>
-				<ul className={styles.list}>
-					{Object.entries(status.components || {}).map(([key, value]) => (
-						<li key={key}>
-							<span>{labels[key] || key}</span>
-							<span className={styles.state}>{states[value] || value}</span>
-						</li>
-					))}
-				</ul>
-				<span className={styles.hint}>
-					Consulta la guía de Docker para completar la preparación.
-				</span>
 			</div>
-		</details>
+			{expanded ? (
+				<div className={styles.panel}>
+					<ul className={styles.list}>
+						{Object.entries(status.components || {}).map(([key, value]) => (
+							<li key={key}>
+								<span>{labels[key] || key}</span>
+								<span className={styles.state}>{states[value] || value}</span>
+							</li>
+						))}
+					</ul>
+					<span className={styles.hint}>
+						Consulta la guía de Docker para completar la preparación.
+					</span>
+				</div>
+			) : null}
+		</div>
 	)
 }

@@ -18,9 +18,32 @@
 	align-items: center;
 	gap: 7px;
 	padding: 8px 12px;
-	cursor: pointer;
-	list-style: none;
 	line-height: 1.35;
+}
+
+.toggle {
+	display: flex;
+	align-items: center;
+	gap: 7px;
+	flex: 1;
+	min-width: 0;
+	padding: 0;
+	border: none;
+	background: transparent;
+	color: inherit;
+	font: inherit;
+	text-align: left;
+	cursor: pointer;
+}
+
+.toggle:hover {
+	color: #f6ecc4;
+}
+
+.toggle:focus-visible {
+	outline: 2px solid #d9c37a;
+	outline-offset: 3px;
+	border-radius: 6px;
 }
 
 .summaryLabel {
@@ -33,33 +56,24 @@
 	display: inline-flex;
 	align-items: center;
 	justify-content: center;
-	width: 18px;
-	height: 18px;
-	border-radius: 5px;
+	width: 20px;
+	height: 20px;
+	padding: 0;
+	border: none;
 	background: transparent;
-	color: #d9c37a;
+	color: #ef4444;
 	cursor: pointer;
-	transition:
-		background 0.15s ease,
-		color 0.15s ease;
+	transition: color 0.15s ease;
 }
 
 .close:hover {
-	background: rgba(255, 255, 255, 0.1);
-	color: #f6ecc4;
+	color: #f87171;
 }
 
 .close:focus-visible {
-	outline: 2px solid #d9c37a;
+	outline: 2px solid #ef4444;
 	outline-offset: 2px;
-}
-
-.summary::-webkit-details-marker {
-	display: none;
-}
-
-.summary::marker {
-	content: "";
+	border-radius: 4px;
 }
 
 .caret {
@@ -68,18 +82,8 @@
 	transition: transform 0.16s ease;
 }
 
-.chip[open] .caret {
+.caretOpen {
 	transform: rotate(90deg);
-}
-
-.summary:hover {
-	color: #f6ecc4;
-}
-
-.summary:focus-visible {
-	outline: 2px solid #d9c37a;
-	outline-offset: 3px;
-	border-radius: 6px;
 }
 
 .panel {

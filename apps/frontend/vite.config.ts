@@ -58,6 +58,12 @@ export default defineConfig(({ mode }) => {
 			watch: { ignored: ['**/playwright-report/**', '**/test-results/**'] },
 			proxy: apiProxy,
 		},
+		// Los paquetes del workspace se consumen como fuente TS; excluirlos del
+		// pre-bundling hace que sus cambios (fixtures de escenarios) recarguen
+		// en caliente en lugar de quedarse cacheados.
+		optimizeDeps: {
+			exclude: ['@cybersim/exercises', '@cybersim/scenario-contract'],
+		},
 		preview: {
 			proxy: apiProxy,
 		},

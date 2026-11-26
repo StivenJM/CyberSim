@@ -10,7 +10,9 @@ import styles from '../styles/MonitorDesktopOverlay.module.css'
  * 3D monitor screen area. Appears after camera zoom completes.
  * Press Escape or click the back button to exit desktop mode.
  */
-const MonitorDesktopOverlay: React.FC = () => {
+const MonitorDesktopOverlay: React.FC<{ machineName?: string }> = ({
+	machineName,
+}) => {
 	const { desktopMode, monitorRect, exitDesktopMode } = useScreenTransition()
 
 	// Escape key to exit desktop mode
@@ -36,6 +38,11 @@ const MonitorDesktopOverlay: React.FC = () => {
 					exit={{ opacity: 0 }}
 					transition={{ duration: 0.1, ease: 'easeOut' }}
 				>
+					{machineName ? (
+						<div className={styles.machineLabel} title={machineName}>
+							{machineName}
+						</div>
+					) : null}
 					<button
 						className={styles.closeButton}
 						onClick={exitDesktopMode}

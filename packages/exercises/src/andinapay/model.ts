@@ -415,12 +415,6 @@ export async function applyAndinaPay(
 		}
 
 		case 'submit_artifact': {
-			if (state.sealedDiagnosis === null) {
-				return reject(
-					'DIAGNOSIS_REQUIRED',
-					'El diagnóstico D1 debe estar sellado antes de entregar.',
-				)
-			}
 			return applied(
 				{ ...state, artifactSubmitted: true },
 				'artifact:submitted',

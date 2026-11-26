@@ -198,9 +198,14 @@ const Model3DView = React.memo<Model3DProps & { scene: Group }>(
 				)}
 
 				{isSelected && (
-					<mesh position={[0, 0.01, 0]} rotation={[-Math.PI / 2, 0, 0]}>
+					<mesh position={[0, 0.02, 0]} rotation={[-Math.PI / 2, 0, 0]}>
 						<ringGeometry args={[ringInnerRadius, ringOuterRadius, 32]} />
-						<meshBasicMaterial color="#0088ff" transparent opacity={0.4} />
+						<meshBasicMaterial
+							color="#0088ff"
+							transparent
+							opacity={0.85}
+							depthWrite={false}
+						/>
 					</mesh>
 				)}
 			</group>

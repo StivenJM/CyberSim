@@ -41,12 +41,7 @@ const SEEDS: readonly ExerciseSeed[] = [
 			'Una clave retirada del código permite leer dos registros operativos. Reparar la custodia sin perder la copia histórica.',
 		zona: 'AndinaPay · Operaciones',
 		dispositivo: 'PC Analista',
-		fases: [
-			'Familiarización',
-			'Diagnóstico D1',
-			'Recuperación de claves',
-			'Pruebas e informe',
-		],
+		fases: ['Familiarización'],
 	},
 	{
 		id: 102,
@@ -116,9 +111,6 @@ const SEEDS: readonly ExerciseSeed[] = [
 
 const ANDINAPAY_OBJETIVOS = [
 	['Leer el aviso y adjuntar la versión H1 al expediente'],
-	['Sellar el diagnóstico provisional con dos evidencias'],
-	['Migrar R01/R02 a recovery-v2 y retirar legacy-demo'],
-	['Verificar B/Q/C y enviar el informe'],
 ] as const
 
 const ANDINAPAY_AVISO_INFO = {
@@ -134,7 +126,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoNotificacion: 5,
 		tiempoEnOcurrir: 999999,
 		descripcion:
-			'Aviso anónimo recibido en el canal de soporte. Hay un expediente nuevo en el PC del analista; ábrelo desde el monitor.',
+			'Soporte te reenvió un mensaje para revisar. Abre Correo en el PC del analista; los materiales recibidos también están en el expediente.',
 		fase: 1,
 		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},
@@ -155,37 +147,7 @@ const ANDINAPAY_EVENTOS = [
 		tiempoEnOcurrir: 999999,
 		descripcion:
 			'Prueba la clave candidata en el Banco criptográfico y compara el resultado con el fragmento del aviso.',
-		fase: 2,
-		infoAdicional: ANDINAPAY_AVISO_INFO,
-	},
-	{
-		nombreEvento: 'Escribir D1',
-		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
-		tiempoNotificacion: 20,
-		tiempoEnOcurrir: 999999,
-		descripcion:
-			'Escribe D1: qué encontraste, dos evidencias, una explicación rival, una prueba y lo que no sabes.',
-		fase: 2,
-		infoAdicional: ANDINAPAY_AVISO_INFO,
-	},
-	{
-		nombreEvento: 'Preparar recuperación',
-		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
-		tiempoNotificacion: 25,
-		tiempoEnOcurrir: 999999,
-		descripcion:
-			'Prepara la recuperación en Respuesta de claves: K2, custodia restringida, recifrado y publicación.',
-		fase: 3,
-		infoAdicional: ANDINAPAY_AVISO_INFO,
-	},
-	{
-		nombreEvento: 'Verificar e informar',
-		tipoEvento: TipoEvento.VERIFICACION_ACCION_JUGADOR,
-		tiempoNotificacion: 30,
-		tiempoEnOcurrir: 999999,
-		descripcion:
-			'Ejecuta B/Q/C y envía el informe; documenta qué sigue expuesto y qué no puedes demostrar.',
-		fase: 4,
+		fase: 1,
 		infoAdicional: ANDINAPAY_AVISO_INFO,
 	},
 ]
@@ -327,9 +289,6 @@ function definitionOf(seed: ExerciseSeed): DefinicionEscenario {
 			descripcion: isAndinaPay
 				? ([
 						'Abre el expediente en el PC del analista y revisa el aviso, los logs y el inventario.',
-						'Entrega un diagnóstico provisional con dos evidencias citadas y una predicción comprobable.',
-						'Prepara recovery-v2, migra R01/R02, publica y retira legacy-demo.',
-						'Ejecuta B/Q/C y envía el informe con los límites de la copia histórica.',
 					][index] ?? nombre)
 				: nombre,
 			faseActual: index === 0,
